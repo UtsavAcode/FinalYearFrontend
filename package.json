@@ -10,8 +10,12 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.0.0",
+    "admin-lte": "3.2",
+    "bootstrap": "^5.3.3",
+    "jquery": "^3.7.1",
     "primevue": "^4.0.0",
-    "vue": "^3.4.29"
+    "vue": "^3.4.29",
+    "vue-router": "^4.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

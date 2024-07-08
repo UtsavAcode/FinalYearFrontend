@@ -16,6 +16,10 @@ header {
   flex-direction: row;
   justify-content: space-between;
 }
+.search {
+  margin: auto;
+}
+
 
 .title {
   padding: 3rem 3rem 3rem 10rem;
@@ -33,7 +37,7 @@ header {
   justify-content: center;
   align-items: center;
 }
-.links {
+.social_links {
   background-color: black;
   color: white;
   list-style: none;
@@ -45,18 +49,23 @@ header {
   width: 29px;
 }
 
-nav{
+nav {
   height: 4rem;
 }
 
-.nav-container{
+.nav-container {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.nav-item{
+.nav-item {
   padding: 1.4rem 1rem 1rem 1rem;
   margin: 0.5;
   list-style: none;
+}
+
+.routes {
+  text-decoration: none;
+  color: black;
 }
