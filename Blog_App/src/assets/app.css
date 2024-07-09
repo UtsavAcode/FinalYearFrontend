@@ -18,12 +18,12 @@ header {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #eee;
-  padding-bottom: 1rem;
+  padding-bottom: 0.4rem;
 }
 
 .site-title {
   margin: auto;
-  padding: 3rem 1rem 1rem 1rem;
+  padding: 2rem 1rem 1rem 1rem;
 }
 
 .social {
@@ -56,7 +56,6 @@ header {
   align-items: center;
   width: 100%;
   height: 4rem;
-  
 }
 
 .nav-container {
@@ -91,22 +90,22 @@ header {
   align-items: center;
 }
 
-.search-field{
+.search-field {
   margin-left: 6rem;
-  position:absolute;
+  position: absolute;
   left: 20rem;
 }
 
-.button-cover{
+.button-cover {
   position: absolute;
   left: 90%;
 }
 
-.button-cover button{
+.button-cover button {
   background-color: black;
   color: white;
-  padding:0.8rem;
+  padding: 0.8rem;
   border-radius: 10px;
-  margin:2px;
+  margin: 2px;
   cursor: pointer;
 }
