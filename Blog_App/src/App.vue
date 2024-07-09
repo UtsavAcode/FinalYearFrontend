@@ -22,6 +22,9 @@ import { RouterLink, RouterView } from "vue-router";
           <RouterLink to="/category" class="nav-link">Category</RouterLink>
         </li>
         <li><RouterLink to="/profile" class="nav-link">Profile</RouterLink></li>
+        <li>
+          <RouterLink to="/admin" class="nav-link">Admin</RouterLink>
+        </li>
       </ul>
       <div class="right-cover">
         <IconField class="search-field">
@@ -30,8 +33,8 @@ import { RouterLink, RouterView } from "vue-router";
         </IconField>
 
         <div class="button-cover">
-          <button>Register</button>
-          <button>Login</button>
+          <button><RouterLink to="/register">Register</RouterLink></button>
+          <button><RouterLink to="/login">Login</RouterLink></button>
         </div>
       </div>
     </nav>

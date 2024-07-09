@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import CategoryView from "../views/CategoryView.vue";
 import ProfileView from "../views/ProfileView.vue";
+import RegisterView from "../views/RegisterView.vue";
+import LoginView from "../views/LoginView.vue";
+import AdminDashView from "../views/AdminDashView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +24,15 @@ const router = createRouter({
       path: "/profile",
       name: "profile",
       component: ProfileView,
+    },
+
+    { path: "/login", name: "login", component: LoginView },
+    { path: "/register", name: "register", component: RegisterView },
+    {
+      path: "/admin",
+      name: "admindashboard",
+      component: AdminDashView,
+      meta: { requiresAuth: true, roles: ["Admin", "SuperAdmin"] },
     },
     // {
     //   path: '/about',
