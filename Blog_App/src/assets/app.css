@@ -54,20 +54,25 @@ header {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 4rem;
+  
 }
 
 .nav-container {
   display: inherit;
+  position: absolute;
+  left: 38%;
 }
 
-.nav-container li{
-    list-style: none;
-    margin: 0.8rem;
+.nav-container li {
+  list-style: none;
+  margin: 0.8rem;
 }
 
-.nav-container li:hover{
-    cursor: pointer;
-    border-bottom: 1px solid #898686;
+.nav-container li:hover {
+  cursor: pointer;
+  border-bottom: 1px solid #898686;
 }
 .nav-link {
   text-decoration: none;
@@ -75,6 +80,33 @@ header {
   font-size: 1.3em;
 }
 
-.content{
-    margin-top: 5px;
+.content {
+  margin-top: 5px;
+}
+
+.right-cover {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-field{
+  margin-left: 6rem;
+  position:absolute;
+  left: 20rem;
+}
+
+.button-cover{
+  position: absolute;
+  left: 90%;
+}
+
+.button-cover button{
+  background-color: black;
+  color: white;
+  padding:0.8rem;
+  border-radius: 10px;
+  margin:2px;
+  cursor: pointer;
 }

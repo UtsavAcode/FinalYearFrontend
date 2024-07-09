@@ -6,7 +6,7 @@ import { RouterLink, RouterView } from "vue-router";
   <header>
     <div class="title">
       <h1 class="site-title">Bloggy</h1>
-      <div><Button label="Register" class="p-button-primary" /></div>
+
       <div class="social">
         <ul class="social-group">
           <li class="social-link">F</li>
@@ -23,6 +23,17 @@ import { RouterLink, RouterView } from "vue-router";
         </li>
         <li><RouterLink to="/profile" class="nav-link">Profile</RouterLink></li>
       </ul>
+      <div class="right-cover">
+        <IconField class="search-field">
+          <InputIcon class="pi pi-search" />
+          <InputText v-model="value1" placeholder="Search" />
+        </IconField>
+
+        <div class="button-cover">
+          <button>Register</button>
+          <button>Login</button>
+        </div>
+      </div>
     </nav>
   </header>
 
