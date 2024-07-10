@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://localhost:5103/api/account/";
+const API_URL = "https://localhost:5103/account/";
 
 class AuthService {
   login(user) {
@@ -27,6 +27,10 @@ class AuthService {
       email: user.email,
       password: user.password,
     });
+  }
+
+  getAll() {
+    return axios.get("/");
   }
 }
 
