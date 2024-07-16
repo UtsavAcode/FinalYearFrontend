@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h1>Register here:</h1>
-  </div>
+  <div>Welcome registered User</div>
 </template>
 
 <script>

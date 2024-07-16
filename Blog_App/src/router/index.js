@@ -1,47 +1,26 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
-import CategoryView from "../views/CategoryView.vue";
-import ProfileView from "../views/ProfileView.vue";
-import RegisterView from "../views/RegisterView.vue";
-import LoginView from "../views/LoginView.vue";
-import AdminDashView from "../views/AdminDashView.vue";
-
+import register from "../components/register.vue";
+import login from "../components/login.vue";
+import dashboard from "../components/dashboard.vue";
+import Register from "../components/register.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/",
-      name: "home",
-      component: HomeView,
+      path: "/register",
+      component: Register,
+      name: "register",
     },
     {
-      path: "/category",
-      name: "category",
-      component: CategoryView,
+      path: "/login",
+      component: login,
+      name: "login",
     },
-
     {
-      path: "/profile",
-      name: "profile",
-      component: ProfileView,
+      path: "/dashboard",
+      component: dashboard,
+      name: "dashboard",
     },
-
-    { path: "/login", name: "login", component: LoginView },
-    { path: "/register", name: "register", component: RegisterView },
-    {
-      path: "/admin",
-      name: "admindashboard",
-      component: AdminDashView,
-      meta: { requiresAuth: true, roles: ["Admin", "SuperAdmin"] },
-    },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('../views/AboutView.vue')
-    // }
   ],
 });
 

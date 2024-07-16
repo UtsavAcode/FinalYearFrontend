@@ -17,13 +17,8 @@ import { RouterLink, RouterView } from "vue-router";
     </div>
     <nav class="navbar">
       <ul class="nav-container">
-        <li><RouterLink to="/" class="nav-link">Home</RouterLink></li>
         <li>
-          <RouterLink to="/category" class="nav-link">Category</RouterLink>
-        </li>
-        <li><RouterLink to="/profile" class="nav-link">Profile</RouterLink></li>
-        <li>
-          <RouterLink to="/admin" class="nav-link">Admin</RouterLink>
+          <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
         </li>
       </ul>
       <div class="right-cover">
