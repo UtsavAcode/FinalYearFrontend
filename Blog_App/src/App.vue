@@ -4,27 +4,33 @@ import { RouterLink, RouterView } from "vue-router";
 
 <template>
   <header class="container-fluid">
-    <div class="border-bottom border-secondary p-4">
-      <h1 class="w-25 position-relative mx-7">Bloggy</h1>
+    <div class="border-bottom border-gray p-4">
+      <h1 class="w-25 mx-7">Bloggy</h1>
       <div>
         <ul
-          class="list-group position-absolute my-4 end-0 mx-4 top-0 list-group-horizontal float-end"
+          class="list-group position-absolute my-5 end-0 mx-4 top-0 list-group-horizontal float-end"
         >
-          <li class="list-group-item bg-dark text-light rounded-circle m-1">
-            F
+          <li
+            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
+          >
+            <i class="bi bi-facebook"></i>
           </li>
-          <li class="list-group-item bg-dark text-light rounded-circle m-1">
-            T
+          <li
+            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
+          >
+            <i class="bi bi-twitter"></i>
           </li>
-          <li class="list-group-item bg-dark text-light rounded-circle m-1">
-            L
+          <li
+            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
+          >
+            <i class="bi bi-linkedin"></i>
           </li>
         </ul>
       </div>
     </div>
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg p-4">
       <div class="container-fluid">
-        <!-- <a class="navbar-brand" href="#">Navbar</a> -->
+        <a class="navbar-brand" href="#"></a>
         <button
           class="navbar-toggler"
           type="button"
@@ -42,10 +48,13 @@ import { RouterLink, RouterView } from "vue-router";
             style="justify-content: center"
           >
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
+              <RouterLink class="nav-link active" to="home">Home</RouterLink>
             </li>
+            <!-- <li class="nav-item">
+              <RouterLink class="nav-link active" to='/'href="#">Profile</RouterLink>
+            </li> -->
             <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
+              <a class="nav-link" href="#"></a>
             </li>
             <li class="nav-item dropdown">
               <a
@@ -66,42 +75,24 @@ import { RouterLink, RouterView } from "vue-router";
                 </li>
               </ul>
             </li>
-            <li class="nav-item">
-              <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-            </li>
           </ul>
-          <form class="d-flex ms-auto" role="search">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <button class="btn btn-outline-success" type="submit">
-              Search
-            </button>
+          <form class="d-flex ms-6" role="search">
+            <IconField>
+              <InputIcon class="pi pi-search" />
+              <InputText v-model="value1" placeholder="Search" />
+            </IconField>
           </form>
+          <div class="ms-5">
+            <RouterLink to="/register" class="btn btn-dark mx-2"
+              >Register</RouterLink
+            >
+            <RouterLink to="/login" class="btn btn-dark">Login</RouterLink>
+          </div>
         </div>
       </div>
     </nav>
-
-    <!-- <nav class="navbar">
-      <ul class="nav-container">
-        <li>
-          <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
-        </li>
-      </ul>
-      <div class="right-cover">
-        <div class="button-cover">
-          <button><RouterLink to="/register">Register</RouterLink></button>
-          <button><RouterLink to="/login">Login</RouterLink></button>
-        </div>
-      </div>
-    </nav> -->
   </header>
-  <!-- This is the beginning -->
-  <div class="move"></div>
-  <!-- This is the end -->
+
   <div class="content">
     <RouterView />
   </div>

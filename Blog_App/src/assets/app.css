@@ -2,7 +2,25 @@
   margin-left: 35rem !important;
 }
 
-
 .mx-7 {
-  margin-left: 39rem !important;
+  margin: auto !important;
+  text-align: center;
+}
+
+.border-gray {
+  border-bottom: 1px solid #eee;
+}
+
+.ms-6 {
+  margin-left: 9rem !important;
+}
+
+.display-7 {
+  font-size: 0.9em !important;
+  height: 2rem;
+  width: 2rem;
+  text-align: center;
+  padding: 4px !important;
+  border-radius: 50% !important;
+  border: 1px solid black !important;
 }

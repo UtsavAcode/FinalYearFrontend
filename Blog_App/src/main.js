@@ -7,7 +7,11 @@ import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura";
 import "bootstrap/dist/css/bootstrap.min.css";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
-// import "bootstrap-icons/font/bootstrap-icons.css";
+import IconField from "primevue/iconfield";
+import InputText from "primevue/inputtext";
+import InputIcon from "primevue/inputicon";
+import "primeicons/primeicons.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const app = createApp(App);
 
@@ -21,6 +25,11 @@ app.use(PrimeVue, {
     },
   },
 });
+
+app.component("IconField", IconField);
+app.component("InputIcon", InputIcon);
+app.component("InputText", InputText);
+
 app.use(router);
 app.use(bootstrap);
 app.mount("#app");
