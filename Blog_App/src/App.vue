@@ -1,7 +1,3 @@
-<script setup>
-import { RouterLink, RouterView } from "vue-router";
-</script>
-
 <template>
   <header class="container-fluid">
     <div class="border-bottom border-gray p-4">
@@ -66,6 +62,10 @@ import { RouterLink, RouterView } from "vue-router";
               >
                 Dropdown
               </a>
+              <router-link v-if="isAuthenticated" to="/admin"
+                >Admin Dashboard</router-link
+              >
+              <button v-if="isAuthenticated" @click="logout">Logout</button>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">Action</a></li>
                 <li><a class="dropdown-item" href="#">Another action</a></li>
@@ -79,14 +79,19 @@ import { RouterLink, RouterView } from "vue-router";
           <form class="d-flex ms-6" role="search">
             <IconField>
               <InputIcon class="pi pi-search" />
-              <InputText v-model="value1" placeholder="Search" />
+              <InputText placeholder="Search" />
             </IconField>
           </form>
           <div class="ms-5">
-            <RouterLink to="/register" class="btn btn-dark mx-2"
+            <RouterLink
+              v-if="!isAuthenticated"
+              to="/register"
+              class="btn btn-dark mx-2"
               >Register</RouterLink
             >
-            <RouterLink to="/login" class="btn btn-dark">Login</RouterLink>
+            <RouterLink v-if="!isAuthenticated" to="/login" class="btn btn-dark"
+              >Login</RouterLink
+            >
           </div>
         </div>
       </div>
@@ -97,5 +102,22 @@ import { RouterLink, RouterView } from "vue-router";
     <RouterView />
   </div>
 </template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  computed: {
+    ...mapGetters("auth", ["isAuthenticated"]),
+  },
+  methods: {
+    ...mapActions("auth", ["logout"]),
+    logout() {
+      this.logout();
+      this.$router.push("/");
+    },
+  },
+};
+</script>
 
 <style scoped></style>
