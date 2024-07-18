@@ -1,40 +1,49 @@
-<!-- src/components/Login.vue -->
-
 <template>
   <div>
-    <h2>Login</h2>
+    <h1>Login</h1>
     <form @submit.prevent="login">
-      <input type="email" v-model="email" placeholder="Email" required />
-      <input type="password" v-model="password" placeholder="Password" required />
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" v-model="email" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" v-model="password" required>
+      </div>
       <button type="submit">Login</button>
-    </form>
-  </div>
+       <p v-if="error">{{ error }}</p>
+</form>
+ </div>
 </template>
-
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   data() {
     return {
       email: '',
-      password: '',
+      password: ''
     };
   },
-  methods: {
-    ...mapActions('auth', ['login']),
-    async login() {
-      try {
-        const user = {
-          email: this.email,
-          password: this.password,
-        };
-        await this.login(user);
-        this.$router.push('/');
-      } catch (error) {
-        console.error(error);
-      }
-    },
+  computed: {
+    ...mapGetters({
+      error: 'auth/authError'
+    })
   },
+   methods: {
+    ...mapActions({
+      loginAction: 'auth/login'
+    }),
+    login() {
+      this.loginAction({ email: this.email, password: this.password })
+        .then(() => {
+          if (this.$store.getters['auth/userRole'] === 'admin' || this.$store.getters['auth/userRole'] === 'superadmin') {
+            this.$router.push('/admin');
+          } else {
+            this.$router.push('/');
+          }
+        });
+    }
+  }
 };
 </script>

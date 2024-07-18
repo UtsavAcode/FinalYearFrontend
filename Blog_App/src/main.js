@@ -15,7 +15,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import store from "./store";
 const app = createApp(App);
 import axios from "axios";
-axios.defaults.baseURL = "http://localhost:5103";
+axios.defaults.baseURL = "http://localhost:5254/api";
 
 app.use(PrimeVue, {
   theme: {

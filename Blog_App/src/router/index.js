@@ -1,67 +1,48 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "../store";
-import login from "../components/login.vue";
-import dashboard from "../components/dashboard.vue";
+import Login from "../components/login.vue";
+import HeroPage from "../components/HeroPage.vue";
 import Register from "../components/register.vue";
 import Home from "../components/home.vue";
-import User from "../components/user.vue";
+import Profile from "../components/Profile.vue";
 import Admin from "../components/admin.vue";
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: "/home",
-      name: "Home",
-      component: Home,
-    },
-    {
-      path: "/register",
-      component: Register,
-      name: "register",
-    },
-    {
-      path: "/login",
-      component: login,
-      name: "login",
-    },
-    {
-      path: "/dashboard",
-      component: dashboard,
-      name: "dashboard",
-    },
 
-    {
-      path: "/user",
-      component: User,
-      meta: { requiresAuth: true, role: "user" },
-    },
+Vue.use(Router);
 
-    {
-      path: "/admin",
-      component: Admin,
-      meta: { requiresAuth: true, requiresAdmin: true },
-    },
-  ],
+const routes = [
+  { path: "/", name: "Home", component: Home },
+  { path: "/login", name: "Login", component: Login },
+  { path: "/register", name: "Register", component: Register },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    component: Admin,
+    meta: { requiresAuth: true, isAdmin: true },
+  },
+];
+
+const router = new Router({
+  mode: "history",
+  base: process.env.BASE_URL,
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem("token");
-  const roles = localStorage.getItem("roles")
-    ? localStorage.getItem("roles").split(",")
-    : [];
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const isAdmin = to.matched.some((record) => record.meta.isAdmin);
+  const isLoggedIn = store.getters["auth/isLoggedIn"];
+  const userRole = store.getters["auth/userRole"];
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!isAuthenticated) {
-      next("/login");
-    } else if (to.matched.some((record) => record.meta.requiresAdmin)) {
-      if (roles.includes("Admin") || roles.includes("SuperAdmin")) {
-        next();
-      } else {
-        next("/");
-      }
-    } else {
-      next();
-    }
+  if (requiresAuth && !isLoggedIn) {
+    next("/login");
+  } else if (isAdmin && userRole !== "admin" && userRole !== "superadmin") {
+    next("/");
   } else {
     next();
   }

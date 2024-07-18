@@ -62,10 +62,17 @@
               >
                 Dropdown
               </a>
-              <router-link v-if="isAuthenticated" to="/admin"
+              <router-link v-if="isLoggedIn" to="/profile">Profile</router-link>
+              <router-link
+                v-if="
+                  isLoggedIn &&
+                  (userRole === 'admin' || userRole === 'superadmin')
+                "
+                to="/admin"
                 >Admin Dashboard</router-link
               >
-              <button v-if="isAuthenticated" @click="logout">Logout</button>
+              <a v-if="isLoggedIn" @click="logout">Logout</a>
+
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">Action</a></li>
                 <li><a class="dropdown-item" href="#">Another action</a></li>
@@ -84,12 +91,12 @@
           </form>
           <div class="ms-5">
             <RouterLink
-              v-if="!isAuthenticated"
+              v-if="!isLoggedIn"
               to="/register"
               class="btn btn-dark mx-2"
               >Register</RouterLink
             >
-            <RouterLink v-if="!isAuthenticated" to="/login" class="btn btn-dark"
+            <RouterLink v-if="!isLoggedIn" to="/login" class="btn btn-dark"
               >Login</RouterLink
             >
           </div>
@@ -104,16 +111,21 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters("auth", ["isAuthenticated"]),
+    ...mapGetters({
+      isLoggedIn: "auth/isLoggedIn",
+      userRole: "auth/userRole",
+    }),
   },
   methods: {
-    ...mapActions("auth", ["logout"]),
+    ...mapActions({
+      logoutAction: "auth/logout",
+    }),
     logout() {
-      this.logout();
+      this.logoutAction();
       this.$router.push("/");
     },
   },

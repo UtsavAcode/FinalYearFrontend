@@ -1,48 +1,59 @@
-<!-- src/components/Register.vue -->
 
+**`views/Register.vue`**
+
+```vue
 <template>
   <div>
-    <h2>Register</h2>
+    <h1>Register</h1>
     <form @submit.prevent="register">
-      <input type="text" v-model="name" placeholder="Name" required />
-      <input type="email" v-model="email" placeholder="Email" required />
-      <input
-        type="password"
-        v-model="password"
-        placeholder="Password"
-        required
-      />
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" v-model="email" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" v-model="password" required>
+      </div>
+      <div>
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" v-model="confirmPassword" required>
+      </div>
       <button type="submit">Register</button>
+      <p v-if="error">{{ error }}</p>
     </form>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   data() {
     return {
-      name: "",
-      email: "",
-      password: "",
+      email: '',
+      password: '',
+      confirmPassword: ''
     };
   },
-  methods: {
-    ...mapActions("auth", ["register"]),
-    async register() {
-      try {
-        const user = {
-          name: this.name,
-          email: this.email,
-          password: this.password,
-        };
-        await this.register(user);
-        this.$router.push("/login");
-      } catch (error) {
-        console.error(error);
-      }
-    },
+  computed: {
+    ...mapGetters({
+      error: 'auth/authError'
+    })
   },
+  methods: {
+    ...mapActions({
+      registerAction: 'auth/register'
+    }),
+    register() {
+      if (this.password !== this.confirmPassword) {
+        this.error = "Passwords do not match";
+        return;
+      }
+      this.registerAction({ email: this.email, password: this.password })
+        .then(() => {
+          this.$router.push('/login');
+        });
+    }
+  }
 };
 </script>
