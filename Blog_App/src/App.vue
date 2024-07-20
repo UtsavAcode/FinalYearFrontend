@@ -3,14 +3,22 @@
     <div class="border-bottom border-gray p-4">
       <h1 class="w-25 mx-7">Bloggy</h1>
       <div>
-        <ul class="list-group position-absolute my-5 end-0 mx-4 top-0 list-group-horizontal float-end">
-          <li class="list-group-item bg-dark text-light rounded-circle m-1 display-7">
+        <ul
+          class="list-group position-absolute my-5 end-0 mx-4 top-0 list-group-horizontal float-end"
+        >
+          <li
+            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
+          >
             <i class="bi bi-facebook"></i>
           </li>
-          <li class="list-group-item bg-dark text-light rounded-circle m-1 display-7">
+          <li
+            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
+          >
             <i class="bi bi-twitter"></i>
           </li>
-          <li class="list-group-item bg-dark text-light rounded-circle m-1 display-7">
+          <li
+            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
+          >
             <i class="bi bi-linkedin"></i>
           </li>
         </ul>
@@ -36,7 +44,7 @@
             style="justify-content: center"
           >
             <li class="nav-item">
-              <a class="nav-link" href="#"></a>
+              <a class="nav-link" href="#">Home</a>
             </li>
             <li class="nav-item dropdown">
               <a
@@ -48,18 +56,25 @@
               >
                 Dropdown
               </a>
-              <!-- <router-link v-if="isLoggedIn" to="/profile">Profile</router-link>
-              <router-link
-                v-if="isLoggedIn && (userRole === 'admin' || userRole === 'superadmin')"
-                to="/admin"
-                >Admin Dashboard</router-link
-              > -->
-              <!-- <a  @click="logout">Logout</a> -->
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li v-if="isAuthenticated">
+                  <router-link class="dropdown-item" to="/profile"
+                    >Profile</router-link
+                  >
+                </li>
+                <li
+                  v-if="
+                    isAuthenticated &&
+                    (userRole === 'Admin' || userRole === 'SuperAdmin')
+                  "
+                >
+                  <router-link class="dropdown-item" to="/admin"
+                    >Admin Dashboard</router-link
+                  >
+                </li>
+                <li v-if="isAuthenticated">
+                  <a class="dropdown-item" @click="handleLogout">Logout</a>
+                </li>
               </ul>
             </li>
           </ul>
@@ -69,13 +84,11 @@
               <InputText placeholder="Search" />
             </IconField>
           </form>
-          <div class="ms-5">
+          <div class="ms-5" v-if="!isAuthenticated">
             <RouterLink to="/register" class="btn btn-dark mx-2"
               >Register</RouterLink
             >
-            <RouterLink  to="/login" class="btn btn-dark"
-              >Login</RouterLink
-            >
+            <RouterLink to="/login" class="btn btn-dark">Login</RouterLink>
           </div>
         </div>
       </div>
@@ -88,7 +101,28 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 
+export default {
+  name: "App",
+  computed: {
+    ...mapGetters("auth", ["isAuthenticated", "roles"]),
+    userRole() {
+      return this.roles.length > 0 ? this.roles[0] : ""; // Assuming the first role is the main role
+    },
+  },
+  methods: {
+    ...mapActions("auth", ["logout"]),
+    async handleLogout() {
+      try {
+        await this.logout(); // Call Vuex action to perform logout
+        this.$router.push("/login"); // Redirect to login page after logout
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    },
+  },
+};
 </script>
 
 <style scoped></style>
