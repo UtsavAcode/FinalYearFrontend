@@ -3,22 +3,14 @@
     <div class="border-bottom border-gray p-4">
       <h1 class="w-25 mx-7">Bloggy</h1>
       <div>
-        <ul
-          class="list-group position-absolute my-5 end-0 mx-4 top-0 list-group-horizontal float-end"
-        >
-          <li
-            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
-          >
+        <ul class="list-group position-absolute my-5 end-0 mx-4 top-0 list-group-horizontal float-end">
+          <li class="list-group-item bg-dark text-light rounded-circle m-1 display-7">
             <i class="bi bi-facebook"></i>
           </li>
-          <li
-            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
-          >
+          <li class="list-group-item bg-dark text-light rounded-circle m-1 display-7">
             <i class="bi bi-twitter"></i>
           </li>
-          <li
-            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
-          >
+          <li class="list-group-item bg-dark text-light rounded-circle m-1 display-7">
             <i class="bi bi-linkedin"></i>
           </li>
         </ul>
@@ -44,12 +36,6 @@
             style="justify-content: center"
           >
             <li class="nav-item">
-              <RouterLink class="nav-link active" to="home">Home</RouterLink>
-            </li>
-            <!-- <li class="nav-item">
-              <RouterLink class="nav-link active" to='/'href="#">Profile</RouterLink>
-            </li> -->
-            <li class="nav-item">
               <a class="nav-link" href="#"></a>
             </li>
             <li class="nav-item dropdown">
@@ -62,24 +48,18 @@
               >
                 Dropdown
               </a>
-              <router-link v-if="isLoggedIn" to="/profile">Profile</router-link>
+              <!-- <router-link v-if="isLoggedIn" to="/profile">Profile</router-link>
               <router-link
-                v-if="
-                  isLoggedIn &&
-                  (userRole === 'admin' || userRole === 'superadmin')
-                "
+                v-if="isLoggedIn && (userRole === 'admin' || userRole === 'superadmin')"
                 to="/admin"
                 >Admin Dashboard</router-link
-              >
-              <a v-if="isLoggedIn" @click="logout">Logout</a>
-
+              > -->
+              <!-- <a  @click="logout">Logout</a> -->
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">Action</a></li>
                 <li><a class="dropdown-item" href="#">Another action</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
               </ul>
             </li>
           </ul>
@@ -90,13 +70,10 @@
             </IconField>
           </form>
           <div class="ms-5">
-            <RouterLink
-              v-if="!isLoggedIn"
-              to="/register"
-              class="btn btn-dark mx-2"
+            <RouterLink to="/register" class="btn btn-dark mx-2"
               >Register</RouterLink
             >
-            <RouterLink v-if="!isLoggedIn" to="/login" class="btn btn-dark"
+            <RouterLink  to="/login" class="btn btn-dark"
               >Login</RouterLink
             >
           </div>
@@ -111,25 +88,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
 
-export default {
-  computed: {
-    ...mapGetters({
-      isLoggedIn: "auth/isLoggedIn",
-      userRole: "auth/userRole",
-    }),
-  },
-  methods: {
-    ...mapActions({
-      logoutAction: "auth/logout",
-    }),
-    logout() {
-      this.logoutAction();
-      this.$router.push("/");
-    },
-  },
-};
 </script>
 
 <style scoped></style>

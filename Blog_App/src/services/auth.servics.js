@@ -1,53 +1,49 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5103/api/auth/";
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:5254/api/auth",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-class AuthService {
-  login(user) {
-    return axios
-      .post(API_URL + "login", {
-        email: user.email,
-        password: user.password,
-      })
-      .then((response) => {
-        if (response.data.jwtToken) {
-          localStorage.setItem("user", JSON.stringify(response.data));
-        }
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Login Error:", error);
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          console.error("Response Data:", error.response.data);
-          console.error("Response Status:", error.response.status);
-        } else if (error.request) {
-          // The request was made but no response was received
-          console.error("Request:", error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.error("Error Message:", error.message);
-        }
-        throw error; // Rethrow the error to handle it in the Vue component
-      });
-  }
+const authService = {
+  async login(email, password) {
+    try {
+      const response = await axiosInstance.post("/Login", { email, password });
+      if (response.data.isSuccess) {
+        localStorage.setItem("token", response.data.message);
+        localStorage.setItem("roles", JSON.stringify(response.data.roles));
+      }
+      return response.data; // Ensure this returns { isSuccess: true/false, message: "", roles: [] }
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error; // Ensure errors are thrown to be caught in the component
+    }
+  },
 
   logout() {
-    localStorage.removeItem("user");
-  }
+    localStorage.removeItem("token");
+    localStorage.removeItem("roles");
+  },
 
-  register(user) {
-    return axios
-      .post(API_URL + "register", {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-      })
-      .catch((error) => {
-        console.error("Registration Error:", error);
-        throw error; // Rethrow the error to handle it in the Vue component
-      });
-  }
-}
+  getToken() {
+    return localStorage.getItem("token");
+  },
 
-export default new AuthService();
+  getRoles() {
+    const roles = localStorage.getItem("roles");
+    return roles ? JSON.parse(roles) : [];
+  },
+
+  isAuthenticated() {
+    return !!localStorage.getItem("token");
+  },
+
+  isAdmin() {
+    const roles = this.getRoles();
+    return roles.includes("Admin") || roles.includes("SuperAdmin");
+  },
+};
+
+export default authService;

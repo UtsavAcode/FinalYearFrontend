@@ -1,85 +1,54 @@
-import axios from "axios";
+// store/modules/auth.js
+import authService from "@/services/auth.servics";
 
 const state = {
-  token: localStorage.getItem("token") || "",
-  user: {},
-  status: "",
-  error: null,
+  token: authService.getToken(),
+  roles: authService.getRoles(), // Add roles to the state
 };
 
 const mutations = {
-  auth_request(state) {
-    state.status = "loading";
-    state.error = null;
-  },
-  auth_success(state, { token, user }) {
+  SET_TOKEN(state, token) {
     state.token = token;
-    state.user = user;
-    state.status = "success";
-    state.error = null;
   },
-  auth_error(state, error) {
-    state.status = "error";
-    state.error = error;
+  CLEAR_TOKEN(state) {
+    state.token = null;
   },
-  logout(state) {
-    state.status = "";
-    state.token = "";
-    state.user = {};
-    state.error = null;
+  SET_ROLES(state, roles) {
+    state.roles = roles;
+  },
+  CLEAR_ROLES(state) {
+    state.roles = [];
   },
 };
 
 const actions = {
-  async login({ commit }, user) {
-    commit("auth_request");
-    try {
-      const response = await axios.post(
-        "http://localhost:5254/api/Auth/login",
-        user
-      );
-      const token = response.data.token;
-      const userResponse = await axios.get(
-        "http://localhost:5254/api/Users/profile",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const user = userResponse.data;
-
-      localStorage.setItem("token", token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      commit("auth_success", { token, user });
-    } catch (error) {
-      commit("auth_error", error);
-      localStorage.removeItem("token");
+  async login({ commit }, { email, password }) {
+    const response = await authService.login(email, password);
+    if (response.isSuccess) {
+      commit("SET_TOKEN", response.message);
+      commit("SET_ROLES", response.roles);
+      localStorage.setItem("token", response.message);
+      localStorage.setItem("roles", JSON.stringify(response.roles));
     }
-  },
-  async register({ commit }, user) {
-    commit("auth_request");
-    try {
-      await axios.post("http://localhost:5254/api/Auth/register", user);
-      commit("auth_success", { token: "", user: {} });
-    } catch (error) {
-      commit("auth_error", error);
-    }
+    return response;
   },
   logout({ commit }) {
-    commit("logout");
-    localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
+    authService.logout();
+    commit("CLEAR_TOKEN");
+    commit("CLEAR_ROLES");
   },
 };
 
 const getters = {
-  isLoggedIn: (state) => !!state.token,
-  authStatus: (state) => state.status,
-  userRole: (state) => state.user.role,
-  authError: (state) => state.error,
-  user: (state) => state.user,
+  isAuthenticated: (state) => !!state.token,
+  token: (state) => state.token,
+  roles: (state) => state.roles, // Add roles getter
+  isAdmin: (state) =>
+    state.roles.includes("Admin") || state.roles.includes("SuperAdmin"),
 };
 
 export default {
+  namespaced: true,
   state,
   mutations,
   actions,
