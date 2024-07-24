@@ -48,3 +48,31 @@
   font-weight: 500;
   font-style: normal;
 }
+
+.avatar{
+  padding: 0.9rem;
+  padding-top: 2rem;
+  text-align: center;
+
+}
+
+.avatar-con{
+  border: 1px solid #c1bdbd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 2.5rem;
+  width: 2.5rem;  
+  margin-left: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+
+
+
+}
+
+.avatar-con:hover{
+  border: 1px solid black;
+}
+

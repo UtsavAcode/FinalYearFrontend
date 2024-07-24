@@ -2,7 +2,7 @@
   <div>
     <h1>Welcome to the Blog</h1>
     <p>This is for authenticated users only.</p>
-    <button @click="handleLogout">Logout</button>
+    <!-- <button @click="handleLogout">Logout</button> -->
   </div>
 </template>
 

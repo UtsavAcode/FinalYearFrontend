@@ -13,6 +13,8 @@ import InputText from "primevue/inputtext";
 import InputIcon from "primevue/inputicon";
 import "primeicons/primeicons.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import Dialog from "primevue/dialog";
+import Button from "primevue/button";
 
 const app = createApp(App);
 import axios from "axios";
@@ -30,6 +32,8 @@ app.use(PrimeVue, {
 });
 
 app.component("IconField", IconField);
+app.component("Button", Button);
+app.component("Dialog", Dialog);
 app.component("InputIcon", InputIcon);
 app.component("InputText", InputText);
 app.config.globalProperties.$axios = axios;

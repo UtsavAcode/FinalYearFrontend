@@ -21,47 +21,51 @@
             <li class="nav-item">
               <a class="nav-link poppins" href="#">Home</a>
             </li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle poppins"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Dropdown
-              </a>
-              <ul class="dropdown-menu">
-                <li v-if="isAuthenticated">
-                  <router-link class="dropdown-item poppins" to="/profile"
-                    >Profile</router-link
-                  >
-                </li>
-                <li
-                  v-if="
-                    isAuthenticated &&
-                    (userRole === 'Admin' || userRole === 'SuperAdmin')
-                  "
-                >
-                  <router-link class="dropdown-item poppins" to="/admin"
-                    >Admin Dashboard</router-link
-                  >
-                </li>
-                <li v-if="isAuthenticated">
-                  <a class="dropdown-item poppins" @click="handleLogout"
-                    >Logout</a
-                  >
-                </li>
-              </ul>
-            </li>
+           
           </ul>
           <h1 class="cursive mx-7">Bloggy</h1>
-          <form class="d-flex ms-6" role="search">
+          <form class="searchbar" role="search">
             <IconField>
               <InputIcon class="pi pi-search" />
               <InputText placeholder="Search" />
             </IconField>
           </form>
+          <div class="dropdown avatar-con" v-if="isAuthenticated">
+            <p
+              class="avatar"
+              id="dropdownMenuButton"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {{ firstLetter }}
+            </p>
+            <div
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="dropdownMenuButton"
+            >
+              <li v-if="isAuthenticated">
+                <router-link class="dropdown-item poppins" to="/profile"
+                  >Profile</router-link
+                >
+              </li>
+              <li
+                v-if="
+                  isAuthenticated &&
+                  (userRole === 'Admin' || userRole === 'SuperAdmin')
+                "
+              >
+                <router-link class="dropdown-item poppins" to="/admin"
+                  >Admin Dashboard</router-link
+                >
+              </li>
+              <li v-if="isAuthenticated">
+                <a class="dropdown-item poppins" @click="handleLogout"
+                  >Logout</a
+                >
+              </li>
+            </div>
+          </div>
+
           <div class="ms-5" v-if="!isAuthenticated">
             <RouterLink
               to="/login"
@@ -83,10 +87,21 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Navbar",
+
+  data() {
+    return {
+      user: {
+        name: "",
+      },
+    };
+  },
   computed: {
-    ...mapGetters("auth", ["isAuthenticated", "roles"]),
+    ...mapGetters("auth", ["isAuthenticated", "roles", "name"]),
     userRole() {
       return this.roles.length > 0 ? this.roles[0] : ""; // Assuming the first role is the main role
+    },
+    firstLetter() {
+      return this.name ? this.name.charAt(0).toUpperCase() : "";
     },
   },
   methods: {

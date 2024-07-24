@@ -12,8 +12,10 @@ const authService = {
     try {
       const response = await axiosInstance.post("/Login", { email, password });
       if (response.data.isSuccess) {
-        localStorage.setItem("token", response.data.message);
+        const token = response.data.message;
+        localStorage.setItem("token", token);
         localStorage.setItem("roles", JSON.stringify(response.data.roles));
+        localStorage.setItem("name", JSON.stringify(response.data.name));
       }
       return response.data; // Ensure this returns { isSuccess: true/false, message: "", roles: [] }
     } catch (error) {
@@ -25,6 +27,7 @@ const authService = {
   logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("roles");
+    localStorage.removeItem("name");
   },
 
   getToken() {
@@ -40,6 +43,9 @@ const authService = {
     return !!localStorage.getItem("token");
   },
 
+  getName() {
+    return localStorage.getItem("name");
+  },
   isAdmin() {
     const roles = this.getRoles();
     return roles.includes("Admin") || roles.includes("SuperAdmin");

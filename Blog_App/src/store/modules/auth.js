@@ -1,9 +1,9 @@
-// store/modules/auth.js
 import authService from "@/services/auth.servics";
 
 const state = {
   token: authService.getToken(),
-  roles: authService.getRoles(), // Add roles to the state
+  roles: authService.getRoles(),
+  name: authService.getName(),
 };
 
 const mutations = {
@@ -19,6 +19,12 @@ const mutations = {
   CLEAR_ROLES(state) {
     state.roles = [];
   },
+  SET_NAME(state, name) {
+    state.name = name;
+  },
+  CLEAR_NAME(state) {
+    state.name = "";
+  },
 };
 
 const actions = {
@@ -27,8 +33,10 @@ const actions = {
     if (response.isSuccess) {
       commit("SET_TOKEN", response.message);
       commit("SET_ROLES", response.roles);
+      commit("SET_NAME", response.name);
       localStorage.setItem("token", response.message);
       localStorage.setItem("roles", JSON.stringify(response.roles));
+      localStorage.setItem("name", response.name);
     }
     return response;
   },
@@ -36,13 +44,15 @@ const actions = {
     authService.logout();
     commit("CLEAR_TOKEN");
     commit("CLEAR_ROLES");
+    commit("CLEAR_NAME");
   },
 };
 
 const getters = {
   isAuthenticated: (state) => !!state.token,
   token: (state) => state.token,
-  roles: (state) => state.roles, // Add roles getter
+  roles: (state) => state.roles,
+  name: (state) => state.name,
   isAdmin: (state) =>
     state.roles.includes("Admin") || state.roles.includes("SuperAdmin"),
 };
