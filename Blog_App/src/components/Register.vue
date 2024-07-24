@@ -1,24 +1,46 @@
 <template>
-  <div>
-    <h1>Register</h1>
+  <div class="container w-25">
+    <h2 class="text-center p-2 mb-4">Sign up To Bloggy</h2>
     <form @submit.prevent="registerUser">
-      <!-- <div>
-        <label for="username">Username:</label>
-        <input type="text" v-model="user.username" required />
-      </div> -->
+      <label for="username" class="font-weight-bold">Username:</label>
+      <input
+        type="text"
+        class="h-1 form-control"
+        v-model="user.name"
+        required
+      />
+
       <div>
-        <label for="email">Email:</label>
-        <input type="email" v-model="user.email" required />
+        <label for="email" class="font-weight-bold">Email:</label>
+        <input
+          type="email"
+          class="h-1 form-control"
+          v-model="user.email"
+          required
+        />
       </div>
       <div>
-        <label for="password">Password:</label>
-        <input type="password" v-model="user.password" required />
+        <label for="password" class="font-weight-bold">Password:</label>
+        <input
+          type="password"
+          class="h-1 form-control"
+          v-model="user.password"
+          required
+        />
       </div>
       <div>
-        <label for="repeatPassword">Confirm Password:</label>
-        <input type="password" v-model="user.repeatPassword" required />
+        <label for="repeatPassword" class="font-weight-bold"
+          >Confirm Password:</label
+        >
+        <input
+          type="password"
+          class="h-1 form-control"
+          v-model="user.repeatPassword"
+          required
+        />
       </div>
-      <button type="submit">Register</button>
+      <button type="submit" class="btn-darkish">Create Account</button>
+      <p class="text-center p-2 mx-auto">Already have an account? Sign in</p>
       <p v-if="error">{{ error }}</p>
       <p v-if="success">{{ success }}</p>
       <ul v-if="validationErrors.length">
@@ -38,6 +60,7 @@ export default {
   data() {
     return {
       user: {
+        name: "",
         email: "",
         password: "",
         repeatPassword: "",
@@ -57,6 +80,7 @@ export default {
         const response = await axios.post(
           "http://localhost:5254/api/Auth/Register",
           {
+            name: this.user.name,
             email: this.user.email,
             password: this.user.password,
             confirmPassword: this.user.repeatPassword,

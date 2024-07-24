@@ -1,0 +1,104 @@
+<template>
+  <header class="container-fluid">
+    <nav class="navbar navbar-expand-lg p-4">
+      <div class="container-fluid">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse">
+          <ul
+            class="navbar-nav mb-2 mb-lg-0 mx-2"
+            style="justify-content: center"
+          >
+            <li class="nav-item">
+              <a class="nav-link poppins" href="#">Home</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle poppins"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Dropdown
+              </a>
+              <ul class="dropdown-menu">
+                <li v-if="isAuthenticated">
+                  <router-link class="dropdown-item poppins" to="/profile"
+                    >Profile</router-link
+                  >
+                </li>
+                <li
+                  v-if="
+                    isAuthenticated &&
+                    (userRole === 'Admin' || userRole === 'SuperAdmin')
+                  "
+                >
+                  <router-link class="dropdown-item poppins" to="/admin"
+                    >Admin Dashboard</router-link
+                  >
+                </li>
+                <li v-if="isAuthenticated">
+                  <a class="dropdown-item poppins" @click="handleLogout"
+                    >Logout</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <h1 class="cursive mx-7">Bloggy</h1>
+          <form class="d-flex ms-6" role="search">
+            <IconField>
+              <InputIcon class="pi pi-search" />
+              <InputText placeholder="Search" />
+            </IconField>
+          </form>
+          <div class="ms-5" v-if="!isAuthenticated">
+            <RouterLink
+              to="/login"
+              class="text-decoration-none poppins m-3 text-dark"
+              >Log in</RouterLink
+            >
+            <RouterLink to="/register" class="btn btn-dark poppins mx-2 mb-1"
+              >Sign Up</RouterLink
+            >
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  name: "Navbar",
+  computed: {
+    ...mapGetters("auth", ["isAuthenticated", "roles"]),
+    userRole() {
+      return this.roles.length > 0 ? this.roles[0] : ""; // Assuming the first role is the main role
+    },
+  },
+  methods: {
+    ...mapActions("auth", ["logout"]),
+    async handleLogout() {
+      try {
+        await this.logout(); // Call Vuex action to perform logout
+        this.$router.push("/login"); // Redirect to login page after logout
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    },
+  },
+};
+</script>

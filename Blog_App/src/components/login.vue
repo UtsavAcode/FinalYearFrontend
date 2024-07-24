@@ -1,16 +1,29 @@
 <template>
-  <div>
-    <h1>Login</h1>
+  <div class="container w-25">
+    <h2 class="text-center p-2 mb-4">Login</h2>
     <form @submit.prevent="loginUser">
       <div>
-        <label for="email">Email:</label>
-        <input type="email" v-model="email" required />
+        <label for="email" class="font-weight-bold">Email:</label>
+        <input
+          class="h-1 mb-2 form-control"
+          type="email"
+          v-model="email"
+          required
+        />
       </div>
       <div>
-        <label for="password">Password:</label>
-        <input type="password" v-model="password" required />
+        <label for="password" class="font-weight-bold">Password:</label>
+        <input
+          class="h-1 mb-3 form-control"
+          type="password"
+          v-model="password"
+          required
+        />
       </div>
-      <button type="submit">Login</button>
+      <button type="submit" class="btn-darkish">Login</button>
+      <p class="text-center p-2 mx-auto">
+        Don't have an account? Register here
+      </p>
       <p v-if="errorMessage">{{ errorMessage }}</p>
     </form>
   </div>

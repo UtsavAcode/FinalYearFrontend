@@ -1,99 +1,5 @@
 <template>
-  <header class="container-fluid">
-    <div class="border-bottom border-gray p-4">
-      <h1 class="w-25 mx-7">Bloggy</h1>
-      <div>
-        <ul
-          class="list-group position-absolute my-5 end-0 mx-4 top-0 list-group-horizontal float-end"
-        >
-          <li
-            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
-          >
-            <i class="bi bi-facebook"></i>
-          </li>
-          <li
-            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
-          >
-            <i class="bi bi-twitter"></i>
-          </li>
-          <li
-            class="list-group-item bg-dark text-light rounded-circle m-1 display-7"
-          >
-            <i class="bi bi-linkedin"></i>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <nav class="navbar navbar-expand-lg p-4">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#"></a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul
-            class="navbar-nav mb-2 mb-lg-0 mx-6"
-            style="justify-content: center"
-          >
-            <li class="nav-item">
-              <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Dropdown
-              </a>
-              <ul class="dropdown-menu">
-                <li v-if="isAuthenticated">
-                  <router-link class="dropdown-item" to="/profile"
-                    >Profile</router-link
-                  >
-                </li>
-                <li
-                  v-if="
-                    isAuthenticated &&
-                    (userRole === 'Admin' || userRole === 'SuperAdmin')
-                  "
-                >
-                  <router-link class="dropdown-item" to="/admin"
-                    >Admin Dashboard</router-link
-                  >
-                </li>
-                <li v-if="isAuthenticated">
-                  <a class="dropdown-item" @click="handleLogout">Logout</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <form class="d-flex ms-6" role="search">
-            <IconField>
-              <InputIcon class="pi pi-search" />
-              <InputText placeholder="Search" />
-            </IconField>
-          </form>
-          <div class="ms-5" v-if="!isAuthenticated">
-            <RouterLink to="/register" class="btn btn-dark mx-2"
-              >Register</RouterLink
-            >
-            <RouterLink to="/login" class="btn btn-dark">Login</RouterLink>
-          </div>
-        </div>
-      </div>
-    </nav>
-  </header>
+ <Navbar/>
 
   <div class="content">
     <RouterView />
@@ -101,28 +7,14 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
 
-export default {
-  name: "App",
-  computed: {
-    ...mapGetters("auth", ["isAuthenticated", "roles"]),
-    userRole() {
-      return this.roles.length > 0 ? this.roles[0] : ""; // Assuming the first role is the main role
-    },
-  },
-  methods: {
-    ...mapActions("auth", ["logout"]),
-    async handleLogout() {
-      try {
-        await this.logout(); // Call Vuex action to perform logout
-        this.$router.push("/login"); // Redirect to login page after logout
-      } catch (error) {
-        console.error("Logout failed:", error);
-      }
-    },
-  },
-};
+import Navbar from "./components/Navbar.vue"
+  export default{
+    name:'App',
+    components:{
+      Navbar,
+    }
+  }
 </script>
 
 <style scoped></style>
