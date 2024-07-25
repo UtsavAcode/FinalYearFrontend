@@ -57,6 +57,10 @@
                 <Button type="button" label="Save" @click="saveUser"></Button>
               </div>
             </Dialog>
+
+            <button class="btn btn-danger px-1 ms-1" @click="deleteUser(user.email)">
+              Delete
+            </button>
           </td>
         </tr>
       </tbody>
@@ -96,7 +100,6 @@ export default {
     },
     async saveUser() {
       try {
-        // Assuming `this.selectedUser` is the data model for the update
         const response = await axios.put(
           "http://localhost:5254/api/Auth/Update",
           {
@@ -114,6 +117,23 @@ export default {
         }
       } catch (error) {
         console.error("Error updating user:", error);
+      }
+    },
+
+    async deleteUser(email) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:5254/api/Auth/Delete/${email}`
+        );
+        if (response.status === 200) {
+          this.users = this.users.filter((user) => user.email !== email);
+          alert("User deleted successfully.");
+        } else {
+          alert("Error deleting user.");
+        }
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        alert("Error deleting user.");
       }
     },
   },
