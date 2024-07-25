@@ -48,16 +48,7 @@
                   >Profile</router-link
                 >
               </li>
-              <li
-                v-if="
-                  isAuthenticated &&
-                  (userRole === 'Admin' || userRole === 'SuperAdmin')
-                "
-              >
-                <router-link class="dropdown-item poppins" to="/admin"
-                  >Admin Dashboard</router-link
-                >
-              </li>
+            
               <li v-if="isAuthenticated">
                 <a class="dropdown-item poppins" @click="handleLogout"
                   >Logout</a

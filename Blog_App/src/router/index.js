@@ -8,6 +8,7 @@ import Profile from "../components/Profile.vue";
 import Admin from "../components/admin.vue";
 import authService from "@/services/auth.servics";
 import store from "@/store"; // Import the Vuex store
+import Users from "@/components/Users.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
@@ -24,6 +25,13 @@ const routes = [
     name: "AdminDashboard",
     component: Admin,
     meta: { requiresAuth: true, isAdmin: true },
+    children: [
+      {
+        path: "/users",
+        name: "Users",
+        component: Users,
+      },
+    ],
   },
   {
     path: "/hero",

@@ -15,7 +15,10 @@ import "primeicons/primeicons.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
+import "admin-lte/dist/css/adminlte.min.css";
 
+// Import AdminLTE JS
+import "admin-lte/dist/js/adminlte.min.js";
 const app = createApp(App);
 import axios from "axios";
 app.config.globalProperties.hostname = "http://localhost:5254";
