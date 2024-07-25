@@ -87,7 +87,7 @@ export default {
           id: user.id.toString(),
         }));
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching users:", error);
       }
     },
     showDialog(user) {
@@ -96,11 +96,24 @@ export default {
     },
     async saveUser() {
       try {
-        // Add your save logic here, such as sending the updated user to the server
-        console.log("Saving user:", this.selectedUser);
-        this.visible = false;
+        // Assuming `this.selectedUser` is the data model for the update
+        const response = await axios.put(
+          "http://localhost:5254/api/Auth/Update",
+          {
+            email: this.selectedUser.email,
+            name: this.selectedUser.userName,
+          }
+        );
+
+        if (response.data.isSuccess) {
+          console.log("User updated successfully");
+          this.visible = false;
+          await this.getUsers(); // Refresh the user list
+        } else {
+          console.error("Error updating user:", response.data.message);
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Error updating user:", error);
       }
     },
   },
