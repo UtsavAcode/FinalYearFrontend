@@ -1,5 +1,5 @@
 <template>
-      <div class="container mx-8">
+  <div class="container mx-8">
     <table class="table table-striped table-hover text-center table-bordered">
       <thead>
         <tr>
@@ -81,7 +81,7 @@ export default {
       selectedUser: {},
     };
   },
- 
+
   methods: {
     async getUsers() {
       try {

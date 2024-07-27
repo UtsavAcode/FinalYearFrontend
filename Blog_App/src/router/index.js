@@ -9,6 +9,7 @@ import Admin from "../components/admin.vue";
 import authService from "@/services/auth.servics";
 import store from "@/store"; // Import the Vuex store
 import Users from "@/components/Users.vue";
+import Tags from "@/components/tags.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
@@ -30,6 +31,12 @@ const routes = [
         path: "/users",
         name: "Users",
         component: Users,
+      },
+
+      {
+        path: "/tags",
+        name: "Tags",
+        component: Tags,
       },
     ],
   },
