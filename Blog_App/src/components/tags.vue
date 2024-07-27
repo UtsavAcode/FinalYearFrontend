@@ -5,7 +5,12 @@
     <form @submit.prevent="addTag">
       <div>
         <label for="name" class="font-weight-bold">Tag Name</label>
-        <input class="h-1 mb-2 w-50 form-control" type="text" v-model="tagName" required />
+        <input
+          class="h-1 mb-2 w-50 form-control"
+          type="text"
+          v-model="tagName"
+          required
+        />
         <button class="btn btn-dark">Add</button>
       </div>
     </form>
@@ -27,10 +32,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr v-for="tag in tags" :key="tag.id">
+            <td>{{ tag.id }}</td>
+            <td>{{ tag.name }}</td>
             <td></td>
-            <td></td>
-            <td></td>
+
             <!-- <td>
               <button class="btn btn-dark" @click="showDialog()">
                 Show
@@ -89,15 +95,20 @@ export default {
       tagName: "",
       error: null,
       successMessage: null,
-      blogPosts: [], // Add an empty array to match the required structure
+      blogPosts: [],
+      tags: [], // Add an empty array to match the required structure
     };
+  },
+
+  created() {
+    this.getAllTags();
   },
   methods: {
     async addTag() {
       try {
-        const tag = { 
+        const tag = {
           name: this.tagName,
-          blogPosts: this.blogPosts // Ensure this is sent with the request
+          blogPosts: this.blogPosts, // Ensure this is sent with the request
         };
         const response = await blogService.addTag(tag);
         this.successMessage = "Tag added successfully";
@@ -108,6 +119,15 @@ export default {
         console.error("Error adding tag:", err); // Log error details
         this.error = err.message || "An error occurred";
         this.successMessage = null;
+      }
+    },
+
+    async getAllTags() {
+      try {
+        const response = await blogService.getAll();
+        this.tags = response;
+      } catch (error) {
+        this.error = error;
       }
     },
   },

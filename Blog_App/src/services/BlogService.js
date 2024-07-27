@@ -17,6 +17,15 @@ const blogService = {
       throw error.response.data || error.message;
     }
   },
+
+  async getAll() {
+    try {
+      const response = await apiClient.get("/Tag/GetTags");
+      return response.data;
+    } catch (error) {
+      throw error.response.data || error.message;
+    }
+  },
 };
 
 export default blogService;
