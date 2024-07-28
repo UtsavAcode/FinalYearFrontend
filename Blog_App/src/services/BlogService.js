@@ -26,6 +26,15 @@ const blogService = {
       throw error.response.data || error.message;
     }
   },
+
+  async deleteTag(id) {
+    try {
+      const response = await apiClient.delete(`/Tag/Delete/{id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data || error.message;
+    }
+  },
 };
 
 export default blogService;

@@ -111,7 +111,7 @@ export default {
           blogPosts: this.blogPosts, // Ensure this is sent with the request
         };
         const response = await blogService.addTag(tag);
-        this.successMessage = "Tag added successfully";
+        this.successMessage = response.message;
         this.error = null;
         this.tagName = "";
         this.blogPosts = []; // Reset the blogPosts array if needed
