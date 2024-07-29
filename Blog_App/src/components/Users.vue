@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-8">
+  <div class="container">
     <table class="table table-striped table-hover text-center table-bordered">
       <thead>
         <tr>

@@ -1,17 +1,19 @@
 <template>
-  <div class="mx-8 w-50">
-    <h1>tags</h1>
+  <div class="w-50">
+    <h1>Tags</h1>
 
     <form @submit.prevent="addTag">
       <div>
         <label for="name" class="font-weight-bold">Tag Name</label>
-        <input
-          class="h-1 mb-2 w-50 form-control"
-          type="text"
-          v-model="tagName"
-          required
-        />
-        <button class="btn btn-dark">Add</button>
+        <div class="form-inline">
+          <input
+            class="h-1 mb-2 w-50 form-control"
+            type="text"
+            v-model="tagName"
+            required
+          />
+          <button class="btn btn-dark mx-2 mb-2">Add</button>
+        </div>
       </div>
     </form>
 
@@ -35,27 +37,26 @@
           <tr v-for="tag in tags" :key="tag.id">
             <td>{{ tag.id }}</td>
             <td>{{ tag.name }}</td>
-            <td></td>
 
-            <!-- <td>
-              <button class="btn btn-dark" @click="showDialog()">
-                Show
+            <td>
+              <button class="btn btn-dark" @click="showDialog(tag)">
+                Edit
               </button>
 
               <Dialog
                 v-model:visible="visible"
-                header="Edit Profile"
+                header="Edit Tag"
                 :style="{ width: '25rem' }"
               >
-                <span class="text-surface-500 dark:text-surface-400 block mb-8"
-                  >Update your information.</span
-                >
-               
+                <span class="text-surface-500 dark:text-surface-400 block mb-8">
+                  Update the tag name.
+                </span>
+
                 <div class="flex items-center gap-4 mb-3">
                   <label for="name" class="font-semibold w-25">Name</label>
                   <InputText
-                    id="email"
-                    
+                    id="name"
+                    v-model="currentTag.name"
                     class="flex-auto"
                     autocomplete="off"
                   />
@@ -67,17 +68,21 @@
                     severity="secondary"
                     @click="visible = false"
                   ></Button>
-                  <Button type="button" label="Save" @click=""></Button>
+                  <Button
+                    type="button"
+                    label="Save"
+                    @click="updateTag"
+                  ></Button>
                 </div>
               </Dialog>
 
               <button
                 class="btn btn-danger px-1 ms-1"
-                @click=""
+                @click="deleteTag(tag.id)"
               >
                 Delete
               </button>
-            </td> -->
+            </td>
           </tr>
         </tbody>
       </table>
@@ -97,6 +102,8 @@ export default {
       successMessage: null,
       blogPosts: [],
       tags: [], // Add an empty array to match the required structure
+      visible: false,
+      currentTag: {}, // Object to hold the current tag being edited
     };
   },
 
@@ -114,7 +121,8 @@ export default {
         this.successMessage = response.message;
         this.error = null;
         this.tagName = "";
-        this.blogPosts = []; // Reset the blogPosts array if needed
+        this.blogPosts = [];
+        this.getAllTags(); // Reset the blogPosts array if needed
       } catch (err) {
         console.error("Error adding tag:", err); // Log error details
         this.error = err.message || "An error occurred";
@@ -128,6 +136,31 @@ export default {
         this.tags = response;
       } catch (error) {
         this.error = error;
+      }
+    },
+
+    showDialog(tag) {
+      this.currentTag = { ...tag }; // Set current tag for editing
+      this.visible = true;
+    },
+    async deleteTag(id) {
+      try {
+        const response = await blogService.deleteTag(id);
+        this.getAllTags(); // Reloading the tags again
+      } catch (error) {
+        console.error("Error deleting tag:", error);
+        this.error = error.message || "An error occurred";
+      }
+    },
+
+    async updateTag() {
+      try {
+        await blogService.updateTag(this.currentTag);
+        this.visible = false;
+        this.getAllTags();
+      } catch (error) {
+        console.error(error);
+        this.error = error.message;
       }
     },
   },

@@ -29,7 +29,16 @@ const blogService = {
 
   async deleteTag(id) {
     try {
-      const response = await apiClient.delete(`/Tag/Delete/{id}`);
+      const response = await apiClient.delete(`/Tag/Delete/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data || error.message;
+    }
+  },
+
+  async updateTag(tag) {
+    try {
+      const response = await apiClient.put("/Tag/UpdateTag", tag);
       return response.data;
     } catch (error) {
       throw error.response.data || error.message;

@@ -1,7 +1,10 @@
 <template>
   <div>
     <sidebar />
+    <div class="mx-8">
+      <h1>This is a freaking admin panel </h1>
     <RouterView />
+    </div>
   </div>
 </template>
 
