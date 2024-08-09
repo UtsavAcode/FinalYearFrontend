@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container"> 
     <table class="table table-striped table-hover text-center table-bordered">
       <thead>
         <tr>
@@ -8,7 +8,6 @@
           <th>Meta</th>
           <th>Content</th>
           <th>Utility</th>
-
         </tr>
       </thead>
       <tbody>
@@ -49,10 +48,13 @@
                 <Button type="button" label="Save" @click=""></Button>
               </div>
             </Dialog>
-            <!-- 
-            <button class="btn btn-danger px-1 ms-1" @click="deleteTag(tag.id)">
+
+            <button
+              class="btn btn-danger px-1 ms-1"
+              @click="deletePost(blog.id)"
+            >
               Delete
-            </button> -->
+            </button>
           </td>
         </tr>
       </tbody>
@@ -82,6 +84,15 @@ export default {
       try {
         const response = await blogService.getAllBlog();
         this.blogs = response;
+      } catch (error) {
+        this.error = error;
+      }
+    },
+
+    async deletePost(id) {
+      try {
+        const response = await blogService.deleteBlog(id);
+        this.getAllPost();
       } catch (error) {
         this.error = error;
       }

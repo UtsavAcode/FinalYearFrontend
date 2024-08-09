@@ -60,6 +60,15 @@ const blogService = {
     }
   },
 
+  async deleteBlog(id) {
+    try {
+      const response = await apiClient.delete(`/Blog/DeleteBlog/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data || error.message;
+    }
+  },
+
   async addBlogPost(blogPost) {
     try {
       const response = await apiClient.post("/Blog/AddBlogPost", blogPost);
