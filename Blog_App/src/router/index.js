@@ -10,6 +10,8 @@ import authService from "@/services/auth.servics";
 import store from "@/store"; // Import the Vuex store
 import Users from "@/components/Users.vue";
 import Tags from "@/components/tags.vue";
+import AddBlog from "@/components/addBlog.vue";
+import GetBlogs from "@/components/blogsAdmin.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
@@ -21,6 +23,12 @@ const routes = [
     component: Profile,
     meta: { requiresAuth: true },
   },
+  {
+    path: "/addBlog",
+    name: "AddBlog",
+    component: AddBlog,
+  },
+
   {
     path: "/admin-dashboard",
     name: "AdminDashboard",
@@ -37,6 +45,11 @@ const routes = [
         path: "/tags",
         name: "Tags",
         component: Tags,
+      },
+      {
+        path: "/getBlogsAdmin",
+        name: "AllBlogs",
+        component: GetBlogs,
       },
     ],
   },

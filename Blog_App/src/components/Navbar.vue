@@ -21,7 +21,6 @@
             <li class="nav-item">
               <a class="nav-link poppins" href="#">Home</a>
             </li>
-           
           </ul>
           <h1 class="cursive mx-7">Bloggy</h1>
           <form class="searchbar" role="search">
@@ -48,7 +47,13 @@
                   >Profile</router-link
                 >
               </li>
-            
+
+              <li v-if="isAuthenticated">
+                <router-link class="dropdown-item poppins" to="/addBlog"
+                  >Blog</router-link
+                >
+              </li>
+
               <li v-if="isAuthenticated">
                 <a class="dropdown-item poppins" @click="handleLogout"
                   >Logout</a

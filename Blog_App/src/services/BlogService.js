@@ -1,5 +1,7 @@
 // src/services/blogService.js
 import axios from "axios";
+import authService from "./auth.servics";
+import config from "primevue/config";
 
 const apiClient = axios.create({
   baseURL: "http://localhost:5254/api",
@@ -7,6 +9,19 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = authService.getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 const blogService = {
   async addTag(tag) {
@@ -39,6 +54,24 @@ const blogService = {
   async updateTag(tag) {
     try {
       const response = await apiClient.put("/Tag/UpdateTag", tag);
+      return response.data;
+    } catch (error) {
+      throw error.response.data || error.message;
+    }
+  },
+
+  async addBlogPost(blogPost) {
+    try {
+      const response = await apiClient.post("/Blog/AddBlogPost", blogPost);
+      return response.data;
+    } catch (error) {
+      throw error.response.data || error.message;
+    }
+  },
+
+  async getAllBlog() {
+    try {
+      const response = await apiClient.get("/Blog/GetAllBlog");
       return response.data;
     } catch (error) {
       throw error.response.data || error.message;
