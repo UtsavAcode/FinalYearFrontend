@@ -16,6 +16,7 @@ const authService = {
         localStorage.setItem("token", token);
         localStorage.setItem("roles", JSON.stringify(response.data.roles));
         localStorage.setItem("name", JSON.stringify(response.data.name));
+        localStorage.setItem("id", response.data.id);
       }
       return response.data; // Ensure this returns { isSuccess: true/false, message: "", roles: [] }
     } catch (error) {
@@ -28,6 +29,7 @@ const authService = {
     localStorage.removeItem("token");
     localStorage.removeItem("roles");
     localStorage.removeItem("name");
+    localStorage.removeItem("id");
   },
 
   getToken() {
@@ -45,6 +47,11 @@ const authService = {
 
   getName() {
     return localStorage.getItem("name");
+  },
+  getId() {
+    const id = localStorage.getItem("id");
+    console.log("Retrieved ID from localStorage:", id); // Debugging
+    return id;
   },
   isAdmin() {
     const roles = this.getRoles();

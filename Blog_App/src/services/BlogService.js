@@ -71,16 +71,44 @@ const blogService = {
 
   async addBlogPost(blogPost) {
     try {
-      const response = await apiClient.post("/Blog/AddBlogPost", blogPost);
+      const formData = new FormData();
+      formData.append("Title", blogPost.Title);
+      formData.append("MetaDescription", blogPost.MetaDescription);
+      formData.append("Content", blogPost.Content);
+      formData.append("AuthorId", blogPost.AuthorId);
+      formData.append("AuthorName", blogPost.AuthorName);
+
+      if (blogPost.Image) {
+        formData.append("Image", blogPost.Image);
+      }
+
+      const response = await apiClient.post("/Blog/AddBlogPost", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
-      throw error.response.data || error.message;
+      throw error.response?.data || error.message;
     }
   },
 
   async getAllBlog() {
     try {
       const response = await apiClient.get("/Blog/GetAllBlog");
+      return response.data;
+    } catch (error) {
+      throw error.response.data || error.message;
+    }
+  },
+
+  async uploadImage(formData) {
+    try {
+      const response = await apiClient.post("/Blog/UploadImage", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
       throw error.response.data || error.message;

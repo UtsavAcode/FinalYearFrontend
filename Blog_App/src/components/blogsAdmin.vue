@@ -1,64 +1,89 @@
 <template>
-  <div class="container"> 
-    <table class="table table-striped table-hover text-center table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">Id</th>
-          <th scope="col">Title</th>
-          <th>Meta</th>
-          <th>Content</th>
-          <th>Utility</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="blog in blogs" :key="blog.id">
-          <td>{{ blog.id }}</td>
-          <td>{{ blog.title }}</td>
-          <td>{{ blog.metaDescription }}</td>
-          <td>{{ blog.content }}</td>
+  <div class="container">
+    <div class="table-responsive">
+      <table
+        class="table table-striped table-hover text-center table-bordered"
+        style="min-width: 1200px"
+      >
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th>Image</th>
+            <th scope="col">Title</th>
+            <th>Meta</th>
+            <th>Content</th>
+            <th>Date</th>
+            <th>AuthorName</th>
+            <th>AuthorId</th>
+            <th>Utility</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="blog in blogs" :key="blog.id">
+            <td>{{ blog.id }}</td>
+            <td>
+              <img
+                v-if="blog.featuredImagePath"
+                :src="
+                  console.log(blog.featuredImagePath) || blog.featuredImagePath
+                "
+                alt="Featured Image"
+                style="max-width: 100px"
+              />
+            </td>
 
-          <td>
-            <button class="btn btn-dark" @click="showDialog(blog)">Edit</button>
+            <td>{{ blog.title }}</td>
+            <td>{{ blog.metaDescription }}</td>
+            <td>{{ blog.content }}</td>
+            <td>{{ formatDate(blog.createdAt) }}</td>
+            <td>{{ blog.authorName }}</td>
+            <td>{{ blog.authorId }}</td>
 
-            <Dialog
-              v-model:visible="visible"
-              header="Edit Blog"
-              :style="{ width: '25rem' }"
-            >
-              <span class="text-surface-500 dark:text-surface-400 block mb-8">
-                Update the Blog.
-              </span>
+            <td>
+              <button class="btn btn-dark" @click="showDialog(blog)">
+                Edit
+              </button>
 
-              <div class="flex items-center gap-4 mb-3">
-                <label for="name" class="font-semibold w-25">Title</label>
-                <InputText
-                  id="name"
-                  v-model="currentBlog.Title"
-                  class="flex-auto"
-                  autocomplete="off"
-                />
-              </div>
-              <div class="d-flex justify-content-center align-center gap-2">
-                <Button
-                  type="button"
-                  label="Cancel"
-                  severity="secondary"
-                  @click="visible = false"
-                ></Button>
-                <Button type="button" label="Save" @click=""></Button>
-              </div>
-            </Dialog>
+              <Dialog
+                v-model:visible="visible"
+                header="Edit Blog"
+                :style="{ width: '25rem' }"
+              >
+                <span class="text-surface-500 dark:text-surface-400 block mb-8">
+                  Update the Blog.
+                </span>
 
-            <button
-              class="btn btn-danger px-1 ms-1"
-              @click="deletePost(blog.id)"
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+                <div class="flex items-center gap-4 mb-3">
+                  <label for="name" class="font-semibold w-25">Title</label>
+                  <InputText
+                    id="name"
+                    v-model="currentBlog.Title"
+                    class="flex-auto"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="d-flex justify-content-center align-center gap-2">
+                  <Button
+                    type="button"
+                    label="Cancel"
+                    severity="secondary"
+                    @click="visible = false"
+                  ></Button>
+                  <Button type="button" label="Save" @click=""></Button>
+                </div>
+              </Dialog>
+
+              <button
+                class="btn btn-danger px-1 ms-1"
+                @click="deletePost(blog.id)"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -96,6 +121,15 @@ export default {
       } catch (error) {
         this.error = error;
       }
+    },
+
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
     },
   },
 };

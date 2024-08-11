@@ -4,6 +4,7 @@ const state = {
   token: authService.getToken(),
   roles: authService.getRoles(),
   name: authService.getName(),
+  id: authService.getId(),
 };
 
 const mutations = {
@@ -22,8 +23,15 @@ const mutations = {
   SET_NAME(state, name) {
     state.name = name;
   },
+
   CLEAR_NAME(state) {
     state.name = "";
+  },
+  SET_ID(state, id) {
+    state.id = id;
+  },
+  CLEAR_ID(state) {
+    state.id = null;
   },
 };
 
@@ -34,9 +42,11 @@ const actions = {
       commit("SET_TOKEN", response.message);
       commit("SET_ROLES", response.roles);
       commit("SET_NAME", response.name);
+      commit("SET_ID", response.id);
       localStorage.setItem("token", response.message);
       localStorage.setItem("roles", JSON.stringify(response.roles));
       localStorage.setItem("name", response.name);
+      localStorage.setItem("id", JSON.stringify(response.id));
     }
     return response;
   },
@@ -45,6 +55,7 @@ const actions = {
     commit("CLEAR_TOKEN");
     commit("CLEAR_ROLES");
     commit("CLEAR_NAME");
+    commit("CLEAR_ID");
   },
 };
 
@@ -53,6 +64,10 @@ const getters = {
   token: (state) => state.token,
   roles: (state) => state.roles,
   name: (state) => state.name,
+  id: (state) => {
+    console.log("Retrieved ID from state:", state.id); // Debugging
+    return state.id;
+  },
   isAdmin: (state) =>
     state.roles.includes("Admin") || state.roles.includes("SuperAdmin"),
 };

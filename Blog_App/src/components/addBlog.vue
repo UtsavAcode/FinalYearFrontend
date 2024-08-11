@@ -1,6 +1,7 @@
 <template>
   <div class="add-blog-post">
     <h2>Add New Blog Post</h2>
+
     <form @submit.prevent="addBlogPost">
       <div v-if="error" class="alert alert-danger">
         {{ error }}
@@ -22,17 +23,6 @@
         </div>
       </div>
 
-      <!-- <div class="form-group">
-        <label for="slug">Slug</label>
-        <input
-          type="text"
-          v-model="blogPost.Slug"
-          id="slug"
-          class="form-control"
-          required
-        />
-      </div> -->
-
       <div class="form-group">
         <label for="metaDescription">Meta Description</label>
         <textarea
@@ -45,16 +35,6 @@
           {{ error.MetaDescription[0] }}
         </div>
       </div>
-
-      <!-- <div class="form-group">
-        <label for="keywords">Keywords</label>
-        <input
-          type="text"
-          v-model="blogPost.Keywords"
-          id="keywords"
-          class="form-control"
-        />
-      </div> -->
 
       <div class="form-group">
         <label for="content">Content</label>
@@ -70,37 +50,6 @@
         </div>
       </div>
 
-      <!-- <div class="form-group">
-        <label for="categories">Categories</label>
-        <input
-          type="text"
-          v-model="blogPost.Categories"
-          id="categories"
-          class="form-control"
-        />
-      </div> -->
-
-      <!-- <div class="form-group">
-        <label for="visible">
-          <input type="checkbox" v-model="blogPost.Visible" id="visible" />
-          Make blog post visible
-        </label>
-      </div> -->
-      <!-- 
-      <div class="form-group">
-        <label for="tags">Tags</label>
-        <select
-          multiple
-          v-model="blogPost.TagIds"
-          id="tags"
-          class="form-control"
-        >
-          <option v-for="tag in tags" :key="tag.id" :value="tag.id">
-            {{ tag.name }}
-          </option>
-        </select>
-      </div> -->
-      <!-- 
       <div class="form-group">
         <label for="featuredImage">Featured Image</label>
         <input
@@ -109,7 +58,10 @@
           id="featuredImage"
           class="form-control"
         />
-      </div> -->
+        <div v-if="imagePreview" class="mt-3">
+          <img :src="imagePreview" alt="Image Preview" class="img-fluid" />
+        </div>
+      </div>
 
       <button type="submit" class="btn btn-primary">Add Blog Post</button>
     </form>
@@ -118,6 +70,7 @@
 
 <script>
 import blogService from "@/services/BlogService";
+import { mapGetters } from "vuex";
 
 export default {
   name: "AddBlog",
@@ -126,9 +79,15 @@ export default {
       Title: "",
       MetaDescription: "",
       Content: "",
+      imageFile: null,
+      imagePreview: null,
       error: null,
       successMessage: null,
     };
+  },
+
+  computed: {
+    ...mapGetters("auth", ["name", "id"]),
   },
 
   methods: {
@@ -138,6 +97,9 @@ export default {
           Title: this.Title,
           MetaDescription: this.MetaDescription,
           Content: this.Content,
+          AuthorId: this.id.replace(/"/g, ""), // Ensure UUID is correctly formatted
+          AuthorName: this.name,
+          Image: this.imageFile,
         };
 
         const response = await blogService.addBlogPost(blogPost);
@@ -147,6 +109,14 @@ export default {
         console.error("Error while adding blog:", err);
         this.error = err.response?.data?.errors || "An error occurred";
         this.successMessage = null;
+      }
+    },
+
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.imageFile = file;
+        this.imagePreview = URL.createObjectURL(file);
       }
     },
   },

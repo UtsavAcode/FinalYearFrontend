@@ -49,34 +49,35 @@
   font-style: normal;
 }
 
-.avatar{
+.avatar {
   padding: 0.9rem;
   padding-top: 2rem;
   text-align: center;
-
 }
 
-.avatar-con{
+.avatar-con {
   border: 1px solid #c1bdbd;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   height: 2.5rem;
-  width: 2.5rem;  
+  width: 2.5rem;
   margin-left: 1rem;
-    border-radius: 50%;
-    cursor: pointer;
-
-
-
+  border-radius: 50%;
+  cursor: pointer;
 }
 
-.avatar-con:hover{
+.avatar-con:hover {
   border: 1px solid black;
 }
 
-.mx-8{
+.mx-8 {
   margin-left: 18rem !important;
   margin-top: 0rem;
+}
+
+.table-responsive {
+  overflow-x: auto !important;
+  width: 97% !important;
 }
