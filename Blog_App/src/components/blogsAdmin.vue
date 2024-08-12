@@ -36,7 +36,7 @@
             <td>{{ formatDate(blog.createdAt) }}</td>
             <td>{{ formatTags(blog.tags) }}</td>
             <td>{{ blog.authorName }}</td>
-            <td>{{ blog.authorId }}</td>
+            <td>{{ truncateId(blog.authorId) }}</td>
             <td>
               <button class="btn btn-dark" @click="showDialog(blog)">
                 Edit
@@ -106,12 +106,12 @@ export default {
     async getAllPost() {
       try {
         const response = await blogService.getAllBlog();
-        this.blogs = response.$values; // Correctly accessing the $values array in your response.
+        // Check the structure of the response and adjust accordingly
+        this.blogs = response; // Adjust if needed based on API response
       } catch (error) {
         this.error = error;
       }
     },
-
     async deletePost(id) {
       try {
         const response = await blogService.deleteBlog(id);
@@ -130,8 +130,8 @@ export default {
       });
     },
     formatTags(tags) {
-      if (tags && tags.$values) {
-        return tags.$values.map((tag) => tag.name).join(", ");
+      if (tags && Array.isArray(tags)) {
+        return tags.map((tag) => tag.name).join(", ");
       }
       return "No tags";
     },
@@ -143,6 +143,12 @@ export default {
         return "No content"; // Return a placeholder if content is undefined or empty
       }
       return content.length > 10 ? content.substring(0, 10) + "..." : content;
+    },
+    truncateId(Id) {
+      if (!Id) {
+        return "NoId";
+      }
+      return Id.length > 10 ? Id.substring(0, 10) + "..." : Id;
     },
     showDialog(blog) {
       this.currentBlog = { ...blog }; // Pass a copy of the blog to avoid unwanted mutations.

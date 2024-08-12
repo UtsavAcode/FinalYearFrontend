@@ -105,9 +105,9 @@ export default {
   },
   async created() {
     try {
-      const response = await blogService.getAll();
-      if (response && response.$values) {
-        this.tags = response.$values; // Extract the array of tags from the response
+      const response = await blogService.getAll(); // Ensure the API method is correctly named
+      if (Array.isArray(response)) {
+        this.tags = response; // Directly assign the array to tags
       } else {
         console.error("Unexpected response format:", response);
         this.tags = []; // Fallback to an empty array if response format is unexpected
@@ -120,6 +120,11 @@ export default {
   methods: {
     async addBlogPost() {
       try {
+        const tagIdsArray = this.selectedTags.map((tag) =>
+          parseInt(tag.id, 10)
+        );
+        console.log("Formatted Tag IDs:", tagIdsArray); // Log the formatted tag IDs
+
         const blogPost = {
           Title: this.Title,
           MetaDescription: this.MetaDescription,
@@ -127,13 +132,9 @@ export default {
           AuthorId: this.id.replace(/"/g, ""), // Ensure UUID is correctly formatted
           AuthorName: this.name,
           Image: this.imageFile,
-          TagIds: this.selectedTags.map((tag) => parseInt(tag.id)),
+          TagIds: tagIdsArray, // Ensure this is an array of integers
         };
-        console.log("thisis a tag", this.selectedTags);
-        console.log(
-          "Extracted Tag IDs:",
-          this.selectedTags.map((tag) => tag.id)
-        );
+
         const response = await blogService.addBlogPost(blogPost);
         this.successMessage = response.message;
         this.error = null;
@@ -143,7 +144,6 @@ export default {
         this.successMessage = null;
       }
     },
-
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {

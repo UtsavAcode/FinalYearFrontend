@@ -81,11 +81,11 @@ const blogService = {
       if (blogPost.Image) {
         formData.append("Image", blogPost.Image);
       }
-
       if (blogPost.TagIds && blogPost.TagIds.length > 0) {
-        formData.append("TagIds", blogPost.TagIds.join(",")); // Adjust depending on backend expectations
+        blogPost.TagIds.forEach((tagId) => {
+          formData.append("TagIds", tagId);
+        });
       }
-
       const response = await apiClient.post("/Blog/AddBlogPost", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
