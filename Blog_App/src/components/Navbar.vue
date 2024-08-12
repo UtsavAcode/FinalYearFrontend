@@ -1,5 +1,5 @@
 <template>
-  <header class="container-fluid">
+  <header class="container-fluid sticky-top">
     <nav class="navbar navbar-expand-lg p-4">
       <div class="container-fluid">
         <button

@@ -15,6 +15,7 @@ import "primeicons/primeicons.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
+import MultiSelect from "primevue/multiselect";
 import "admin-lte/dist/css/adminlte.min.css";
 
 // Import AdminLTE JS
@@ -39,6 +40,7 @@ app.component("Button", Button);
 app.component("Dialog", Dialog);
 app.component("InputIcon", InputIcon);
 app.component("InputText", InputText);
+app.component("MultiSelect", MultiSelect);
 app.config.globalProperties.$axios = axios;
 app.use(router);
 app.use(store);

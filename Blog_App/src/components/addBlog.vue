@@ -62,7 +62,19 @@
           <img :src="imagePreview" alt="Image Preview" class="img-fluid" />
         </div>
       </div>
-
+      <div class="form-group">
+        <label for="tags">Tags</label>
+        <MultiSelect
+          v-model="selectedTags"
+          :options="tags"
+          optionLabel="name"
+          placeholder="Select Tags"
+          display="chip"
+          class="form-control"
+          filter
+          filterPlaceholder="Search Tags"
+        />
+      </div>
       <button type="submit" class="btn btn-primary">Add Blog Post</button>
     </form>
   </div>
@@ -83,13 +95,28 @@ export default {
       imagePreview: null,
       error: null,
       successMessage: null,
+      tags: [],
+      selectedTags: [],
     };
   },
 
   computed: {
     ...mapGetters("auth", ["name", "id"]),
   },
-
+  async created() {
+    try {
+      const response = await blogService.getAll();
+      if (response && response.$values) {
+        this.tags = response.$values; // Extract the array of tags from the response
+      } else {
+        console.error("Unexpected response format:", response);
+        this.tags = []; // Fallback to an empty array if response format is unexpected
+      }
+    } catch (err) {
+      console.error("Error fetching tags:", err);
+      this.tags = []; // Fallback to an empty array if there's an error
+    }
+  },
   methods: {
     async addBlogPost() {
       try {
@@ -100,8 +127,13 @@ export default {
           AuthorId: this.id.replace(/"/g, ""), // Ensure UUID is correctly formatted
           AuthorName: this.name,
           Image: this.imageFile,
+          TagIds: this.selectedTags.map((tag) => parseInt(tag.id)),
         };
-
+        console.log("thisis a tag", this.selectedTags);
+        console.log(
+          "Extracted Tag IDs:",
+          this.selectedTags.map((tag) => tag.id)
+        );
         const response = await blogService.addBlogPost(blogPost);
         this.successMessage = response.message;
         this.error = null;

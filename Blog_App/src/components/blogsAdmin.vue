@@ -13,6 +13,7 @@
             <th>Meta</th>
             <th>Content</th>
             <th>Date</th>
+            <th>Tags</th>
             <th>AuthorName</th>
             <th>AuthorId</th>
             <th>Utility</th>
@@ -24,21 +25,18 @@
             <td>
               <img
                 v-if="blog.featuredImagePath"
-                :src="
-                  console.log(blog.featuredImagePath) || blog.featuredImagePath
-                "
+                :src="getImageUrl(blog.featuredImagePath)"
                 alt="Featured Image"
                 style="max-width: 100px"
               />
             </td>
-
             <td>{{ blog.title }}</td>
             <td>{{ blog.metaDescription }}</td>
-            <td>{{ blog.content }}</td>
+            <td>{{ truncateContent(blog.content) }}</td>
             <td>{{ formatDate(blog.createdAt) }}</td>
+            <td>{{ formatTags(blog.tags) }}</td>
             <td>{{ blog.authorName }}</td>
             <td>{{ blog.authorId }}</td>
-
             <td>
               <button class="btn btn-dark" @click="showDialog(blog)">
                 Edit
@@ -96,7 +94,7 @@ export default {
     return {
       blogs: [],
       visible: false,
-      //currentBlog: {},
+      currentBlog: {}, // This should be initialized to an empty object or your default structure.
     };
   },
 
@@ -108,7 +106,7 @@ export default {
     async getAllPost() {
       try {
         const response = await blogService.getAllBlog();
-        this.blogs = response;
+        this.blogs = response.$values; // Correctly accessing the $values array in your response.
       } catch (error) {
         this.error = error;
       }
@@ -130,6 +128,25 @@ export default {
         month: "2-digit",
         day: "2-digit",
       });
+    },
+    formatTags(tags) {
+      if (tags && tags.$values) {
+        return tags.$values.map((tag) => tag.name).join(", ");
+      }
+      return "No tags";
+    },
+    getImageUrl(path) {
+      return `http://localhost:5254${path}`; // Ensure this URL matches your backend image URL.
+    },
+    truncateContent(content) {
+      if (!content) {
+        return "No content"; // Return a placeholder if content is undefined or empty
+      }
+      return content.length > 10 ? content.substring(0, 10) + "..." : content;
+    },
+    showDialog(blog) {
+      this.currentBlog = { ...blog }; // Pass a copy of the blog to avoid unwanted mutations.
+      this.visible = true;
     },
   },
 };
