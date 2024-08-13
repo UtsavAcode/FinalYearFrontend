@@ -12,6 +12,8 @@ import Users from "@/components/Users.vue";
 import Tags from "@/components/tags.vue";
 import AddBlog from "@/components/addBlog.vue";
 import GetBlogs from "@/components/blogsAdmin.vue";
+import UserDashboard from "@/components/userDashboard.vue";
+import UserBlogs from "@/components/UserActivity/UserBlogs.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
@@ -27,6 +29,19 @@ const routes = [
     path: "/addBlog",
     name: "AddBlog",
     component: AddBlog,
+  },
+
+  {
+    path: "/userDashboard",
+    name: "UserDashboard",
+    component: UserDashboard,
+    children: [
+      {
+        path: "/userBlogs",
+        name: "UserBlogs",
+        component: UserBlogs,
+      },
+    ],
   },
 
   {

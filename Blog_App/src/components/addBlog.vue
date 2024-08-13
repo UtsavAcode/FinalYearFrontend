@@ -73,6 +73,7 @@
           class="form-control"
           filter
           filterPlaceholder="Search Tags"
+          style="height:3rem;"
         />
       </div>
       <button type="submit" class="btn btn-primary">Add Blog Post</button>
@@ -105,16 +106,16 @@ export default {
   },
   async created() {
     try {
-      const response = await blogService.getAll(); // Ensure the API method is correctly named
+      const response = await blogService.getAll(); 
       if (Array.isArray(response)) {
-        this.tags = response; // Directly assign the array to tags
+        this.tags = response; 
       } else {
         console.error("Unexpected response format:", response);
-        this.tags = []; // Fallback to an empty array if response format is unexpected
+        this.tags = []; 
       }
     } catch (err) {
       console.error("Error fetching tags:", err);
-      this.tags = []; // Fallback to an empty array if there's an error
+      this.tags = []; 
     }
   },
   methods: {
@@ -123,16 +124,16 @@ export default {
         const tagIdsArray = this.selectedTags.map((tag) =>
           parseInt(tag.id, 10)
         );
-        console.log("Formatted Tag IDs:", tagIdsArray); // Log the formatted tag IDs
+        console.log("Formatted Tag IDs:", tagIdsArray);
 
         const blogPost = {
           Title: this.Title,
           MetaDescription: this.MetaDescription,
           Content: this.Content,
-          AuthorId: this.id.replace(/"/g, ""), // Ensure UUID is correctly formatted
+          AuthorId: this.id.replace(/"/g, ""), 
           AuthorName: this.name,
           Image: this.imageFile,
-          TagIds: tagIdsArray, // Ensure this is an array of integers
+          TagIds: tagIdsArray,
         };
 
         const response = await blogService.addBlogPost(blogPost);

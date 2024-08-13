@@ -17,6 +17,7 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import MultiSelect from "primevue/multiselect";
 import "admin-lte/dist/css/adminlte.min.css";
+import Panel from "primevue/panel";
 
 // Import AdminLTE JS
 import "admin-lte/dist/js/adminlte.min.js";
@@ -36,6 +37,7 @@ app.use(PrimeVue, {
 });
 
 app.component("IconField", IconField);
+app.component("Panel", Panel);
 app.component("Button", Button);
 app.component("Dialog", Dialog);
 app.component("InputIcon", InputIcon);

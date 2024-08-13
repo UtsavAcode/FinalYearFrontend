@@ -1,5 +1,5 @@
 <template>
-  <header class="container-fluid sticky-top">
+  <header class="container-fluid sticky-top bg-white">
     <nav class="navbar navbar-expand-lg p-4">
       <div class="container-fluid">
         <button
@@ -19,10 +19,12 @@
             style="justify-content: center"
           >
             <li class="nav-item">
-              <a class="nav-link poppins" href="#">Home</a>
+              <RouterLink class="text-dark poppins" to="/">Home</RouterLink>
             </li>
           </ul>
-          <h1 class="cursive mx-7">Bloggy</h1>
+          <h1 class="cursive mx-7">
+            <RouterLink class="text-dark" to="/">Bloggy</RouterLink>
+          </h1>
           <form class="searchbar" role="search">
             <IconField>
               <InputIcon class="pi pi-search" />
@@ -51,6 +53,11 @@
               <li v-if="isAuthenticated">
                 <router-link class="dropdown-item poppins" to="/addBlog"
                   >Blog</router-link
+                >
+              </li>
+              <li v-if="isAuthenticated">
+                <router-link class="dropdown-item poppins" :to="dashBoard"
+                  >Dashboard</router-link
                 >
               </li>
 
@@ -98,6 +105,16 @@ export default {
     },
     firstLetter() {
       return this.name ? this.name.charAt(0).toUpperCase() : "";
+    },
+
+    dashBoard() {
+      if (this.roles.includes("SuperAdmin")) {
+        return "/admin-Dashboard"; // Redirect to super admin dashboard
+      } else if (this.roles.includes("Admin")) {
+        return "/adminDashboard"; // Redirect to admin dashboard
+      } else {
+        return "/userDashboard"; // Redirect to user dashboard
+      }
     },
   },
   methods: {
