@@ -118,6 +118,35 @@ const blogService = {
       throw error.response.data || error.message;
     }
   },
+
+  async updateBlogPost(blogPost) {
+    try {
+      const formData = new FormData();
+      formData.append("Id", blogPost.id);
+      formData.append("Title", blogPost.title); // Use `blogPost.title`
+      formData.append("MetaDescription", blogPost.metaDescription); // Use `blogPost.metaDescription`
+      formData.append("Content", blogPost.content); // Use `blogPost.content`
+      formData.append("AuthorId", blogPost.authorId);
+      formData.append("AuthorName", blogPost.authorName);
+
+      if (blogPost.Image) {
+        formData.append("Image", blogPost.Image);
+      }
+
+      blogPost.TagIds.forEach((tagId) => formData.append("TagIds", tagId)); // Handle multiple tags
+
+      console.log("FormData Contents:", Array.from(formData.entries())); // Debug output
+
+      const response = await apiClient.put(`/Blog/UpdateBlogPost`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
 };
 
 export default blogService;

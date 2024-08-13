@@ -45,29 +45,100 @@
               <Dialog
                 v-model:visible="visible"
                 header="Edit Blog"
-                :style="{ width: '25rem' }"
+                :style="{ width: '60.5rem' }"
+                class="container"
               >
-                <span class="text-surface-500 dark:text-surface-400 block mb-8">
-                  Update the Blog.
-                </span>
+                <div class="containeer-edit">
+                  <span
+                    class="text-surface-500 dark:text-surface-400 block mb-8"
+                  >
+                    Update the Blog.
+                  </span>
 
-                <div class="flex items-center gap-4 mb-3">
-                  <label for="name" class="font-semibold w-25">Title</label>
-                  <InputText
-                    id="name"
-                    v-model="currentBlog.Title"
-                    class="flex-auto"
-                    autocomplete="off"
-                  />
-                </div>
-                <div class="d-flex justify-content-center align-center gap-2">
-                  <Button
-                    type="button"
-                    label="Cancel"
-                    severity="secondary"
-                    @click="visible = false"
-                  ></Button>
-                  <Button type="button" label="Save" @click=""></Button>
+                  <div class="flex items-center gap-4 mb-3">
+                    <label for="editTitle" class="font-semibold w-25"
+                      >Title</label
+                    >
+                    <InputText
+                      id="editTitle"
+                      v-model="currentBlog.title"
+                      class="flex-auto"
+                      autocomplete="off"
+                      :style="{ width: '56.9rem' }"
+                    />
+                  </div>
+
+                  <div class="flex items-center gap-4 mb-3">
+                    <label for="editMetaDescription" class="font-semibold w-25"
+                      >Meta Description</label
+                    >
+                    <textarea
+                      id="editMetaDescription"
+                      v-model="currentBlog.metaDescription"
+                      class="flex-auto"
+                      rows="3"
+                      :style="{ width: '56.9rem' }"
+                    ></textarea>
+                  </div>
+
+                  <div class="flex items-center gap-4 mb-3">
+                    <label for="editContent" class="font-semibold w-25"
+                      >Content</label
+                    >
+                    <textarea
+                      id="editContent"
+                      v-model="currentBlog.content"
+                      class="flex-auto"
+                      rows="5"
+                      :style="{ width: '56.9rem' }"
+                    ></textarea>
+                  </div>
+
+                  <div class="form-group mb-3">
+                    <label for="editTags">Tags</label>
+                    <MultiSelect
+                      v-model="currentBlog.tags"
+                      :options="availableTags"
+                      option-label="name"
+                      option-value="id"
+                      placeholder="Select tags"
+                      display="chip"
+                      :style="{ width: '56.9rem' }"
+                      class="w-full"
+                      ref="multiSelect"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="editFeaturedImage">Featured Image</label>
+                    <input
+                      type="file"
+                      @change="handleEditImageUpload"
+                      id="editFeaturedImage"
+                      class="form-control"
+                    />
+                    <div v-if="editImagePreview" class="mt-3">
+                      <img
+                        :src="editImagePreview"
+                        alt="Image Preview"
+                        class="img-fluid"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-center align-center gap-2">
+                    <Button
+                      type="button"
+                      label="Cancel"
+                      severity="secondary"
+                      @click="visible = false"
+                    ></Button>
+                    <Button
+                      type="button"
+                      label="Save"
+                      @click="updateBlogPost"
+                    ></Button>
+                  </div>
                 </div>
               </Dialog>
 
@@ -94,33 +165,80 @@ export default {
     return {
       blogs: [],
       visible: false,
-      currentBlog: {}, // This should be initialized to an empty object or your default structure.
+      currentBlog: {
+        id: null,
+        title: "",
+        metaDescription: "",
+        content: "",
+        authorId: "",
+        authorName: "",
+        featuredImagePath: "",
+        tags: [],
+      },
+      editImageFile: null,
+      editImagePreview: null,
     };
   },
 
   created() {
-    this.getAllPost();
+    this.getAllPosts();
+    this.getAvailableTags();
   },
 
   methods: {
-    async getAllPost() {
+    async getAvailableTags() {
       try {
-        const response = await blogService.getAllBlog();
-        // Check the structure of the response and adjust accordingly
-        this.blogs = response; // Adjust if needed based on API response
+        const response = await blogService.getAll(); // Adjust to the correct method to fetch tags
+        this.availableTags = response.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        }));
+        console.log("Available Tags:", this.availableTags); // Debug output
       } catch (error) {
-        this.error = error;
-      }
-    },
-    async deletePost(id) {
-      try {
-        const response = await blogService.deleteBlog(id);
-        this.getAllPost();
-      } catch (error) {
-        this.error = error;
+        console.error("Error fetching tags:", error);
       }
     },
 
+    async getAllPosts() {
+      try {
+        const response = await blogService.getAllBlog(); // Ensure this method returns blog posts
+        this.blogs = response;
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    },
+
+    async deletePost(id) {
+      try {
+        await blogService.deleteBlog(id);
+        this.getAllPosts(); // Refresh the list
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      }
+    },
+
+    async updateBlogPost() {
+      try {
+        const tagIdsArray = this.currentBlog.tags.map((tag) =>
+          parseInt(tag.id, 10)
+        );
+
+        const updatedBlogPost = {
+          ...this.currentBlog,
+          Image: this.editImageFile,
+          TagIds: tagIdsArray,
+        };
+
+        console.log("Updating Blog Post with Data:", updatedBlogPost); // Debug output
+
+        await blogService.updateBlogPost(updatedBlogPost);
+        this.getAllPosts(); // Refresh the list
+        this.visible = false;
+      } catch (error) {
+        console.error("Error updating blog post:", error);
+        this.error = error.response?.data?.errors || "An error occurred";
+      }
+    },
     formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString("en-US", {
@@ -129,30 +247,54 @@ export default {
         day: "2-digit",
       });
     },
+
     formatTags(tags) {
       if (tags && Array.isArray(tags)) {
         return tags.map((tag) => tag.name).join(", ");
       }
       return "No tags";
     },
+
     getImageUrl(path) {
-      return `http://localhost:5254${path}`; // Ensure this URL matches your backend image URL.
+      return `http://localhost:5254${path}`;
     },
+
     truncateContent(content) {
       if (!content) {
-        return "No content"; // Return a placeholder if content is undefined or empty
+        return "No content";
       }
       return content.length > 10 ? content.substring(0, 10) + "..." : content;
     },
-    truncateId(Id) {
-      if (!Id) {
+
+    truncateId(id) {
+      if (!id) {
         return "NoId";
       }
-      return Id.length > 10 ? Id.substring(0, 10) + "..." : Id;
+      return id.length > 10 ? id.substring(0, 10) + "..." : id;
     },
+
     showDialog(blog) {
-      this.currentBlog = { ...blog }; // Pass a copy of the blog to avoid unwanted mutations.
+      // Make sure to correctly copy the blog object
+      this.currentBlog = { ...blog };
+      this.editImageFile = null;
+      this.editImagePreview = this.getImageUrl(blog.featuredImagePath);
+
+      // Ensure `currentBlog.tags` is correctly formatted
+      this.currentBlog.tags = blog.tags.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+      }));
+
+      console.log("Selected Blog for Editing:", this.currentBlog); // Debug output
+
       this.visible = true;
+    },
+    handleEditImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.editImageFile = file;
+        this.editImagePreview = URL.createObjectURL(file);
+      }
     },
   },
 };
