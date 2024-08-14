@@ -26,12 +26,13 @@
               </a>
             </li>
             <li>
-              <a href="#" class="nav-link px-0 align-middle text-dark">
+              <RouterLink
+                class="nav-link px-0 align-middle text-dark"
+                to="/userBlogs"
+              >
                 <i class="fs-4 bi-table"></i>
-                <RouterLink class="ms-1 d-none d-sm-inline text-dark display-7" to="/userBlogs"
-                  >Blogs</RouterLink
-                >
-              </a>
+                <p class="ms-1 d-none d-sm-inline text-dark display-7">Blogs</p>
+              </RouterLink>
             </li>
             <!-- <li>
               <a

@@ -9,7 +9,10 @@
       >
         <div class="d-flex align-items-center">
           <div class="image-section">
-            <img :src="blog.featuredImagePath" alt="featureimage" />
+            <img
+              :src="getImageUrl(blog.featuredImagePath)"
+              alt="featureimage"
+            />
           </div>
           <div class="blog-info-section ms-3 mt-3">
             <p>{{ blog.title }}</p>
@@ -47,13 +50,6 @@ export default {
       try {
         const response = await blogService.getAllBlog();
         this.blogs = Array.isArray(response) ? response : [];
-        console.log("Blogs array after fetch:", this.blogs);
-
-        // Optional: Check the structure of the first blog
-        if (this.blogs.length > 0) {
-          console.log("First blog object:", this.blogs[0]);
-          console.log("First blog's authorId:", String(this.blogs[0].authorId));
-        }
       } catch (error) {
         console.log("User dash fetch error blogs:", error);
       }
@@ -61,27 +57,21 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleDateString();
     },
+    getImageUrl(path) {
+      return `http://localhost:5254${path}`;
+    },
   },
 
   computed: {
     ...mapGetters("auth", ["id"]),
     userBlogs() {
-      const userId = String(this.id).replace(/"/g, "").trim(); // Ensure userId is a string
-      console.log("User ID:", userId);
+      const userId = String(this.id).replace(/"/g, "").trim();
 
-      // Log each blog's authorId to verify
-      this.blogs.forEach((blog) => {
-        console.log("Blog ID:", blog.id);
-        console.log("Blog Author ID:", String(blog.authorId).trim()); // Ensure authorId is a string and remove extra spaces
-      });
-
-      // Filter blogs by authorId
       const filteredBlogs = this.blogs.filter((blog) => {
-        const blogAuthorId = String(blog.authorId).trim(); // Convert authorId to a string and remove extra spaces
+        const blogAuthorId = String(blog.authorId).trim();
         return blogAuthorId === userId;
       });
 
-      console.log("Filtered blogs", filteredBlogs);
       return filteredBlogs;
     },
   },
