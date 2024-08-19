@@ -18,7 +18,8 @@ import Button from "primevue/button";
 import MultiSelect from "primevue/multiselect";
 import "admin-lte/dist/css/adminlte.min.css";
 import Panel from "primevue/panel";
-
+import { QuillEditor } from "@vueup/vue-quill";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
 // Import AdminLTE JS
 import "admin-lte/dist/js/adminlte.min.js";
 const app = createApp(App);
@@ -43,6 +44,7 @@ app.component("Dialog", Dialog);
 app.component("InputIcon", InputIcon);
 app.component("InputText", InputText);
 app.component("MultiSelect", MultiSelect);
+app.component("QuillEditor", QuillEditor);
 app.config.globalProperties.$axios = axios;
 app.use(router);
 app.use(store);

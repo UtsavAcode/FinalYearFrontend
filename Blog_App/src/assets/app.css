@@ -2,6 +2,7 @@
   margin-left: 35rem !important;
 }
 
+
 .mx-7 {
   margin: auto auto auto 38rem !important;
   text-align: center;
@@ -82,9 +83,10 @@
   width: 97% !important;
 }
 
-.add-blog-post {
-  margin: 1rem 0 2rem 0;
-}
+
+
+/* Other styles remain unchanged */
+
 
 .w-5 {
   width: 10%;

@@ -1,8 +1,8 @@
 <template>
-  <div class="add-blog-post">
-    <h2>Add New Blog Post</h2>
+  <div class="add-blog-post" >
+    <!-- <h2>Add New Blog Post</h2> -->
 
-    <form @submit.prevent="addBlogPost">
+    <form @submit.prevent="addBlogPost" style="width:90%">
       <div v-if="error" class="alert alert-danger">
         {{ error }}
       </div>
@@ -36,7 +36,11 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div id="app">
+        <quill-editor theme="snow" toolbar="full" style="height: 20rem;"></quill-editor>
+      </div>
+
+      <!-- <div class="form-group">
         <label for="content">Content</label>
         <textarea
           v-model="Content"
@@ -48,7 +52,7 @@
         <div v-if="error?.Content" class="text-danger">
           {{ error.Content[0] }}
         </div>
-      </div>
+      </div> -->
 
       <div class="form-group">
         <label for="featuredImage">Featured Image</label>
@@ -73,7 +77,7 @@
           class="form-control"
           filter
           filterPlaceholder="Search Tags"
-          style="height:3rem;"
+          style="height: 3rem"
         />
       </div>
       <button type="submit" class="btn btn-primary">Add Blog Post</button>
@@ -106,16 +110,16 @@ export default {
   },
   async created() {
     try {
-      const response = await blogService.getAll(); 
+      const response = await blogService.getAll();
       if (Array.isArray(response)) {
-        this.tags = response; 
+        this.tags = response;
       } else {
         console.error("Unexpected response format:", response);
-        this.tags = []; 
+        this.tags = [];
       }
     } catch (err) {
       console.error("Error fetching tags:", err);
-      this.tags = []; 
+      this.tags = [];
     }
   },
   methods: {
@@ -130,7 +134,7 @@ export default {
           Title: this.Title,
           MetaDescription: this.MetaDescription,
           Content: this.Content,
-          AuthorId: this.id.replace(/"/g, ""), 
+          AuthorId: this.id.replace(/"/g, ""),
           AuthorName: this.name,
           Image: this.imageFile,
           TagIds: tagIdsArray,
@@ -158,10 +162,14 @@ export default {
 
 <style scoped>
 .add-blog-post {
-  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  max-width: 80%;
   margin: auto;
   padding: 20px;
-  background-color: #f9f9f9;
+  
   border-radius: 10px;
 }
 
