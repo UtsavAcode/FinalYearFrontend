@@ -1,8 +1,8 @@
 <template>
-  <div class="add-blog-post" >
+  <div class="add-blog-post">
     <!-- <h2>Add New Blog Post</h2> -->
 
-    <form @submit.prevent="addBlogPost" style="width:90%">
+    <form @submit.prevent="addBlogPost" style="width: 90%">
       <div v-if="error" class="alert alert-danger">
         {{ error }}
       </div>
@@ -37,7 +37,12 @@
       </div>
 
       <div id="app">
-        <quill-editor theme="snow" toolbar="full" style="height: 20rem;"></quill-editor>
+        <froala
+          id="edit"
+          :tag="'textarea'"
+          :config="config"
+          v-model:value="Content"
+        ></froala>
       </div>
 
       <!-- <div class="form-group">
@@ -122,6 +127,97 @@ export default {
       this.tags = [];
     }
   },
+
+  methods: {
+    selectLocalImage() {
+      const input = document.createElement("input");
+      input.setAttribute("type", "file");
+      input.setAttribute("accept", "image/*");
+      input.click();
+
+      input.onchange = () => {
+        const file = input.files[0];
+        this.uploadImage(file);
+      };
+    },
+
+    uploadImage(file) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      axios
+        .post("/api/Blog/UploadImage", formData)
+        .then((response) => {
+          const imageUrl = response.data.path;
+          const range = this.quillEditor.getSelection(true);
+          this.quillEditor.insertEmbed(range.index, "image", imageUrl);
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+        });
+    },
+  },
+
+  methods: {
+    selectLocalImage() {
+      const input = document.createElement("input");
+      input.setAttribute("type", "file");
+      input.setAttribute("accept", "image/*");
+      input.click();
+
+      input.onchange = () => {
+        const file = input.files[0];
+        this.uploadImage(file);
+      };
+    },
+
+    uploadImage(file) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      axios
+        .post("/api/Blog/UploadImage", formData)
+        .then((response) => {
+          const imageUrl = response.data.path;
+          const range = this.quillEditor.getSelection(true);
+          this.quillEditor.insertEmbed(range.index, "image", imageUrl);
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+        });
+    },
+  },
+
+  methods: {
+    // selectLocalImage() {
+    //   const input = document.createElement("input");
+    //   input.setAttribute("type", "file");
+    //   input.setAttribute("accept", "image/*");
+    //   input.click();
+
+    //   input.onchange = () => {
+    //     const file = input.files[0];
+    //     this.uploadImage(file);
+    //   };
+    // },
+
+    uploadImage(file) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      axios
+        .post("/api/Blog/UploadImage", formData)
+        .then((response) => {
+          const imageUrl = response.data.path;
+          const range = this.quillEditor.getSelection(true);
+          this.quillEditor.insertEmbed(range.index, "image", imageUrl);
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+        });
+    },
+  },
+
   methods: {
     async addBlogPost() {
       try {
@@ -166,10 +262,10 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  max-width: 80%;
+  width: 90%;
   margin: auto;
   padding: 20px;
-  
+
   border-radius: 10px;
 }
 

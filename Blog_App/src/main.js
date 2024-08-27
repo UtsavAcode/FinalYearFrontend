@@ -18,12 +18,20 @@ import Button from "primevue/button";
 import MultiSelect from "primevue/multiselect";
 import "admin-lte/dist/css/adminlte.min.css";
 import Panel from "primevue/panel";
-import { QuillEditor } from "@vueup/vue-quill";
-import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import "froala-editor/js/plugins.pkgd.min.js";
+//Import third party plugins
+import "froala-editor/js/third_party/embedly.min";
+import "froala-editor/js/third_party/font_awesome.min";
+import "froala-editor/js/third_party/spell_checker.min";
+import "froala-editor/js/third_party/image_tui.min";
+// Import Froala Editor css files.
+import "froala-editor/css/froala_editor.pkgd.min.css";
+import "froala-editor/css/froala_style.min.css";
 // Import AdminLTE JS
 import "admin-lte/dist/js/adminlte.min.js";
 const app = createApp(App);
 import axios from "axios";
+import VueFroala from "vue-froala-wysiwyg";
 app.config.globalProperties.hostname = "http://localhost:5254";
 
 app.use(PrimeVue, {
@@ -44,9 +52,10 @@ app.component("Dialog", Dialog);
 app.component("InputIcon", InputIcon);
 app.component("InputText", InputText);
 app.component("MultiSelect", MultiSelect);
-app.component("QuillEditor", QuillEditor);
+
 app.config.globalProperties.$axios = axios;
 app.use(router);
+app.use(VueFroala);
 app.use(store);
 app.use(bootstrap);
 app.mount("#app");

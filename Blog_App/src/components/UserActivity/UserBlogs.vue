@@ -20,13 +20,30 @@
           </div>
         </div>
         <div
-          class="utilities-section me-5 d-flex align-items-center justify-content-between w-25"
+          class="utilities-section me-5 d-flex align-items-center justify-content-between"
         >
-          <p>del</p>
-          <p>view</p>
-          <p>edit</p>
+          <div class="blog-utilities" @click="showDialog(blog)">
+            <i class="bi bi-eye" style="font-size: 1.5em"> </i>
+          </div>
+          <div class="blog-utilities">
+            <i class="bi bi-pencil" style="font-size: 1.5em"></i>
+          </div>
+          <div class="blog-utilities">
+            <i class="bi bi-trash3" style="font-size: 1.5em"></i>
+          </div>
         </div>
       </div>
+      <Dialog
+        v-model:visible="visible"
+        header=""
+        :style="{ width: '60.5rem' }"
+        class="container"
+      >
+        <div class="mb-3">
+          <h1>{{ currentBlog.title }}</h1>
+        </div>
+        <div v-html="currentBlog.content"></div>
+      </Dialog>
     </div>
   </div>
 </template>
@@ -40,6 +57,17 @@ export default {
   data() {
     return {
       blogs: [],
+      visible: false,
+      currentBlog: {
+        id: null,
+        title: "",
+        metaDescription: "",
+        content: "",
+        authorId: "",
+        authorName: "",
+        featuredImagePath: "",
+        tags: [],
+      },
     };
   },
   created() {
@@ -59,6 +87,22 @@ export default {
     },
     getImageUrl(path) {
       return `http://localhost:5254${path}`;
+    },
+    showDialog(blog) {
+      // Make sure to correctly copy the blog object
+      this.currentBlog = { ...blog };
+      this.editImageFile = null;
+      this.editImagePreview = this.getImageUrl(blog.featuredImagePath);
+
+      // Ensure `currentBlog.tags` is correctly formatted
+      this.currentBlog.tags = blog.tags.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+      }));
+
+      console.log("Selected Blog for Editing:", this.currentBlog); // Debug output
+
+      this.visible = true;
     },
   },
 

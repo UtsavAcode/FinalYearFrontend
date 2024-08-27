@@ -2,7 +2,6 @@
   margin-left: 35rem !important;
 }
 
-
 .mx-7 {
   margin: auto auto auto 38rem !important;
   text-align: center;
@@ -83,10 +82,7 @@
   width: 97% !important;
 }
 
-
-
 /* Other styles remain unchanged */
-
 
 .w-5 {
   width: 10%;
@@ -111,6 +107,11 @@
   border-radius: 5px;
 }
 
+.blog-panel:hover {
+  box-shadow: 3px 4px 2px #cac9c9, 0px 0px 0px #ccc;
+  cursor: pointer;
+}
+
 .image-section {
   width: 6rem;
   height: 4.8rem;
@@ -124,4 +125,18 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.blog-utilities {
+  width: 1rem;
+  padding-right: 1rem;
+}
+
+.blog-utilities:hover {
+  cursor: pointer;
+  transform: scale(1.2); 
+
+}
+.utilities-section {
+  width: 9rem !important;
 }
