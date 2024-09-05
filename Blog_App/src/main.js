@@ -16,7 +16,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import MultiSelect from "primevue/multiselect";
-import "admin-lte/dist/css/adminlte.min.css";
+
 import Panel from "primevue/panel";
 import "froala-editor/js/plugins.pkgd.min.js";
 //Import third party plugins
@@ -29,6 +29,7 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 import "froala-editor/css/froala_style.min.css";
 // Import AdminLTE JS
 import "admin-lte/dist/js/adminlte.min.js";
+import 'admin-lte/dist/css/adminlte.min.css';
 const app = createApp(App);
 import axios from "axios";
 import VueFroala from "vue-froala-wysiwyg";

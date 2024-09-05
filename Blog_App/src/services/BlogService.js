@@ -147,6 +147,15 @@ const blogService = {
       throw error.response?.data || error.message;
     }
   },
+  async getBlogById(id) {
+    try {
+      const response = await apiClient.get(`/Blog/GetBlog/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  }
+  
 };
 
 export default blogService;

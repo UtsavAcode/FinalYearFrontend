@@ -19,11 +19,11 @@
             style="justify-content: center"
           >
             <li class="nav-item">
-              <RouterLink class="text-dark poppins" to="/">Home</RouterLink>
+              <RouterLink class="text-dark poppins" to="/" style="text-decoration: none;">Home</RouterLink>
             </li>
           </ul>
           <h1 class="cursive mx-7">
-            <RouterLink class="text-dark" to="/">Bloggy</RouterLink>
+            <RouterLink class="text-dark" to="/" style="text-decoration: none;">Bloggy</RouterLink>
           </h1>
           <form class="searchbar" role="search">
             <IconField>

@@ -22,13 +22,13 @@
         <div
           class="utilities-section me-5 d-flex align-items-center justify-content-between"
         >
-          <div class="blog-utilities" @click="showDialog(blog)">
+          <div class="blog-utilities" @click="showDialog(blog)" title="View Blog"> 
             <i class="bi bi-eye" style="font-size: 1.5em"> </i>
           </div>
-          <div class="blog-utilities">
+          <div class="blog-utilities" title="Edit" @click="editBlog(blog)">
             <i class="bi bi-pencil" style="font-size: 1.5em"></i>
           </div>
-          <div class="blog-utilities">
+          <div class="blog-utilities" title="Delete">
             <i class="bi bi-trash3" style="font-size: 1.5em"></i>
           </div>
         </div>
@@ -46,10 +46,13 @@
       </Dialog>
     </div>
   </div>
+
+
 </template>
 
 <script>
 import blogService from "@/services/BlogService";
+import { RouterLink } from "vue-router";
 import { mapGetters } from "vuex";
 
 export default {
@@ -81,6 +84,9 @@ export default {
       } catch (error) {
         console.log("User dash fetch error blogs:", error);
       }
+    },
+    editBlog(blog) {
+      this.$router.push({ path: `/edit-blog/${blog.id}` });
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString();

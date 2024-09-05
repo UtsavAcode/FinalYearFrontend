@@ -8,7 +8,6 @@
 
       <!-- Main content: takes up the remaining 9 columns -->
       <div class="col-md-9">
-
         <RouterView />
       </div>
     </div>

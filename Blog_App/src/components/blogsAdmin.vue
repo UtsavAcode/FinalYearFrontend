@@ -5,8 +5,8 @@
         class="table table-striped table-hover text-center table-bordered"
         style="min-width: 1200px" 
       >
-        <thead>asdn asd
-          <tr>
+        <thead>     
+               <tr>
             <th scope="col">Id</th>
             <th>Image</th>
             <th scope="col">Title</th>

@@ -105,6 +105,7 @@
   margin: 1rem 0 0 0;
   height: 7rem;
   border-radius: 5px;
+  
 }
 
 .blog-panel:hover {
@@ -135,8 +136,9 @@
 .blog-utilities:hover {
   cursor: pointer;
   transform: scale(1.2); 
-
+ 
 }
 .utilities-section {
   width: 9rem !important;
 }
+

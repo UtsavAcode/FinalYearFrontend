@@ -14,11 +14,12 @@ import AddBlog from "@/components/addBlog.vue";
 import GetBlogs from "@/components/blogsAdmin.vue";
 import UserDashboard from "@/components/userDashboard.vue";
 import UserBlogs from "@/components/UserActivity/UserBlogs.vue";
+import EditBlog from "@/components/UserActivity/UserBlogEdit.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
   { path: "/login", name: "Login", component: Login },
-  { path: "/register", name: "Register", component: Register },
+  { path: "/register", name: "Register",component: Register },
   {
     path: "/profile",
     name: "Profile",
@@ -41,6 +42,12 @@ const routes = [
         name: "UserBlogs",
         component: UserBlogs,
       },
+      {
+        path:"/edit-blog/:id",
+        name:"EditBlog",
+        component:EditBlog,
+        props:true
+      }
     ],
   },
 
