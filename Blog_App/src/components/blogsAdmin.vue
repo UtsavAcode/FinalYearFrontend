@@ -3,7 +3,7 @@
     <div class="table-responsive">
       <table
         class="table table-striped table-hover text-center table-bordered"
-        style="min-width: 1200px"
+        style="min-width: 1200px" 
       >
         <thead>
           <tr>
