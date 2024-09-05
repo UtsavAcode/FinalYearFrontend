@@ -15,11 +15,12 @@ import GetBlogs from "@/components/blogsAdmin.vue";
 import UserDashboard from "@/components/userDashboard.vue";
 import UserBlogs from "@/components/UserActivity/UserBlogs.vue";
 import EditBlog from "@/components/UserActivity/UserBlogEdit.vue";
+import Performance from "@/components/Performance.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
   { path: "/login", name: "Login", component: Login },
-  { path: "/register", name: "Register",component: Register },
+  { path: "/register", name: "Register", component: Register },
   {
     path: "/profile",
     name: "Profile",
@@ -43,11 +44,11 @@ const routes = [
         component: UserBlogs,
       },
       {
-        path:"/edit-blog/:id",
-        name:"EditBlog",
-        component:EditBlog,
-        props:true
-      }
+        path: "/edit-blog/:id",
+        name: "EditBlog",
+        component: EditBlog,
+        props: true,
+      },
     ],
   },
 
@@ -72,6 +73,11 @@ const routes = [
         path: "/getBlogsAdmin",
         name: "AllBlogs",
         component: GetBlogs,
+      },
+      {
+        path: "/performance",
+        name: "Performance",
+        component: Performance,
       },
     ],
   },

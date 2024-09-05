@@ -19,11 +19,18 @@
             style="justify-content: center"
           >
             <li class="nav-item">
-              <RouterLink class="text-dark poppins" to="/" style="text-decoration: none;">Home</RouterLink>
+              <RouterLink
+                class="text-dark poppins"
+                to="/"
+                style="text-decoration: none"
+                >Home</RouterLink
+              >
             </li>
           </ul>
           <h1 class="cursive mx-7">
-            <RouterLink class="text-dark" to="/" style="text-decoration: none;">Bloggy</RouterLink>
+            <RouterLink class="text-dark" to="/" style="text-decoration: none"
+              >Bloggy</RouterLink
+            >
           </h1>
           <form class="searchbar" role="search">
             <IconField>
@@ -109,7 +116,7 @@ export default {
 
     dashBoard() {
       if (this.roles.includes("SuperAdmin")) {
-        return "/admin-Dashboard"; // Redirect to super admin dashboard
+        return "/performance"; // Redirect to super admin dashboard
       } else if (this.roles.includes("Admin")) {
         return "/adminDashboard"; // Redirect to admin dashboard
       } else {

@@ -32,6 +32,12 @@
           <li class="nav-item menu-open">
             <ul class="nav nav-treeview">
               <li class="nav-item">
+                <RouterLink to="/performance" href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Dashboard</p>
+                </RouterLink>
+              </li>
+              <li class="nav-item">
                 <RouterLink to="/users" href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Users</p>
@@ -55,12 +61,6 @@
                   <i class="far fa-circle nav-icon"></i>
                   <p>Add Blog</p>
                 </RouterLink>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Inactive Page</p>
-                </a>
               </li>
 
               <li class="nav-item" v-if="isAuthenticated">
@@ -86,7 +86,6 @@
     </div>
     <!-- /.sidebar -->
   </aside>
- 
 </template>
 
 <script>

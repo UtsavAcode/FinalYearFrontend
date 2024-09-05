@@ -1,6 +1,5 @@
 <template>
   <div>
-    User Blogs
     <div class="blog-list">
       <div
         v-for="blog in userBlogs"
@@ -22,13 +21,21 @@
         <div
           class="utilities-section me-5 d-flex align-items-center justify-content-between"
         >
-          <div class="blog-utilities" @click="showDialog(blog)" title="View Blog"> 
+          <div
+            class="blog-utilities"
+            @click="showDialog(blog)"
+            title="View Blog"
+          >
             <i class="bi bi-eye" style="font-size: 1.5em"> </i>
           </div>
           <div class="blog-utilities" title="Edit" @click="editBlog(blog)">
             <i class="bi bi-pencil" style="font-size: 1.5em"></i>
           </div>
-          <div class="blog-utilities" title="Delete">
+          <div
+            class="blog-utilities"
+            title="Delete"
+            @click="deletePost(blog.id)"
+          >
             <i class="bi bi-trash3" style="font-size: 1.5em"></i>
           </div>
         </div>
@@ -46,8 +53,6 @@
       </Dialog>
     </div>
   </div>
-
-
 </template>
 
 <script>
@@ -87,6 +92,14 @@ export default {
     },
     editBlog(blog) {
       this.$router.push({ path: `/edit-blog/${blog.id}` });
+    },
+    async deletePost(id) {
+      try {
+        await blogService.deleteBlog(id);
+        this.fetchUserBlogs(); // Refresh the list after deletion
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      }
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString();

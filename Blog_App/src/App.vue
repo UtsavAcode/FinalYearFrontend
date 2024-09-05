@@ -16,7 +16,13 @@ export default {
   },
   computed: {
     shownavbar() {
-      const hiddenRoutes = ["Users", "AdminDashboard", "Tags", "AllBlogs"];
+      const hiddenRoutes = [
+        "Users",
+        "AdminDashboard",
+        "Tags",
+        "AllBlogs",
+        "Performance",
+      ];
       return !hiddenRoutes.includes(this.$route.name);
     },
   },
