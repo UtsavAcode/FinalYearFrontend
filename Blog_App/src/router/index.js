@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import Login from "../components/login.vue";
-import HeroPage from "../components/HeroPage.vue";
-import Register from "../components/register.vue";
-import Home from "../components/home.vue";
-import Profile from "../components/Profile.vue";
-import Admin from "../components/admin.vue";
+import Login from "@/components/login.vue";
+import HeroPage from "@/components/HeroPage.vue";
+import Register from "@/components/Register.vue";
+import Home from "@/components/home.vue";
+import Profile from "@/components/Profile.vue";
+import Admin from "@/components/admin.vue";
 import authService from "@/services/auth.servics";
 import store from "@/store"; // Import the Vuex store
 import Users from "@/components/Users.vue";
