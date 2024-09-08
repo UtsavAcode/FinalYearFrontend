@@ -29,7 +29,7 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 import "froala-editor/css/froala_style.min.css";
 // Import AdminLTE JS
 import "admin-lte/dist/js/adminlte.min.js";
-import 'admin-lte/dist/css/adminlte.min.css';
+import "admin-lte/dist/css/adminlte.min.css";
 const app = createApp(App);
 import axios from "axios";
 import VueFroala from "vue-froala-wysiwyg";

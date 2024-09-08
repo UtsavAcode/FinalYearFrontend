@@ -54,7 +54,7 @@ export default {
         if (response.isSuccess) {
           const roles = this.$store.getters["auth/roles"]; // Get roles from Vuex
           if (roles.includes("Admin") || roles.includes("SuperAdmin")) {
-            this.$router.push("/admin-dashboard"); // Redirect to admin dashboard
+            this.$router.push("/performance"); // Redirect to admin dashboard
           } else {
             this.$router.push("/hero"); // Redirect to hero page
           }

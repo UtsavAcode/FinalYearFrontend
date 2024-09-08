@@ -57,6 +57,18 @@ const authService = {
     const roles = this.getRoles();
     return roles.includes("Admin") || roles.includes("SuperAdmin");
   },
+
+  async getUserRegistrations(startDate, endDate) {
+    try {
+      const response = await axiosInstance.get("/registrations", {
+        params: { startDate, endDate },
+      });
+      return response.data; // Returns the user registration statistics data
+    } catch (error) {
+      console.error("Error fetching user registrations:", error);
+      throw error;
+    }
+  },
 };
 
 export default authService;
