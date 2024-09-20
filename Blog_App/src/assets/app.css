@@ -158,3 +158,29 @@
 .logout-item {
   margin-top: 1rem;
 }
+
+.imagesection {
+  height: 15rem;
+  width: 50rem;
+
+  margin: auto;
+}
+
+.imagesection img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blogcontainer {
+  height: 18rem;
+}
+
+.blogcontainer:hover {
+  cursor: pointer;
+}
+
+.blogsection{
+  width: 190rem;
+  padding: 1rem;
+}

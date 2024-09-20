@@ -1,7 +1,7 @@
 <template>
-  <div class="container-fluid position-fixed">
+  <div class="container-fluid position-fixed  border-end" style="width: 17rem">
     <div class="row flex-wrap">
-      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white border-end">
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white">
         <div
           class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 dark min-vh-100"
         >
