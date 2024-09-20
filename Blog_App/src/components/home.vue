@@ -1,33 +1,44 @@
 <template>
-  <div
-    class="blogcontainer container p-2 m-1 mx-auto rounded d-flex justify-content-between border-bottom"
-    v-for="blog in blogs"
-    :key="blog.id"
-  >
-    <div class="blogsection">
-      <h3 class="">{{ blog.title }}</h3>
-      <div class="author-date d-flex justify-content-between">
-        <span>{{ blog.authorName }}</span>
-        <span class="me-4">{{ formatDate(blog.createdAt) }}</span>
+  <div>
+    <div
+      class="blogcontainer container p-2 m-1 mx-auto rounded d-flex justify-content-between border-bottom"
+      v-for="blog in paginatedBlogs"
+      :key="blog.id"
+    >
+      <div class="blogsection">
+        <h3>{{ blog.title }}</h3>
+        <div class="author-date d-flex justify-content-between">
+          <span>{{ blog.authorName }}</span>
+          <span class="me-4">{{ formatDate(blog.createdAt) }}</span>
+        </div>
+        <div class="blogtags container pb-2 d-flex flex-wrap">
+          <span
+            class="badge bg-secondary me-1"
+            v-for="tag in blog.tags"
+            :key="tag.id"
+          >
+            {{ tag.name }}
+          </span>
+        </div>
+        <p>{{ blog.metaDescription }}</p>
       </div>
-      <div class="blogtags container pb-2 d-flex flex-wrap">
-        <span
-          class="badge bg-secondary me-1"
-          v-for="tag in blog.tags"
-          :key="tag.id"
-        >
-          {{ tag.name }}
-        </span>
+      <div class="imagesection rounded">
+        <img
+          v-if="blog.featuredImagePath"
+          :src="getImageUrl(blog.featuredImagePath)"
+          alt="Featured Image"
+          class="rounded"
+        />
       </div>
-      <p>{{ blog.metaDescription }}</p>
     </div>
-    <div class="imagesection rounded">
-      <img
-        v-if="blog.featuredImagePath"
-        :src="getImageUrl(blog.featuredImagePath)"
-        alt="Featured Image"
-        class="rounded"
-      />
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+      <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        Next
+      </button>
     </div>
   </div>
 </template>
@@ -40,6 +51,8 @@ export default {
     return {
       blogs: [],
       tags: [],
+      currentPage: 1,
+      blogsPerPage: 10,
     };
   },
 
@@ -47,7 +60,16 @@ export default {
     this.getAllPosts();
     this.getAvailableTags();
   },
-
+  computed: {
+    paginatedBlogs() {
+      const start = (this.currentPage - 1) * this.blogsPerPage;
+      const end = start + this.blogsPerPage;
+      return this.blogs.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.blogs.length / this.blogsPerPage);
+    },
+  },
   methods: {
     async getAvailableTags() {
       try {
@@ -89,6 +111,27 @@ export default {
         day: "2-digit",
       });
     },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
   },
 };
 </script>
+
+<style>
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+button {
+  margin: 0 5px;
+}
+</style>
