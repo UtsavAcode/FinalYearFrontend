@@ -1,91 +1,90 @@
 <template>
-  <!-- /.navbar -->
-  <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
-    <a class="brand-link">
-      <RouterLink
-        class="brand-text font-weight-light text-light mx-3 display-7"
-        to="/"
-        >Bloggy</RouterLink
-      >
-    </a>
+  <div class="container-fluid position-fixed">
+    <div class="row flex-wrap">
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white border-end">
+        <div
+          class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 dark min-vh-100"
+        >
+          <ul
+            class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
+            id="menu"
+          >
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+              <div class="info">
+                <a href="#" class="admins_name">{{ name }}</a>
+              </div>
+            </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="info">
-          <a href="#" class="d-block">{{ name }}</a>
+            <li>
+              <a
+                href="#submenu1"
+                data-bs-toggle="collapse"
+                class="nav-link px-0 align-middle text-dark"
+              >
+                <i class="fs-4 bi-speedometer2"></i>
+                <span class="ms-1 d-none d-sm-inline">Dashboard</span>
+              </a>
+            </li>
+
+            <li>
+              <RouterLink class="nav-link px-0 align-middle text-dark" to="/">
+                <i class="fs-4 bi-house"></i>
+                <p class="ms-1 d-none d-sm-inline text-dark display-7">Home</p>
+              </RouterLink>
+            </li>
+
+            <li>
+              <RouterLink
+                class="nav-link px-0 align-middle text-dark"
+                to="/users"
+              >
+                <i class="fs-4 bi-person"></i>
+                <p class="ms-1 d-none d-sm-inline text-dark display-7">Users</p>
+              </RouterLink>
+            </li>
+            <li>
+              <RouterLink
+                class="nav-link px-0 align-middle text-dark"
+                to="/tags"
+              >
+                <i class="fs-4 bi-bookmark-check"></i>
+                <p class="ms-1 d-none d-sm-inline text-dark display-7">Tags</p>
+              </RouterLink>
+            </li>
+            <li>
+              <RouterLink
+                class="nav-link px-0 align-middle text-dark"
+                to="/getBlogsAdmin"
+              >
+                <i class="fs-4 bi-book"></i>
+                <p class="ms-1 d-none d-sm-inline text-dark display-7">Blogs</p>
+              </RouterLink>
+            </li>
+
+            <li>
+              <RouterLink
+                class="nav-link px-0 align-middle text-dark"
+                to="/addBlog"
+              >
+                <i class="fs-4 bi-table"></i>
+                <p class="ms-1 d-none d-sm-inline text-dark display-7">
+                  AddBlogs
+                </p>
+              </RouterLink>
+            </li>
+
+            <li class="logout-item" v-if="isAuthenticated">
+              <a @click="handleLogout" href="#" class="logout-link">
+                <i class="fs bi-box-arrow-right pe-2"></i>
+                <p>Logout</p>
+              </a>
+            </li>
+          </ul>
+          <hr />
         </div>
       </div>
-
-      <!-- Sidebar Menu -->
-      <nav class="mt-2">
-        <ul
-          class="nav nav-pills nav-sidebar flex-column"
-          data-widget="treeview"
-          role="menu"
-        >
-          <!-- Add icons to the links using the .nav-icon class
-             with font-awesome or any other icon font library -->
-          <li class="nav-item menu-open">
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <RouterLink to="/performance" href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Dashboard</p>
-                </RouterLink>
-              </li>
-              <li class="nav-item">
-                <RouterLink to="/users" href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Users</p>
-                </RouterLink>
-              </li>
-
-              <li class="nav-item">
-                <RouterLink to="/tags" href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Tags</p>
-                </RouterLink>
-              </li>
-              <li class="nav-item">
-                <RouterLink to="/getBlogsAdmin" href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>All Blogs</p>
-                </RouterLink>
-              </li>
-              <li class="nav-item">
-                <RouterLink to="/addBlog" href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Add Blog</p>
-                </RouterLink>
-              </li>
-
-              <li class="nav-item" v-if="isAuthenticated">
-                <a @click="handleLogout" href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Logout</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <!-- <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Simple Link
-                <span class="right badge badge-danger">New</span>
-              </p>
-            </a>
-          </li> -->
-        </ul>
-      </nav>
-      <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
-  </aside>
+  </div>
 </template>
 
 <script>

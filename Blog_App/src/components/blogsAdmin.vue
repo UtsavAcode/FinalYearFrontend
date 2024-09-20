@@ -3,15 +3,15 @@
     <div class="table-responsive">
       <table
         class="table table-striped table-hover text-center table-bordered"
-        style="min-width: 1200px" 
+        style="min-width: 1200px"
       >
-        <thead>     
-               <tr>
+        <thead>
+          <tr>
             <th scope="col">Id</th>
             <th>Image</th>
             <th scope="col">Title</th>
-            <th>Meta</th>
-            <th>Content</th>
+            <!-- <th>Meta</th>
+            <th>Content</th> -->
             <th>Date</th>
             <th>Tags</th>
             <th>AuthorName</th>
@@ -31,8 +31,8 @@
               />
             </td>
             <td>{{ blog.title }}</td>
-            <td>{{ blog.metaDescription }}</td>
-            <td>{{ truncateContent(blog.content) }}</td>
+            <!-- <td>{{ blog.metaDescription }}</td>
+            <td>{{ truncateContent(blog.content) }}</td> -->
             <td>{{ formatDate(blog.createdAt) }}</td>
             <td>{{ formatTags(blog.tags) }}</td>
             <td>{{ blog.authorName }}</td>
