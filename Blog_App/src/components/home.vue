@@ -7,8 +7,17 @@
     <div class="blogsection">
       <h3 class="">{{ blog.title }}</h3>
       <div class="author-date d-flex justify-content-between">
-        <p>{{ blog.authorName }}</p>
-        <p class="me-4">{{ blog.createdAt }}</p>
+        <span>{{ blog.authorName }}</span>
+        <span class="me-4">{{ formatDate(blog.createdAt) }}</span>
+      </div>
+      <div class="blogtags container pb-2 d-flex flex-wrap">
+        <span
+          class="badge bg-secondary me-1"
+          v-for="tag in blog.tags"
+          :key="tag.id"
+        >
+          {{ tag.name }}
+        </span>
       </div>
       <p>{{ blog.metaDescription }}</p>
     </div>
@@ -30,6 +39,7 @@ export default {
   data() {
     return {
       blogs: [],
+      tags: [],
     };
   },
 
@@ -54,7 +64,10 @@ export default {
     async getAllPosts() {
       try {
         const response = await blogService.getAllBlog(); // Ensure this method returns blog posts
-        this.blogs = response;
+        // Sort the blogs by createdAt in descending order
+        this.blogs = response.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -67,6 +80,14 @@ export default {
         return tags.map((tag) => tag.name).join(", ");
       }
       return "No tags";
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
     },
   },
 };

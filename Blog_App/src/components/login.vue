@@ -56,7 +56,7 @@ export default {
           if (roles.includes("Admin") || roles.includes("SuperAdmin")) {
             this.$router.push("/performance"); // Redirect to admin dashboard
           } else {
-            this.$router.push("/hero"); // Redirect to hero page
+            this.$router.push("/"); // Redirect to hero page
           }
         } else {
           this.errorMessage = response.message;

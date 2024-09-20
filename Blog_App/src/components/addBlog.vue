@@ -1,7 +1,5 @@
 <template>
   <div class="add-blog-post">
-    <!-- <h2>Add New Blog Post</h2> -->
-
     <form @submit.prevent="addBlogPost" style="width: 90%">
       <div v-if="error" class="alert alert-danger">
         {{ error }}
@@ -30,9 +28,14 @@
           id="metaDescription"
           class="form-control"
           rows="3"
+          maxlength="500"
         ></textarea>
         <div v-if="error?.MetaDescription" class="text-danger">
           {{ error.MetaDescription[0] }}
+        </div>
+        <div class="text-danger" v-if="metaDescriptionLengthExceeded">
+          Meta description cannot exceed 500 characters. You have used
+          {{ MetaDescription.length }} characters.
         </div>
       </div>
 
@@ -44,20 +47,6 @@
           v-model:value="Content"
         ></froala>
       </div>
-
-      <!-- <div class="form-group">
-        <label for="content">Content</label>
-        <textarea
-          v-model="Content"
-          id="content"
-          class="form-control"
-          rows="5"
-          required
-        ></textarea>
-        <div v-if="error?.Content" class="text-danger">
-          {{ error.Content[0] }}
-        </div>
-      </div> -->
 
       <div class="form-group">
         <label for="featuredImage">Featured Image</label>
@@ -71,6 +60,7 @@
           <img :src="imagePreview" alt="Image Preview" class="img-fluid" />
         </div>
       </div>
+
       <div class="form-group">
         <label for="tags">Tags</label>
         <MultiSelect
@@ -85,7 +75,14 @@
           style="height: 3rem"
         />
       </div>
-      <button type="submit" class="btn btn-primary">Add Blog Post</button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        :disabled="metaDescriptionLengthExceeded"
+      >
+        Add Blog Post
+      </button>
     </form>
   </div>
 </template>
@@ -112,7 +109,23 @@ export default {
 
   computed: {
     ...mapGetters("auth", ["name", "id"]),
+    metaDescriptionLengthExceeded() {
+      return this.MetaDescription.length > 500;
+    },
   },
+
+  watch: {
+    MetaDescription(newValue) {
+      if (newValue.length > 500) {
+        this.error = {
+          MetaDescription: ["Meta description cannot exceed 500 characters."],
+        };
+      } else {
+        this.error = null; // Clear error if within limit
+      }
+    },
+  },
+
   async created() {
     try {
       const response = await blogService.getAll();
@@ -129,102 +142,15 @@ export default {
   },
 
   methods: {
-    selectLocalImage() {
-      const input = document.createElement("input");
-      input.setAttribute("type", "file");
-      input.setAttribute("accept", "image/*");
-      input.click();
-
-      input.onchange = () => {
-        const file = input.files[0];
-        this.uploadImage(file);
-      };
-    },
-
-    uploadImage(file) {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      axios
-        .post("/api/Blog/UploadImage", formData)
-        .then((response) => {
-          const imageUrl = response.data.path;
-          const range = this.quillEditor.getSelection(true);
-          this.quillEditor.insertEmbed(range.index, "image", imageUrl);
-        })
-        .catch((error) => {
-          console.error("Error uploading image:", error);
-        });
-    },
-  },
-
-  methods: {
-    selectLocalImage() {
-      const input = document.createElement("input");
-      input.setAttribute("type", "file");
-      input.setAttribute("accept", "image/*");
-      input.click();
-
-      input.onchange = () => {
-        const file = input.files[0];
-        this.uploadImage(file);
-      };
-    },
-
-    uploadImage(file) {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      axios
-        .post("/api/Blog/UploadImage", formData)
-        .then((response) => {
-          const imageUrl = response.data.path;
-          const range = this.quillEditor.getSelection(true);
-          this.quillEditor.insertEmbed(range.index, "image", imageUrl);
-        })
-        .catch((error) => {
-          console.error("Error uploading image:", error);
-        });
-    },
-  },
-
-  methods: {
-    // selectLocalImage() {
-    //   const input = document.createElement("input");
-    //   input.setAttribute("type", "file");
-    //   input.setAttribute("accept", "image/*");
-    //   input.click();
-
-    //   input.onchange = () => {
-    //     const file = input.files[0];
-    //     this.uploadImage(file);
-    //   };
-    // },
-
-    uploadImage(file) {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      axios
-        .post("/api/Blog/UploadImage", formData)
-        .then((response) => {
-          const imageUrl = response.data.path;
-          const range = this.quillEditor.getSelection(true);
-          this.quillEditor.insertEmbed(range.index, "image", imageUrl);
-        })
-        .catch((error) => {
-          console.error("Error uploading image:", error);
-        });
-    },
-  },
-
-  methods: {
     async addBlogPost() {
+      if (this.metaDescriptionLengthExceeded) {
+        return; // Prevent submission if validation fails
+      }
+
       try {
         const tagIdsArray = this.selectedTags.map((tag) =>
           parseInt(tag.id, 10)
         );
-        console.log("Formatted Tag IDs:", tagIdsArray);
 
         const blogPost = {
           Title: this.Title,
@@ -245,6 +171,7 @@ export default {
         this.successMessage = null;
       }
     },
+
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
@@ -265,7 +192,6 @@ export default {
   width: 90%;
   margin: auto;
   padding: 20px;
-
   border-radius: 10px;
 }
 

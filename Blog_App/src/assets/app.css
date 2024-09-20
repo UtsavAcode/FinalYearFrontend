@@ -184,3 +184,9 @@
   width: 190rem;
   padding: 1rem;
 }
+.author-date{
+  font-size: 0.9em;
+  color: gray;
+  font-style: italic;
+  padding: 0 5rem 0 1rem;
+}
