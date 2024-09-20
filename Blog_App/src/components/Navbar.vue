@@ -32,10 +32,22 @@
               >Bloggy</RouterLink
             >
           </h1>
-          <form class="searchbar" role="search">
+          <form
+            class="searchbar"
+            role="search"
+            @submit.prevent="emitSearchQuery"
+          >
             <IconField>
-              <InputIcon class="pi pi-search" />
-              <InputText placeholder="Search" />
+              <InputIcon
+                class="pi pi-search"
+                type="button"
+                @click="emitSearchQuery"
+              />
+              <InputText
+                placeholder="Search"
+                v-model="searchText"
+                @keyup.enter="emitSearchQuery"
+              />
             </IconField>
           </form>
           <div class="dropdown avatar-con" v-if="isAuthenticated">
@@ -103,6 +115,7 @@ export default {
       user: {
         name: "",
       },
+      searchText: "",
     };
   },
   computed: {
@@ -132,6 +145,13 @@ export default {
         this.$router.push("/login"); // Redirect to login page after logout
       } catch (error) {
         console.error("Logout failed:", error);
+      }
+    },
+    emitSearchQuery() {
+      if (this.searchText.trim() !== "") {
+        this.$emit("search", this.searchText); // Emit the search query to parent
+      } else {
+        this.$emit("search", ""); // Emit an empty string to clear the search
       }
     },
   },

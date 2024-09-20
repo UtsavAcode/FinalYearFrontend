@@ -1,8 +1,8 @@
 <template>
-  <Navbar v-if="shownavbar" />
+  <Navbar v-if="shownavbar" @search="handleSearch" />
 
   <div class="content">
-    <RouterView />
+    <RouterView :searchQuery="searchQuery" />
   </div>
 </template>
 
@@ -14,6 +14,11 @@ export default {
   components: {
     Navbar,
   },
+  data() {
+    return {
+      searchQuery: "",
+    };
+  },
   computed: {
     shownavbar() {
       const hiddenRoutes = [
@@ -24,6 +29,11 @@ export default {
         "Performance",
       ];
       return !hiddenRoutes.includes(this.$route.name);
+    },
+  },
+  methods: {
+    handleSearch(query) {
+      this.searchQuery = query; // Update the searchQuery
     },
   },
 };

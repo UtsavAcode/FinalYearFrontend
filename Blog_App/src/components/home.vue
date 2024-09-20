@@ -1,8 +1,15 @@
 <template>
   <div>
+    <!-- Display no result message -->
+    <div v-if="filteredBlogs.length === 0" class="no-results">
+      No blogs found for "{{ searchQuery }}".
+    </div>
+
+    <!-- Blog List -->
     <div
+      v-else
       class="blogcontainer container p-2 m-1 mx-auto rounded d-flex justify-content-between border-bottom"
-      v-for="blog in paginatedBlogs"
+      v-for="blog in filteredBlogs"
       :key="blog.id"
     >
       <div class="blogsection">
@@ -33,9 +40,9 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="pagination-controls">
+    <div class="pagination-controls" v-if="filteredBlogs.length > 0">
       <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <span class="page">Page {{ currentPage }} of {{ totalPages }}</span>
       <button @click="nextPage" :disabled="currentPage === totalPages">
         Next
       </button>
@@ -45,20 +52,29 @@
 
 <script>
 import blogService from "@/services/BlogService";
+
 export default {
   name: "Home",
+  props: {
+    searchQuery: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       blogs: [],
-      tags: [],
       currentPage: 1,
       blogsPerPage: 10,
     };
   },
-
+  watch: {
+    searchQuery(newQuery) {
+      this.handleSearch(newQuery); // Filter blogs when search query changes
+    },
+  },
   created() {
     this.getAllPosts();
-    this.getAvailableTags();
   },
   computed: {
     paginatedBlogs() {
@@ -69,24 +85,20 @@ export default {
     totalPages() {
       return Math.ceil(this.blogs.length / this.blogsPerPage);
     },
+    filteredBlogs() {
+      // Filter blogs based on the search query
+      if (this.searchQuery) {
+        return this.blogs.filter((blog) =>
+          blog.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      }
+      return this.paginatedBlogs;
+    },
   },
   methods: {
-    async getAvailableTags() {
-      try {
-        const response = await blogService.getAll();
-        this.getAvailableTags = response.map((tag) => ({
-          id: tag.id,
-          name: tag.name,
-        }));
-      } catch (error) {
-        console.error("Error Fetching the the tags");
-      }
-    },
-
     async getAllPosts() {
       try {
         const response = await blogService.getAllBlog(); // Ensure this method returns blog posts
-        // Sort the blogs by createdAt in descending order
         this.blogs = response.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
@@ -96,12 +108,6 @@ export default {
     },
     getImageUrl(path) {
       return `http://localhost:5254${path}`;
-    },
-    formatTags(tags) {
-      if (tags && Array.isArray(tags)) {
-        return tags.map((tag) => tag.name).join(", ");
-      }
-      return "No tags";
     },
     formatDate(dateString) {
       const date = new Date(dateString);
@@ -121,17 +127,41 @@ export default {
         this.currentPage--;
       }
     },
+
+    handleSearch(query) {
+      // Reset to first page after search
+      this.currentPage = 1;
+    },
   },
 };
 </script>
 
 <style>
+.no-results {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: red;
+}
+
 .pagination-controls {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  padding: 10px;
 }
-button {
+
+.pagination-controls button {
   margin: 0 5px;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.5rem;
+  background-color: black;
+  color: white;
+}
+
+.page {
+  margin: 10px 0 0 0;
 }
 </style>
