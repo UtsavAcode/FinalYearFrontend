@@ -28,6 +28,13 @@
           </span>
         </div>
         <p>{{ blog.metaDescription }}</p>
+        <button
+          class="btn btn-outline-dark"
+          @click="goToBlogDetail(blog)"
+          style="width: 10rem"
+        >
+          Read
+        </button>
       </div>
       <div class="imagesection rounded">
         <img
@@ -86,11 +93,21 @@ export default {
       return Math.ceil(this.blogs.length / this.blogsPerPage);
     },
     filteredBlogs() {
-      // Filter blogs based on the search query
       if (this.searchQuery) {
-        return this.blogs.filter((blog) =>
-          blog.title.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
+        const lowerCaseQuery = this.searchQuery.toLowerCase();
+        return this.blogs.filter((blog) => {
+          const titleMatch = blog.title.toLowerCase().includes(lowerCaseQuery);
+          const authorMatch = blog.authorName
+            .toLowerCase()
+            .includes(lowerCaseQuery);
+
+          // Check if any tag matches the query
+          const tagsMatch = blog.tags.some((tag) =>
+            tag.name.toLowerCase().includes(lowerCaseQuery)
+          );
+
+          return titleMatch || authorMatch || tagsMatch;
+        });
       }
       return this.paginatedBlogs;
     },
@@ -131,6 +148,9 @@ export default {
     handleSearch(query) {
       // Reset to first page after search
       this.currentPage = 1;
+    },
+    goToBlogDetail(blog) {
+      this.$router.push({ path: `/userBlogDetail/${blog.id}` } );
     },
   },
 };

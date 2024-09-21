@@ -28,7 +28,11 @@
             </li>
           </ul>
           <h1 class="cursive mx-7">
-            <RouterLink class="text-dark" to="/" style="text-decoration: none"
+            <RouterLink
+              class="text-dark"
+              to="/"
+              style="text-decoration: none"
+              @click.native="reloadPage"
               >Bloggy</RouterLink
             >
           </h1>
@@ -153,6 +157,9 @@ export default {
       } else {
         this.$emit("search", ""); // Emit an empty string to clear the search
       }
+    },
+    reloadPage() {
+      window.location.href = "/"; // This will force a page reload when clicked
     },
   },
 };
