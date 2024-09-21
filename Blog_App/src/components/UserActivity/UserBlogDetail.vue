@@ -3,7 +3,7 @@
     <h1 class="" style="margin: auto; width: 55rem">{{ blog.title }}</h1>
     <div
       class="author-date d-flex justify-content-between"
-      style="width: 59rem; margin-left: 9rem; font-size: 1em;"
+      style="width: 59rem; margin-left: 9rem; font-size: 1em"
     >
       <div>By: {{ blog.authorName }}</div>
       <div>{{ formatDate(blog.createdAt) }}</div>
@@ -14,6 +14,14 @@
         {{ tag.name }}
       </span>
     </div>
+    <div class="likes">
+      <i
+        :class="[hasLiked ? 'bi-heart-fill' : 'bi-heart']"
+        @click="likeBlog"
+      ></i>
+      <span class="ms-2">{{ likesCount }} Likes</span>
+    </div>
+
     <!-- Blog Image -->
     <div class="blogdetail-image">
       <img
@@ -25,12 +33,27 @@
 
     <!-- content section -->
     <div class="container" v-html="blog.content" style="width: 80%"></div>
+
+    <div>
+      <h3>Comments</h3>
+      <textarea v-model="newComment" placeholder="Add a comment"></textarea>
+      <button @click="addComment">Submit Comment</button>
+      <ul>
+        <li v-for="comment in comments" :key="comment.id">
+          <span>{{ comment.content }}</span>
+          <button @click="editComment(comment)">Edit</button>
+          <button @click="deleteComment(comment.id)">Delete</button>
+        </li>
+      </ul>
+    </div>
   </div>
+
   <div v-else>Loading blog...</div>
 </template>
 
 <script>
 import blogService from "@/services/BlogService";
+import authService from "@/services/auth.servics";
 
 export default {
   name: "UserBlogDetail",
@@ -44,20 +67,29 @@ export default {
     return {
       blog: null,
       error: null,
+      likesCount: 0,
+      comments: [],
+      newComment: "",
+      hasLiked: false,
+      editingCommentId: null,
     };
   },
   async created() {
     try {
       const response = await blogService.getBlogById(this.id);
       this.blog = response; // Assign the blog details
+      await this.fetchLikesCount(); // Fetch likes count after blog is fetched
+      await this.fetchComments(); // Fetch comments after blog is fetched
+      this.hasLiked = await blogService.checkIfUserLiked(this.blog.id); // Check if the user has liked the post
     } catch (error) {
       console.log("Error fetching blog details:", error);
       this.error = error.message;
     }
+    await this.fetchLikesCount();
+    await this.fetchComments();
   },
   methods: {
     getImageUrl(path) {
-      // Adjust to handle blogs without an image path
       return path ? `http://localhost:5254${path}` : "";
     },
     formatDate(dateString) {
@@ -67,6 +99,83 @@ export default {
         month: "2-digit",
         day: "2-digit",
       });
+    },
+    async fetchLikesCount() {
+      const blogId = this.blog.id;
+      try {
+        const count = await blogService.getLikesCount(blogId);
+        console.log("Fetched likes count:", count); // Debugging line
+        this.likesCount = count;
+      } catch (error) {
+        console.error("Error fetching likes count:", error);
+      }
+    },
+
+    async fetchComments() {
+      const blogId = this.blog.id;
+      this.comments = await blogService.getComments(blogId);
+    },
+    async likeBlog() {
+      const blogId = this.blog.id;
+      try {
+        if (this.hasLiked) {
+          // User has already liked, so remove the like
+          const response = await blogService.removeLike(blogId); // Add this method in your blogService
+          if (response.isSuccess) {
+            this.likesCount--; // Decrement the count
+            this.hasLiked = false; // Update the like status
+          }
+        } else {
+          // User hasn't liked yet, so add the like
+          const response = await blogService.addLike(blogId);
+          if (response.isSuccess) {
+            this.likesCount++; // Increment the count
+            this.hasLiked = true; // Update the like status
+          }
+        }
+      } catch (error) {
+        console.error("Error liking blog:", error);
+      }
+    },
+    async addComment() {
+      if (!this.newComment) return;
+
+      const blogId = this.blog.id;
+      const response = await blogService.addComment(blogId, this.newComment);
+      if (response.isSuccess) {
+        this.comments.push(response.comment); // Push the newly created comment
+        this.newComment = "";
+      } else {
+        alert(response.message);
+      }
+    },
+    async editComment(comment) {
+      const newContent = prompt("Edit your comment:", comment.content);
+      if (newContent) {
+        const response = await blogService.updateComment(
+          comment.id,
+          newContent
+        );
+        if (response.isSuccess) {
+          const index = this.comments.findIndex((c) => c.id === comment.id);
+          this.comments[index].content = newContent; // Update the comment in the list
+        } else {
+          alert(response.message);
+        }
+      }
+    },
+    async deleteComment(commentId) {
+      const confirmDelete = confirm(
+        "Are you sure you want to delete this comment?"
+      );
+      if (confirmDelete) {
+        const response = await blogService.deleteComment(commentId);
+        if (response.isSuccess) {
+          this.comments = this.comments.filter((c) => c.id !== commentId); // Remove the comment from the list
+        } else {
+          alert(response.message);
+        }
+      }
     },
   },
 };

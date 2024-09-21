@@ -192,13 +192,25 @@
 }
 
 .blogdetail-image {
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  margin: 20px 0; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
 }
 
 .blogdetail-image img {
   max-width: 100%; /* Ensure the image is responsive */
   height: 28rem; /* Maintain aspect ratio */
+}
+
+.likes {
+  font-size: 1.5em;
+
+  width: 25rem;
+  margin-left: 10rem;
+  margin-top: 1rem;
+}
+
+.likes:hover {
+  cursor: pointer;
 }

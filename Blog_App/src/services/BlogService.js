@@ -154,8 +154,87 @@ const blogService = {
     } catch (error) {
       throw error.response?.data || error.message;
     }
-  }
-  
+  },
+  async addLike(blogPostId) {
+    try {
+      const userId = authService.getId(); // Fetch the user ID from authService
+      const likeData = {
+        UserId: userId, // Make sure this is the correct property name
+      };
+
+      const response = await apiClient.post(
+        `/Blog/${blogPostId}/like`,
+        likeData
+      );
+      return response.data; // Ensure you return the right response structure
+    } catch (error) {
+      throw error.response?.data || error.message; // Error handling
+    }
+  },
+
+  async getLikesCount(blogPostId) {
+    const response = await apiClient.get(`/Blog/${blogPostId}/likesCount`);
+    return response.data.likesCount; // Adjust according to your API response structure
+  },
+  async checkIfUserLiked(blogPostId) {
+    const response = await apiClient.get(`/Blog/${blogPostId}/hasLiked`);
+    return response.data.hasLiked; // Adjust according to your API response
+  },
+  async removeLike(blogPostId) {
+    const response = await apiClient.delete(`/Blog/${blogPostId}/like`);
+    return response.data; // Adjust according to your API response
+  },
+
+  async addComment(blogPostId, commentData) {
+    try {
+      console.log("Comment Data:", commentData);
+      const response = await apiClient.post(
+        `/Blog/${blogPostId}/comments`,
+        commentData
+      );
+
+      return response.data; // Handle the response as needed
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      throw error; // Handle the error as needed
+    }
+  },
+
+  async updateComment(commentId, content) {
+    try {
+      const response = await apiClient.put(`/Blog/UpdateComment/${commentId}`, {
+        Content: content,
+      });
+      return { isSuccess: true };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: error.response.data || error.message,
+      };
+    }
+  },
+
+  async deleteComment(commentId) {
+    try {
+      const response = await apiClient.delete(
+        `/Blog/DeleteComment/${commentId}`
+      );
+      return { isSuccess: true };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: error.response.data || error.message,
+      };
+    }
+  },
+  async getComments(blogId) {
+    try {
+      const response = await apiClient.get(`/Blog/${blogId}/comments`);
+      return response.data; // Ensure this returns the comments array
+    } catch (error) {
+      throw error.response.data || error.message; // Proper error handling
+    }
+  },
 };
 
 export default blogService;
