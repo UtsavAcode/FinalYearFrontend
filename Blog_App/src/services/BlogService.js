@@ -187,11 +187,15 @@ const blogService = {
 
   async addComment(blogPostId, commentData) {
     try {
-      const userId = authService.getId(); // Fetch logged-in user ID from authService
+      const userId = authService.getId();
+      const userName = authService.getName();
       const updatedCommentData = {
-        ...commentData, // Spread existing comment data
-        UserId: userId, // Add the logged-in user ID to the comment
+        ...commentData,
+        userId: userId,
+        userName: userName,
       };
+      console.log("UserId:", userId, "UserName:", userName);
+      console.log("Updated Comment Data:", updatedCommentData);
 
       // Make the API call to add the comment to the specified blog post
       const response = await apiClient.post(
@@ -207,7 +211,7 @@ const blogService = {
   },
 
   async updateComment(commentId, content) {
-    try { 
+    try {
       const response = await apiClient.put(`/Blog/UpdateComment/${commentId}`, {
         Content: content,
       });
@@ -233,16 +237,15 @@ const blogService = {
       };
     }
   },
-  async getComments(blogId) {
+  async getComments() {
+    //Getting all comments for now
     try {
-      const response = await apiClient.get(`/Blog/${blogId}/comments`);
-      return response.data; // Ensure this returns the comments array
+      const response = await apiClient.get(`/Blog/GetComments`);
+      return response.data;
     } catch (error) {
-      throw error.response.data || error.message; // Proper error handling
+      throw error.response.data || error.message;
     }
-  }
-  
-  
+  },
 };
 
 export default blogService;

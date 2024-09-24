@@ -67,6 +67,54 @@
   border-radius: 50%;
   cursor: pointer;
 }
+.profile-con {
+  border: 1px solid #c1bdbd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 2.5rem;
+  width: 2.5rem;
+  margin-left: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.bubble {
+  border: 1px solid #c1bdbd;
+  border-radius: 1.5rem;
+  margin-left: 0.3rem;
+  height: auto;
+  padding: 0.6rem;
+  background-color: #f3f2f0;
+}
+
+.comment-utility {
+  margin-left: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.comment-utility:hover {
+  cursor: pointer;
+  border: 1px solid #c1bdbd;
+  border-radius: 50%;
+  height: 1.8rem;
+  width: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  background-color: #f0eded;
+}
+
+.bubble:hover {
+  cursor: pointer;
+}
+
+.bubble:hover .comment-utility {
+  display: block;
+}
 
 .avatar-con:hover {
   border: 1px solid black;
@@ -130,6 +178,7 @@
 .blog-utilities {
   width: 1rem;
   padding-right: 1rem;
+  font-size: 1.5em;
 }
 
 .blog-utilities:hover {
@@ -213,4 +262,17 @@
 
 .likes:hover {
   cursor: pointer;
+}
+
+.username-comment {
+  font-family: "Raleway", sans-serif;
+  font-optical-sizing: auto;
+  font-style: italic;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.comment-content {
+  margin: 0;
+  padding: 0;
 }

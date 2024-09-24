@@ -34,22 +34,42 @@
     <!-- content section -->
     <div class="container" v-html="blog.content" style="width: 80%"></div>
 
-    <div>
+    <div class="container ms-6">
       <h2>Comments</h2>
-      <ul v-if="comments.length">
-        <li v-for="comment in comments" :key="comment.id">
-          <strong>{{ comment.userName }}:</strong> {{ comment.content }}
-        </li>
-      </ul>
-      <p v-else>No comments yet.</p>
+
       <form @submit.prevent="addComment">
         <textarea
           v-model="newComment"
           placeholder="Add a comment..."
           required
+          rows="3"
+          class="form-control w-50 mb-2 p-1"
         ></textarea>
-        <button type="submit">Submit</button>
+        <button class="btn btn-dark" style="width: 10rem">Submit</button>
       </form>
+      <div v-if="comments.length" class="mt-3 mb-3">
+        <div
+          class="mb-1 d-flex"
+          v-for="comment in filteredComments"
+          :key="comment.id"
+          @mouseenter="setHoverdComment(comment.id)"
+          @mouseleave="clearHoveredCommentId"
+        >
+          <div class="profile-con">
+            <div class="profile-pic">
+              {{ getFirstLetter(comment.userName) }}
+            </div>
+          </div>
+          <div class="bubble">
+            <div class="username-comment">{{ comment.userName }}</div>
+            <p class="comment-content">{{ comment.content }}</p>
+          </div>
+          <div class="comment-utility" v-if="hoveredCommentId === comment.id">
+            ...
+          </div>
+        </div>
+      </div>
+      <p v-else>No comments yet.</p>
     </div>
   </div>
 
@@ -77,6 +97,7 @@ export default {
       newComment: "",
       hasLiked: false,
       editingCommentId: null,
+      hoveredCommentId: null,
     };
   },
   async created() {
@@ -92,6 +113,13 @@ export default {
     }
     await this.fetchLikesCount();
     await this.fetchComments();
+  },
+  computed: {
+    filteredComments() {
+      return this.comments.filter(
+        (comment) => comment.blogPostId == this.blog.id
+      );
+    },
   },
   methods: {
     getImageUrl(path) {
@@ -117,17 +145,13 @@ export default {
     },
 
     async fetchComments() {
-  try {
-    if (!this.blog || !this.blog.id) {
-      console.error("Blog ID is undefined.");
-      return;
-    }
-    this.comments = await blogService.getComments(this.blog.id);
-  } catch (error) {
-    console.error("Failed to fetch comments:", error);
-  }
-}
-,
+      try {
+        const response = await blogService.getComments();
+        this.comments = Array.isArray(response) ? response : [];
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
+      }
+    },
     async likeBlog() {
       const blogId = this.blog.id;
       try {
@@ -152,7 +176,7 @@ export default {
     },
     // Method to add a comment
     async addComment() {
-      if (!this.newComment.trim()) return; // Check if the comment is empty
+      if (!this.newComment.trim()) return;
 
       const blogId = this.blog.id;
       try {
@@ -160,7 +184,6 @@ export default {
           content: this.newComment.trim(),
         };
 
-        // Call the addComment method from blogService
         const response = await blogService.addComment(blogId, commentData);
 
         if (response.isSuccess) {
@@ -202,8 +225,15 @@ export default {
         }
       }
     },
-    isCommentOwner(comment) {
-      return comment.userId === authService.getId(); // Check if the logged-in user is the comment owner
+    getFirstLetter(userName) {
+      return userName ? userName.charAt(0).toUpperCase() : "";
+    },
+
+    setHoverdComment(commentId) {
+      this.hoveredCommentId = commentId;
+    },
+    clearHoveredCommentId(commentId) {
+      this.hoveredCommentId = null;
     },
   },
 };
