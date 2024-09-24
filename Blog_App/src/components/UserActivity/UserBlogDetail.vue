@@ -35,16 +35,21 @@
     <div class="container" v-html="blog.content" style="width: 80%"></div>
 
     <div>
-      <h3>Comments</h3>
-      <textarea v-model="newComment" placeholder="Add a comment"></textarea>
-      <button @click="addComment">Submit Comment</button>
-      <ul>
+      <h2>Comments</h2>
+      <ul v-if="comments.length">
         <li v-for="comment in comments" :key="comment.id">
-          <span>{{ comment.content }}</span>
-          <button @click="editComment(comment)">Edit</button>
-          <button @click="deleteComment(comment.id)">Delete</button>
+          <strong>{{ comment.userName }}:</strong> {{ comment.content }}
         </li>
       </ul>
+      <p v-else>No comments yet.</p>
+      <form @submit.prevent="addComment">
+        <textarea
+          v-model="newComment"
+          placeholder="Add a comment..."
+          required
+        ></textarea>
+        <button type="submit">Submit</button>
+      </form>
     </div>
   </div>
 
@@ -112,9 +117,17 @@ export default {
     },
 
     async fetchComments() {
-      const blogId = this.blog.id;
-      this.comments = await blogService.getComments(blogId);
-    },
+  try {
+    if (!this.blog || !this.blog.id) {
+      console.error("Blog ID is undefined.");
+      return;
+    }
+    this.comments = await blogService.getComments(this.blog.id);
+  } catch (error) {
+    console.error("Failed to fetch comments:", error);
+  }
+}
+,
     async likeBlog() {
       const blogId = this.blog.id;
       try {
@@ -137,16 +150,28 @@ export default {
         console.error("Error liking blog:", error);
       }
     },
+    // Method to add a comment
     async addComment() {
-      if (!this.newComment) return;
+      if (!this.newComment.trim()) return; // Check if the comment is empty
 
       const blogId = this.blog.id;
-      const response = await blogService.addComment(blogId, this.newComment);
-      if (response.isSuccess) {
-        this.comments.push(response.comment); // Push the newly created comment
-        this.newComment = "";
-      } else {
-        alert(response.message);
+      try {
+        const commentData = {
+          content: this.newComment.trim(),
+        };
+
+        // Call the addComment method from blogService
+        const response = await blogService.addComment(blogId, commentData);
+
+        if (response.isSuccess) {
+          this.comments.push(response.comment); // Add the new comment to the list
+          this.newComment = ""; // Clear the comment input field
+        } else {
+          alert(response.message || "Failed to add comment.");
+        }
+      } catch (error) {
+        console.error("Error adding comment:", error);
+        alert("Failed to add comment.");
       }
     },
     async editComment(comment) {
@@ -176,6 +201,9 @@ export default {
           alert(response.message);
         }
       }
+    },
+    isCommentOwner(comment) {
+      return comment.userId === authService.getId(); // Check if the logged-in user is the comment owner
     },
   },
 };

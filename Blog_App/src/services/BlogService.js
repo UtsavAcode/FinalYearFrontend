@@ -157,18 +157,18 @@ const blogService = {
   },
   async addLike(blogPostId) {
     try {
-      const userId = authService.getId(); // Fetch the user ID from authService
+      const userId = authService.getId();
       const likeData = {
-        UserId: userId, // Make sure this is the correct property name
+        UserId: userId,
       };
 
       const response = await apiClient.post(
         `/Blog/${blogPostId}/like`,
         likeData
       );
-      return response.data; // Ensure you return the right response structure
+      return response.data;
     } catch (error) {
-      throw error.response?.data || error.message; // Error handling
+      throw error.response?.data || error.message;
     }
   },
 
@@ -187,21 +187,27 @@ const blogService = {
 
   async addComment(blogPostId, commentData) {
     try {
-      console.log("Comment Data:", commentData);
+      const userId = authService.getId(); // Fetch logged-in user ID from authService
+      const updatedCommentData = {
+        ...commentData, // Spread existing comment data
+        UserId: userId, // Add the logged-in user ID to the comment
+      };
+
+      // Make the API call to add the comment to the specified blog post
       const response = await apiClient.post(
         `/Blog/${blogPostId}/comments`,
-        commentData
+        updatedCommentData
       );
 
-      return response.data; // Handle the response as needed
+      return response.data; // Return the API response data (e.g., the newly created comment)
     } catch (error) {
       console.error("Error adding comment:", error);
-      throw error; // Handle the error as needed
+      throw error.response?.data || error.message; // Proper error handling
     }
   },
 
   async updateComment(commentId, content) {
-    try {
+    try { 
       const response = await apiClient.put(`/Blog/UpdateComment/${commentId}`, {
         Content: content,
       });
@@ -234,7 +240,9 @@ const blogService = {
     } catch (error) {
       throw error.response.data || error.message; // Proper error handling
     }
-  },
+  }
+  
+  
 };
 
 export default blogService;
