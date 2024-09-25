@@ -52,11 +52,11 @@
           class="mb-1 d-flex"
           v-for="comment in filteredComments"
           :key="comment.id"
-          @mouseenter="setHoverdComment(comment.id)"
+          @mouseenter="setHoveredComment(comment.id)"
           @mouseleave="clearHoveredCommentId"
         >
-          <div class="profile-con">
-            <div class="profile-pic">
+          <div class="profile-con" style="background-color: black">
+            <div class="profile-pic" style="color: white">
               {{ getFirstLetter(comment.userName) }}
             </div>
           </div>
@@ -64,7 +64,12 @@
             <div class="username-comment">{{ comment.userName }}</div>
             <p class="comment-content">{{ comment.content }}</p>
           </div>
-          <div class="comment-utility" v-if="hoveredCommentId === comment.id">
+          <div
+            class="comment-utility"
+            v-if="
+              hoveredCommentId === comment.id && isCommentAuthor(comment.userId)
+            "
+          >
             ...
           </div>
         </div>
@@ -98,6 +103,7 @@ export default {
       hasLiked: false,
       editingCommentId: null,
       hoveredCommentId: null,
+      currentUserId: null,
     };
   },
   async created() {
@@ -106,7 +112,8 @@ export default {
       this.blog = response; // Assign the blog details
       await this.fetchLikesCount(); // Fetch likes count after blog is fetched
       await this.fetchComments(); // Fetch comments after blog is fetched
-      this.hasLiked = await blogService.checkIfUserLiked(this.blog.id); // Check if the user has liked the post
+      this.hasLiked = await blogService.checkIfUserLiked(this.blog.id);
+      this.currentUserId = await authService.getId();
     } catch (error) {
       console.log("Error fetching blog details:", error);
       this.error = error.message;
@@ -125,6 +132,7 @@ export default {
     getImageUrl(path) {
       return path ? `http://localhost:5254${path}` : "";
     },
+ 
     formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString("en-US", {
@@ -229,11 +237,14 @@ export default {
       return userName ? userName.charAt(0).toUpperCase() : "";
     },
 
-    setHoverdComment(commentId) {
+    setHoveredComment(commentId) {
       this.hoveredCommentId = commentId;
     },
     clearHoveredCommentId(commentId) {
       this.hoveredCommentId = null;
+    },
+    isCommentAuthor(commentUserId) {
+      return this.currentUserId == commentUserId;
     },
   },
 };
