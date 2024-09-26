@@ -52,7 +52,7 @@
           class="mb-1 d-flex"
           v-for="comment in filteredComments"
           :key="comment.id"
-          @mouseenter="setHoveredComment(comment.id)"
+          @mouseenter="setHoveredComment(comment.id, comment.userId)"
           @mouseleave="clearHoveredCommentId"
         >
           <div class="profile-con" style="background-color: black">
@@ -113,13 +113,14 @@ export default {
       await this.fetchLikesCount(); // Fetch likes count after blog is fetched
       await this.fetchComments(); // Fetch comments after blog is fetched
       this.hasLiked = await blogService.checkIfUserLiked(this.blog.id);
-      this.currentUserId = await authService.getId();
     } catch (error) {
       console.log("Error fetching blog details:", error);
       this.error = error.message;
     }
     await this.fetchLikesCount();
     await this.fetchComments();
+    this.currentUserId = JSON.parse(authService.getId()); 
+    console.log("loggedin user", this.currentUserId);
   },
   computed: {
     filteredComments() {
@@ -132,7 +133,7 @@ export default {
     getImageUrl(path) {
       return path ? `http://localhost:5254${path}` : "";
     },
- 
+
     formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString("en-US", {
@@ -237,10 +238,12 @@ export default {
       return userName ? userName.charAt(0).toUpperCase() : "";
     },
 
-    setHoveredComment(commentId) {
-      this.hoveredCommentId = commentId;
-    },
-    clearHoveredCommentId(commentId) {
+      setHoveredComment(commentId, commentUserId) {
+        if (this.currentUserId === commentUserId) {
+          this.hoveredCommentId = commentId;
+        }
+      },
+    clearHoveredCommentId() {
       this.hoveredCommentId = null;
     },
     isCommentAuthor(commentUserId) {
