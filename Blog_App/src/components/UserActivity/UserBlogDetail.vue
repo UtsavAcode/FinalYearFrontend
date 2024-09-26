@@ -60,18 +60,32 @@
               {{ getFirstLetter(comment.userName) }}
             </div>
           </div>
-          <div class="bubble">
-            <div class="username-comment">{{ comment.userName }}</div>
-            <p class="comment-content">{{ comment.content }}</p>
+          <div class="cover-utility">
+            <div class="bubble">
+              <div class="username-comment">{{ comment.userName }}</div>
+              <p class="comment-content">{{ comment.content }}</p>
+            </div>
+            <div
+              class="comment-utility"
+              v-if="
+                hoveredCommentId === comment.id &&
+                isCommentAuthor(comment.userId)
+              "
+            >
+              <div class="comment-utilities d-flex ms-5">
+                <p
+                  class="me-3 comment-utilities-single"
+                  @click="showDialog(comment)"
+                >
+                  edit
+                </p>
+                <p class="comment-utilities-single">delete</p>
+              </div>
+            </div>
           </div>
-          <div
-            class="comment-utility"
-            v-if="
-              hoveredCommentId === comment.id && isCommentAuthor(comment.userId)
-            "
-          >
-            ...
-          </div>
+          <Dialog v-model:visible="visible" :style="{ width: '25rem' }">
+            <InputText v-model="currentComment.content" :style="{ width: '20rem' }"></InputText>
+          </Dialog>
         </div>
       </div>
       <p v-else>No comments yet.</p>
@@ -101,7 +115,7 @@ export default {
       comments: [],
       newComment: "",
       hasLiked: false,
-      editingCommentId: null,
+      currentComment: {},
       hoveredCommentId: null,
       currentUserId: null,
     };
@@ -119,7 +133,7 @@ export default {
     }
     await this.fetchLikesCount();
     await this.fetchComments();
-    this.currentUserId = JSON.parse(authService.getId()); 
+    this.currentUserId = JSON.parse(authService.getId());
     console.log("loggedin user", this.currentUserId);
   },
   computed: {
@@ -207,42 +221,36 @@ export default {
       }
     },
     async editComment(comment) {
-      const newContent = prompt("Edit your comment:", comment.content);
-      if (newContent) {
-        const response = await blogService.updateComment(
-          comment.id,
-          newContent
-        );
-        if (response.isSuccess) {
-          const index = this.comments.findIndex((c) => c.id === comment.id);
-          this.comments[index].content = newContent; // Update the comment in the list
-        } else {
-          alert(response.message);
-        }
+      try {
+        await blogService.updateComment(this.currentComment);
+        this.visible = false;
+        this.fetchComments();
+      } catch (error) {
+        console.error("error editing comment ", error);
       }
     },
     async deleteComment(commentId) {
-      const confirmDelete = confirm(
-        "Are you sure you want to delete this comment?"
-      );
-      if (confirmDelete) {
+      try {
         const response = await blogService.deleteComment(commentId);
-        if (response.isSuccess) {
-          this.comments = this.comments.filter((c) => c.id !== commentId); // Remove the comment from the list
-        } else {
-          alert(response.message);
-        }
+        this.fetchComments();
+      } catch (error) {
+        console.error("Error deleting comments", error);
       }
+    },
+
+    showDialog(comment) {
+      this.currentComment = { ...comment };
+      this.visible = true;
     },
     getFirstLetter(userName) {
       return userName ? userName.charAt(0).toUpperCase() : "";
     },
 
-      setHoveredComment(commentId, commentUserId) {
-        if (this.currentUserId === commentUserId) {
-          this.hoveredCommentId = commentId;
-        }
-      },
+    setHoveredComment(commentId, commentUserId) {
+      if (this.currentUserId === commentUserId) {
+        this.hoveredCommentId = commentId;
+      }
+    },
     clearHoveredCommentId() {
       this.hoveredCommentId = null;
     },

@@ -210,17 +210,12 @@ const blogService = {
     }
   },
 
-  async updateComment(commentId, content) {
+  async updateComment(comment) {
     try {
-      const response = await apiClient.put(`/Blog/UpdateComment/${commentId}`, {
-        Content: content,
-      });
-      return { isSuccess: true };
+      const response = await apiClient.put("/Blog/updateComment", comment);
+      return response.data;
     } catch (error) {
-      return {
-        isSuccess: false,
-        message: error.response.data || error.message,
-      };
+      throw error.response.data || error.message;
     }
   },
 
@@ -229,10 +224,9 @@ const blogService = {
       const response = await apiClient.delete(
         `/Blog/DeleteComment/${commentId}`
       );
-      return { isSuccess: true };
+      return response.data;
     } catch (error) {
       return {
-        isSuccess: false,
         message: error.response.data || error.message,
       };
     }

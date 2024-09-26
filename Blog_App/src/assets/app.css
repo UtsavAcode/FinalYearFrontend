@@ -91,21 +91,19 @@
 
 .comment-utility {
   margin-left: 0.6rem;
-  margin-top: 0.5rem;
+  
 }
 
-.comment-utility:hover {
+.comment-utilities-single:hover {
   cursor: pointer;
-  border: 1px solid #c1bdbd;
-  border-radius: 50%;
-  height: 1.8rem;
-  width: 1.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding-bottom: 0.5rem;
-  background-color: #f0eded;
+  transform: scale(1.2);
+
+ 
+}
+
+.comment-utilities{
+  font-size: 0.7em;
+  font-style: bold;
 }
 
 .bubble:hover {
