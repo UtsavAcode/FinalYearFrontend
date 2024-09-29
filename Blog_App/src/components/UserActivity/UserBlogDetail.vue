@@ -47,6 +47,7 @@
         ></textarea>
         <button class="btn btn-dark" style="width: 10rem">Submit</button>
       </form>
+
       <div v-if="comments.length" class="mt-3 mb-3">
         <div
           class="mb-1 d-flex"
@@ -58,6 +59,7 @@
           <div class="profile-con" style="background-color: black">
             <div class="profile-pic" style="color: white">
               {{ getFirstLetter(comment.userName) }}
+              
             </div>
           </div>
           <div class="cover-utility">
@@ -79,12 +81,36 @@
                 >
                   edit
                 </p>
-                <p class="comment-utilities-single">delete</p>
+                <p
+                  @click="deleteComment(comment.id)"
+                  class="comment-utilities-single"
+                >
+                  delete
+                </p>
               </div>
             </div>
           </div>
-          <Dialog v-model:visible="visible" :style="{ width: '25rem' }">
-            <InputText v-model="currentComment.content" :style="{ width: '20rem' }"></InputText>
+          <Dialog
+            v-model:visible="visible"
+            :style="{ width: '25rem' }"
+            header="Edit Comment"
+            class="container"
+            :close-on-click-overlay="true"
+          >
+            <InputText
+              v-model="currentComment.content"
+              :style="{ width: '20rem' }"
+            ></InputText>
+
+            <div class="d-flex justify-content-center align-center gap-2">
+              <Button
+                type="button"
+                label="Cancel"
+                severity="secondary"
+                @click="visible = false"
+              ></Button>
+              <Button type="button" label="Save" @click="editComment"></Button>
+            </div>
           </Dialog>
         </div>
       </div>
@@ -118,6 +144,7 @@ export default {
       currentComment: {},
       hoveredCommentId: null,
       currentUserId: null,
+      visible: false,
     };
   },
   async created() {

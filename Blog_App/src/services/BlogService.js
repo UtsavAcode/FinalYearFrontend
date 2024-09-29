@@ -221,9 +221,7 @@ const blogService = {
 
   async deleteComment(commentId) {
     try {
-      const response = await apiClient.delete(
-        `/Blog/DeleteComment/${commentId}`
-      );
+      const response = await apiClient.delete(`/Blog/Delete/${commentId}`);
       return response.data;
     } catch (error) {
       return {
