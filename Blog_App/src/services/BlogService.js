@@ -238,6 +238,23 @@ const blogService = {
       throw error.response.data || error.message;
     }
   },
+
+  async addView(payload) {
+    try {
+      const response = await apiClient.post(
+        `/Blog/${payload.blogPostId}/registerView`,
+        {
+          userId: payload.userId,
+          ipAddress: payload.ipAddress,
+          userAgent: payload.userAgent,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error in addView:", error); // Add logging to see the error
+      throw error.response?.data || error.message;
+    }
+  },
 };
 
 export default blogService;

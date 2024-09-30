@@ -8,12 +8,14 @@
       <div>By: {{ blog.authorName }}</div>
       <div>{{ formatDate(blog.createdAt) }}</div>
     </div>
+
     <!-- Tags -->
     <div class="blogtags" style="width: 59rem; margin-left: 10rem">
       <span v-for="tag in blog.tags" :key="tag.id" class="badge bg-secondary">
         {{ tag.name }}
       </span>
     </div>
+
     <div class="likes">
       <i
         :class="[hasLiked ? 'bi-heart-fill' : 'bi-heart']"
@@ -31,7 +33,7 @@
       />
     </div>
 
-    <!-- content section -->
+    <!-- Content section -->
     <div class="container" v-html="blog.content" style="width: 80%"></div>
 
     <div class="container ms-6">
@@ -59,7 +61,6 @@
           <div class="profile-con" style="background-color: black">
             <div class="profile-pic" style="color: white">
               {{ getFirstLetter(comment.userName) }}
-              
             </div>
           </div>
           <div class="cover-utility">
@@ -116,6 +117,11 @@
       </div>
       <p v-else>No comments yet.</p>
     </div>
+
+    <div v-if="isRegisteringView" class="view-registration-message">
+      Registering view...
+    </div>
+    <!-- Loading indicator -->
   </div>
 
   <div v-else>Loading blog...</div>
@@ -145,23 +151,29 @@ export default {
       hoveredCommentId: null,
       currentUserId: null,
       visible: false,
+      viewRegistered: false,
+      isRegisteringView: false, // New flag for view registration loading state
+      scrollThreshold: 0.2, // 30% of the page
+      timeThreshold: 25000, // 25 seconds
+      timer: null,
+      hasScrolled: false,
     };
   },
   async created() {
     try {
       const response = await blogService.getBlogById(this.id);
       this.blog = response; // Assign the blog details
+
       await this.fetchLikesCount(); // Fetch likes count after blog is fetched
       await this.fetchComments(); // Fetch comments after blog is fetched
       this.hasLiked = await blogService.checkIfUserLiked(this.blog.id);
+      this.startViewRegistration();
     } catch (error) {
       console.log("Error fetching blog details:", error);
       this.error = error.message;
     }
-    await this.fetchLikesCount();
-    await this.fetchComments();
     this.currentUserId = JSON.parse(authService.getId());
-    console.log("loggedin user", this.currentUserId);
+    console.log("logged in user", this.currentUserId);
   },
   computed: {
     filteredComments() {
@@ -169,6 +181,13 @@ export default {
         (comment) => comment.blogPostId == this.blog.id
       );
     },
+  },
+  mounted() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.handleScroll);
+    if (this.timer) clearTimeout(this.timer); // Clear the timer on component destroy
   },
   methods: {
     getImageUrl(path) {
@@ -224,7 +243,6 @@ export default {
         console.error("Error liking blog:", error);
       }
     },
-    // Method to add a comment
     async addComment() {
       if (!this.newComment.trim()) return;
 
@@ -253,7 +271,7 @@ export default {
         this.visible = false;
         this.fetchComments();
       } catch (error) {
-        console.error("error editing comment ", error);
+        console.error("error editing comment", error);
       }
     },
     async deleteComment(commentId) {
@@ -282,18 +300,59 @@ export default {
       this.hoveredCommentId = null;
     },
     isCommentAuthor(commentUserId) {
-      return this.currentUserId == commentUserId;
+      return this.currentUserId === commentUserId;
+    },
+
+    handleScroll() {
+      const scrollTop = window.scrollY;
+      const documentHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+      const scrollPercent = scrollTop / (documentHeight - windowHeight);
+
+      if (scrollPercent > this.scrollThreshold && !this.hasScrolled) {
+        this.hasScrolled = true; // Set flag to true when user scrolls beyond threshold
+
+        this.timer = setTimeout(() => {
+          this.registerView();
+        }, this.timeThreshold);
+      }
+    },
+    async registerView() {
+      if (this.viewRegistered) return; // Avoid registering multiple times
+      const blogId = this.blog.id; // Ensure this is a string
+      const userId = this.currentUserId; // Ensure this is a string
+      const ipAddress = window.location.hostname; // Use hostname as IP address
+      const userAgent = navigator.userAgent; // Get user agent
+
+      const payload = {
+        blogPostId: blogId, // Make sure this is a string and valid
+        userId: userId,
+        ipAddress: ipAddress,
+        userAgent: userAgent,
+      };
+
+      console.log("Registering view with payload:", payload); // Debugging log
+
+      try {
+        const response = await blogService.addView(payload);
+        console.log("View registration response:", response); // Debugging response
+        this.viewRegistered = true; // Mark view as registered
+      } catch (error) {
+        console.error("Error registering view:", error);
+      }
+    },
+    startViewRegistration() {
+      // Initialize the registration process
+      this.hasScrolled = false;
+      this.viewRegistered = false;
     },
   },
 };
 </script>
 
-<style>
-.author-date {
-  margin-bottom: 10px;
-}
-
-.blogtags {
-  margin-top: 20px;
+<style scoped>
+.view-registration-message {
+  margin-top: 10px;
+  color: blue; /* Add some style for visibility */
 }
 </style>
