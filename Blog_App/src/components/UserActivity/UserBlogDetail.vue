@@ -22,6 +22,7 @@
         @click="likeBlog"
       ></i>
       <span class="ms-2">{{ likesCount }} Likes</span>
+      <div>{{ viewsCount }}</div>
     </div>
 
     <!-- Blog Image -->
@@ -157,6 +158,7 @@ export default {
       timeThreshold: 25000, // 25 seconds
       timer: null,
       hasScrolled: false,
+      viewsCount: 0,
     };
   },
   async created() {
@@ -168,6 +170,9 @@ export default {
       await this.fetchComments(); // Fetch comments after blog is fetched
       this.hasLiked = await blogService.checkIfUserLiked(this.blog.id);
       this.startViewRegistration();
+
+      //fetching the views count
+      await this.fetchViews(this.blog.id);
     } catch (error) {
       console.log("Error fetching blog details:", error);
       this.error = error.message;
@@ -318,25 +323,24 @@ export default {
       }
     },
     async registerView() {
-      if (this.viewRegistered) return; // Avoid registering multiple times
-      const blogId = this.blog.id; // Ensure this is a string
-      const userId = this.currentUserId; // Ensure this is a string
-      const ipAddress = window.location.hostname; // Use hostname as IP address
-      const userAgent = navigator.userAgent; // Get user agent
+      const blogId = this.blog.id; // Blog ID
+      const userId = this.currentUserId; // Current user ID
+      const ipAddress = window.location.hostname; // IP address (consider fetching this from server-side for accuracy)
+      const userAgent = navigator.userAgent; // User agent details
 
       const payload = {
-        blogPostId: blogId, // Make sure this is a string and valid
+        blogPostId: blogId,
         userId: userId,
         ipAddress: ipAddress,
         userAgent: userAgent,
       };
 
-      console.log("Registering view with payload:", payload); // Debugging log
+      console.log("Registering view with payload:", payload); // For debugging
 
       try {
-        const response = await blogService.addView(payload);
-        console.log("View registration response:", response); // Debugging response
-        this.viewRegistered = true; // Mark view as registered
+        const response = await blogService.addView(payload); // Make sure this hits the right API endpoint
+        console.log("View registration response:", response); // Debug response
+        this.viewRegistered = true; // Mark the view as registered successfully
       } catch (error) {
         console.error("Error registering view:", error);
       }
@@ -345,6 +349,18 @@ export default {
       // Initialize the registration process
       this.hasScrolled = false;
       this.viewRegistered = false;
+    },
+    async fetchViews(blogPostId) {
+      try {
+        const views = await blogService.getViews(blogPostId); // Ensure this returns views correctly
+        if (typeof views === "number") {
+          this.viewsCount = views;
+        } else {
+          console.error("Unexpected views data format:", views);
+        }
+      } catch (error) {
+        console.error("Error fetching the views", error);
+      }
     },
   },
 };

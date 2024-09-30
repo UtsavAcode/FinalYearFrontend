@@ -255,6 +255,15 @@ const blogService = {
       throw error.response?.data || error.message;
     }
   },
+  async getViews(blogPostId) {
+    try {
+      const response = await apiClient.get(`/Blog/GetViews/${blogPostId}`);
+      return response.data; // Assuming this returns the views count
+    } catch (error) {
+      console.error("Error fetching views:", error);
+      throw error;
+    }
+  },
 };
 
 export default blogService;

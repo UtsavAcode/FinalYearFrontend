@@ -35,6 +35,7 @@
         >
           Read
         </button>
+        <span>{{ likeCount }}</span>
       </div>
       <div class="imagesection rounded">
         <img
@@ -73,6 +74,9 @@ export default {
       blogs: [],
       currentPage: 1,
       blogsPerPage: 10,
+      likeCount: 0,
+      commentCount: 0,
+      viewsCOunt: 0,
     };
   },
   watch: {
@@ -150,7 +154,7 @@ export default {
       this.currentPage = 1;
     },
     goToBlogDetail(blog) {
-      this.$router.push({ path: `/userBlogDetail/${blog.id}` } );
+      this.$router.push({ path: `/userBlogDetail/${blog.id}` });
     },
   },
 };
