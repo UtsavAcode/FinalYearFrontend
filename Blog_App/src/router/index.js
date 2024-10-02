@@ -17,6 +17,7 @@ import UserBlogs from "@/components/UserActivity/UserBlogs.vue";
 import EditBlog from "@/components/UserActivity/UserBlogEdit.vue";
 import Performance from "@/components/Performance.vue";
 import UserBlogDetail from "@/components/UserActivity/UserBlogDetail.vue";
+import UserPerformance  from "@/components/UserActivity/UserPerformance.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
@@ -49,6 +50,11 @@ const routes = [
         path: "/userBlogs",
         name: "UserBlogs",
         component: UserBlogs,
+      },
+      {
+        path:"/userPerformance",
+        name:"UserPerformance",
+        component:UserPerformance
       },
       {
         path: "/edit-blog/:id",

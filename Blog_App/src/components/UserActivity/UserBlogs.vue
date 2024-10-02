@@ -7,17 +7,17 @@
         class="blog-panel d-flex align-items-center justify-content-between"
       >
         <div class="d-flex align-items-center">
-          <div class="image-section">
+          <div class="image-section" @click="goToBlogDetails(blog.id)" title="Goto the blog">
             <img
-              :src="getImageUrl(blog.featuredImagePath)"
+              :src="getImageUrl(blog.featuredImagePath)" 
               alt="featureimage"
             />
           </div>
           <div class="blog-info-section ms-3 mt-3">
-            <b>{{ blog.title }}</b>
+            <b @click="goToBlogDetails(blog.id)" title="Goto the blog">{{ blog.title }}</b>
             <div class="text-gray">{{ formatDate(blog.createdAt) }}</div>
             <div class="blog-stats">
-              <i class="bi bi-heart"></i> 
+              <i class="bi bi-heart"></i>
               <span class="ms-2 me-2">{{ blog.likesCount }}</span>
               <i class="bi bi-eye"></i>
               <span class="ms-2 me-2">{{ blog.viewsCount }} </span>
@@ -127,6 +127,10 @@ export default {
         console.error("Error deleting post:", error);
       }
     },
+    goToBlogDetails(blogId) {
+      this.$router.push({ path: `/userBlogDetail/${blogId}` });
+    },
+
     formatDate(date) {
       return new Date(date).toLocaleDateString();
     },

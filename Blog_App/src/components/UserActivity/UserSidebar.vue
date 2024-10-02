@@ -16,14 +16,13 @@
               </a>
             </li> -->
             <li>
-              <a
-                href="#submenu1"
-                data-bs-toggle="collapse"
+              <RouterLink
                 class="nav-link px-0 align-middle text-dark"
+                to="/userPerformance"
               >
                 <i class="fs-4 bi-speedometer2"></i>
                 <span class="ms-1 d-none d-sm-inline">Dashboard</span>
-              </a>
+              </RouterLink>
             </li>
             <li>
               <RouterLink

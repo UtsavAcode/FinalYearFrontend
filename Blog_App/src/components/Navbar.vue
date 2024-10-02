@@ -137,7 +137,7 @@ export default {
       } else if (this.roles.includes("Admin")) {
         return "/adminDashboard"; // Redirect to admin dashboard
       } else {
-        return "/userDashboard"; // Redirect to user dashboard
+        return "/userPerformance"; // Redirect to user dashboard
       }
     },
   },
