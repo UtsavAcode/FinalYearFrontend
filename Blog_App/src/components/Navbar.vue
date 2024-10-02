@@ -1,6 +1,6 @@
 <template>
   <header class="container-fluid sticky-top bg-white">
-    <nav class="navbar navbar-expand-lg p-4">
+    <nav class="navbar navbar-expand-lg p-2">
       <div class="container-fluid">
         <button
           class="navbar-toggler"

@@ -30,7 +30,7 @@
         <div  style="height:5rem">{{  blog.metaDescription }}</div>
         <div class="d-flex justify-content-between" style="margin-top: 1.5rem">
           <button
-            class="btn btn-outline-dark"
+            class="btn btn-dark"
             @click="goToBlogDetail(blog)"
             style="width: 10rem"
           >
@@ -38,7 +38,7 @@
           </button>
           <div
             class="blog-stats d-flex justify-content-between"
-            style="width: 10rem; margin-right: 6rem; font-size: 1.2em"
+            style="width: 10rem; margin-right: 6rem; font-size: 1.3em"
           >
             <div class="bi bi-heart">
               <span class="ps-2">{{ blog.likesCount }}</span>

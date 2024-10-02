@@ -14,12 +14,15 @@
             />
           </div>
           <div class="blog-info-section ms-3 mt-3">
-            <p>{{ blog.title }}</p>
-            <p class="text-gray">{{ formatDate(blog.createdAt) }}</p>
+            <b>{{ blog.title }}</b>
+            <div class="text-gray">{{ formatDate(blog.createdAt) }}</div>
             <div class="blog-stats">
-              <span>{{ blog.likesCount }} Likes</span>
-              <span>{{ blog.viewsCount }} Views</span>
-              <span>{{ blog.commentCount }} Comments</span>
+              <i class="bi bi-heart"></i> 
+              <span class="ms-2 me-2">{{ blog.likesCount }}</span>
+              <i class="bi bi-eye"></i>
+              <span class="ms-2 me-2">{{ blog.viewsCount }} </span>
+              <i class="bi bi-chat"></i>
+              <span class="ms-2 me-2">{{ blog.commentCount }}</span>
             </div>
           </div>
         </div>
@@ -31,17 +34,17 @@
             @click="showDialog(blog)"
             title="View Blog"
           >
-            <i class="bi bi-eye" style="font-size: 1.5em"> </i>
+            <i class="bi bi-eye" style="font-size: 1em"> </i>
           </div>
           <div class="blog-utilities" title="Edit" @click="editBlog(blog)">
-            <i class="bi bi-pencil" style="font-size: 1.5em"></i>
+            <i class="bi bi-pencil" style="font-size: 1em"></i>
           </div>
           <div
             class="blog-utilities"
             title="Delete"
             @click="deletePost(blog.id)"
           >
-            <i class="bi bi-trash3" style="font-size: 1.5em"></i>
+            <i class="bi bi-trash3" style="font-size: 1em"></i>
           </div>
         </div>
       </div>

@@ -3,28 +3,33 @@
     <h1 class="" style="margin: auto; width: 55rem">{{ blog.title }}</h1>
     <div
       class="author-date d-flex justify-content-between"
-      style="width: 59rem; margin-left: 9rem; font-size: 1em"
+      style="width: 59rem; margin-left: 4rem; font-size: 1em"
     >
       <div>By: {{ blog.authorName }}</div>
       <div>{{ formatDate(blog.createdAt) }}</div>
     </div>
 
     <!-- Tags -->
-    <div class="blogtags" style="width: 59rem; margin-left: 10rem">
+    <div class="blogtags" style="width: 59rem; margin-left: 5rem">
       <span v-for="tag in blog.tags" :key="tag.id" class="badge bg-secondary">
         {{ tag.name }}
       </span>
     </div>
 
-    <div class="likes">
+    <div class="likes d-flex">
       <i
         :class="[hasLiked ? 'bi-heart-fill' : 'bi-heart']"
         @click="likeBlog"
       ></i>
-      <span class="ms-2">{{ likesCount }} Likes</span>
-      <div>{{ viewsCount }}</div>
-      <div class="total-comments" v-if="filteredComments.length">
-        Total Comments: {{ filteredComments.length }}
+      <span class="ms-2">{{ likesCount }} </span>
+      <div class="bi bi-eye ms-4">
+        <span class="p-2">{{ viewsCount }}</span>
+      </div>
+      <div
+        class="total-comments ms-4 bi bi-chat"
+        v-if="filteredComments.length"
+      >
+        <span class="ps-2">{{ filteredComments.length }}</span>
       </div>
     </div>
 
