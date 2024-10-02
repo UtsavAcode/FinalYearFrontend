@@ -16,6 +16,11 @@
           <div class="blog-info-section ms-3 mt-3">
             <p>{{ blog.title }}</p>
             <p class="text-gray">{{ formatDate(blog.createdAt) }}</p>
+            <div class="blog-stats">
+              <span>{{ blog.likesCount }} Likes</span>
+              <span>{{ blog.viewsCount }} Views</span>
+              <span>{{ blog.commentCount }} Comments</span>
+            </div>
           </div>
         </div>
         <div
@@ -85,7 +90,25 @@ export default {
     async fetchUserBlogs() {
       try {
         const response = await blogService.getAllBlog();
-        this.blogs = Array.isArray(response) ? response : [];
+        const blogs = Array.isArray(response) ? response : [];
+
+        // Map to include likes, views, and comments count
+        this.blogs = await Promise.all(
+          blogs.map(async (blog) => {
+            const likes = await blogService.getLikesCount(blog.id);
+            const views = await blogService.getViews(blog.id);
+            const comments = await blogService.getComments(); // Fetch all comments
+            const commentCount = comments.filter(
+              (comment) => comment.blogPostId === blog.id
+            ).length;
+            return {
+              ...blog,
+              likesCount: likes,
+              viewsCount: views,
+              commentCount: commentCount,
+            };
+          })
+        );
       } catch (error) {
         console.log("User dash fetch error blogs:", error);
       }

@@ -10,12 +10,12 @@
             <th scope="col">Id</th>
             <th>Image</th>
             <th scope="col">Title</th>
-            <!-- <th>Meta</th>
-            <th>Content</th> -->
             <th>Date</th>
             <th>Tags</th>
             <th>AuthorName</th>
-            <th>AuthorId</th>
+            <th>Likes</th>
+            <th>Comments</th>
+            <th>Views</th>
             <th>Utility</th>
           </tr>
         </thead>
@@ -36,7 +36,9 @@
             <td>{{ formatDate(blog.createdAt) }}</td>
             <td>{{ formatTags(blog.tags) }}</td>
             <td>{{ blog.authorName }}</td>
-            <td>{{ truncateId(blog.authorId) }}</td>
+            <td>{{ blog.likeCount }}</td>
+            <td>{{ blog.commentCount }}</td>
+            <td>{{ blog.viewCount }}</td>
             <td>
               <button class="btn btn-dark" @click="showDialog(blog)">
                 Edit
@@ -174,6 +176,9 @@ export default {
         authorName: "",
         featuredImagePath: "",
         tags: [],
+        likeCount: 0,
+        commentCount: 0,
+        viewCount: 0,
       },
       editImageFile: null,
       editImagePreview: null,
@@ -202,7 +207,22 @@ export default {
     async getAllPosts() {
       try {
         const response = await blogService.getAllBlog(); // Ensure this method returns blog posts
-        this.blogs = response;
+        this.blogs = await Promise.all(
+          response.map(async (blog) => {
+            const likes = await blogService.getLikesCount(blog.id);
+            const views = await blogService.getViews(blog.id);
+            const comments = await blogService.getComments(); // Fetch all comments
+            const commentCount = comments.filter(
+              (comment) => comment.blogPostId === blog.id
+            ).length;
+            return {
+              ...blog,
+              likeCount: likes,
+              viewCount: views,
+              commentCount: commentCount,
+            };
+          })
+        );
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
