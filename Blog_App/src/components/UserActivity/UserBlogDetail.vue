@@ -23,6 +23,9 @@
       ></i>
       <span class="ms-2">{{ likesCount }} Likes</span>
       <div>{{ viewsCount }}</div>
+      <div class="total-comments" v-if="filteredComments.length">
+        Total Comments: {{ filteredComments.length }}
+      </div>
     </div>
 
     <!-- Blog Image -->
@@ -164,21 +167,23 @@ export default {
   async created() {
     try {
       const response = await blogService.getBlogById(this.id);
-      this.blog = response; // Assign the blog details
+      this.blog = response;
 
-      await this.fetchLikesCount(); // Fetch likes count after blog is fetched
-      await this.fetchComments(); // Fetch comments after blog is fetched
+      await this.fetchLikesCount();
+      await this.fetchComments();
       this.hasLiked = await blogService.checkIfUserLiked(this.blog.id);
-      this.startViewRegistration();
-
-      //fetching the views count
       await this.fetchViews(this.blog.id);
+
+      // Only register the view if redirected from the home page and view isn't already registered
+      if (this.$route.query.fromHomePage && !this.viewRegistered) {
+        this.startViewRegistration();
+      }
     } catch (error) {
       console.log("Error fetching blog details:", error);
       this.error = error.message;
     }
+
     this.currentUserId = JSON.parse(authService.getId());
-    console.log("logged in user", this.currentUserId);
   },
   computed: {
     filteredComments() {
@@ -192,7 +197,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.handleScroll);
-    if (this.timer) clearTimeout(this.timer); // Clear the timer on component destroy
+    if (this.timer) clearTimeout(this.timer); // Clear timer on component destroy
   },
   methods: {
     getImageUrl(path) {
@@ -314,19 +319,23 @@ export default {
       const windowHeight = window.innerHeight;
       const scrollPercent = scrollTop / (documentHeight - windowHeight);
 
-      if (scrollPercent > this.scrollThreshold && !this.hasScrolled) {
+      if (
+        scrollPercent > this.scrollThreshold && // Check scroll threshold
+        !this.hasScrolled &&
+        !this.viewRegistered // Check if the view has already been registered
+      ) {
         this.hasScrolled = true; // Set flag to true when user scrolls beyond threshold
 
         this.timer = setTimeout(() => {
           this.registerView();
-        }, this.timeThreshold);
+        }, this.timeThreshold); // Register view after 25 seconds
       }
     },
     async registerView() {
-      const blogId = this.blog.id; // Blog ID
-      const userId = this.currentUserId; // Current user ID
-      const ipAddress = window.location.hostname; // IP address (consider fetching this from server-side for accuracy)
-      const userAgent = navigator.userAgent; // User agent details
+      const blogId = this.blog.id;
+      const userId = this.currentUserId;
+      const ipAddress = window.location.hostname; // IP address (fetch this server-side if needed)
+      const userAgent = navigator.userAgent;
 
       const payload = {
         blogPostId: blogId,
@@ -335,20 +344,31 @@ export default {
         userAgent: userAgent,
       };
 
-      console.log("Registering view with payload:", payload); // For debugging
-
       try {
-        const response = await blogService.addView(payload); // Make sure this hits the right API endpoint
-        console.log("View registration response:", response); // Debug response
-        this.viewRegistered = true; // Mark the view as registered successfully
+        const response = await blogService.addView(payload);
+        console.log("View registration response:", response);
+
+        this.viewRegistered = true;
+
+        // Stop the timer and scroll tracking after view is registered
+        if (this.timer) clearTimeout(this.timer);
+        window.removeEventListener("scroll", this.handleScroll);
+
+        // Remove fromHomePage query to prevent re-registering on reload
+        this.$router.replace({
+          query: { ...this.$router.query, fromHomePage: null },
+        });
       } catch (error) {
         console.error("Error registering view:", error);
       }
     },
     startViewRegistration() {
-      // Initialize the registration process
+      // Reset flags and start tracking scroll and time
       this.hasScrolled = false;
       this.viewRegistered = false;
+      if (this.$route.query.fromHomePage) {
+        window.addEventListener("scroll", this.handleScroll);
+      }
     },
     async fetchViews(blogPostId) {
       try {

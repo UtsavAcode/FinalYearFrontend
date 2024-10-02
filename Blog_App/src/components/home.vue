@@ -35,7 +35,11 @@
         >
           Read
         </button>
-        <span>{{ likeCount }}</span>
+        <div class="blog-stats">
+          <span>{{ blog.likesCount }} Likes</span>
+          <span>{{ blog.viewsCount }} Views</span>
+          <span>{{ blog.commentCount }} Comments</span>
+        </div>
       </div>
       <div class="imagesection rounded">
         <img
@@ -120,9 +124,25 @@ export default {
     async getAllPosts() {
       try {
         const response = await blogService.getAllBlog(); // Ensure this method returns blog posts
-        this.blogs = response.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        this.blogs = await Promise.all(
+          response.map(async (blog) => {
+            const likes = await blogService.getLikesCount(blog.id);
+            const views = await blogService.getViews(blog.id);
+            const comments = await blogService.getComments(); // Fetch all comments
+            const commentCount = comments.filter(
+              (comment) => comment.blogPostId === blog.id
+            ).length;
+            return {
+              ...blog,
+              likesCount: likes,
+              viewsCount: views,
+              commentCount:commentCount,
+            };
+          })
         );
+        this.blogs.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        ); // Sort by createdAt date
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -154,7 +174,10 @@ export default {
       this.currentPage = 1;
     },
     goToBlogDetail(blog) {
-      this.$router.push({ path: `/userBlogDetail/${blog.id}` });
+      this.$router.push(
+        { path: `/userBlogDetail/${blog.id}` },
+        { fromHomePage: true }
+      );
     },
   },
 };
