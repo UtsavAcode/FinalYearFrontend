@@ -27,18 +27,29 @@
             {{ tag.name }}
           </span>
         </div>
-        <p>{{ blog.metaDescription }}</p>
-        <button
-          class="btn btn-outline-dark"
-          @click="goToBlogDetail(blog)"
-          style="width: 10rem"
-        >
-          Read
-        </button>
-        <div class="blog-stats">
-          <span>{{ blog.likesCount }} Likes</span>
-          <span>{{ blog.viewsCount }} Views</span>
-          <span>{{ blog.commentCount }} Comments</span>
+        <div  style="height:5rem">{{  blog.metaDescription }}</div>
+        <div class="d-flex justify-content-between" style="margin-top: 1.5rem">
+          <button
+            class="btn btn-outline-dark"
+            @click="goToBlogDetail(blog)"
+            style="width: 10rem"
+          >
+            Read
+          </button>
+          <div
+            class="blog-stats d-flex justify-content-between"
+            style="width: 10rem; margin-right: 6rem; font-size: 1.2em"
+          >
+            <div class="bi bi-heart">
+              <span class="ps-2">{{ blog.likesCount }}</span>
+            </div>
+            <div class="bi bi-eye">
+              <span class="ps-2">{{ blog.viewsCount }}</span>
+            </div>
+            <div class="bi bi-chat">
+              <span class="ps-2">{{ blog.commentCount }}</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="imagesection rounded">
@@ -136,7 +147,7 @@ export default {
               ...blog,
               likesCount: likes,
               viewsCount: views,
-              commentCount:commentCount,
+              commentCount: commentCount,
             };
           })
         );

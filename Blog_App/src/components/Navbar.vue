@@ -67,11 +67,11 @@
               class="dropdown-menu dropdown-menu-end"
               aria-labelledby="dropdownMenuButton"
             >
-              <li v-if="isAuthenticated">
+              <!-- <li v-if="isAuthenticated">
                 <router-link class="dropdown-item poppins" to="/profile"
                   >Profile</router-link
                 >
-              </li>
+              </li> -->
 
               <li v-if="isAuthenticated">
                 <router-link class="dropdown-item poppins" to="/addBlog"
