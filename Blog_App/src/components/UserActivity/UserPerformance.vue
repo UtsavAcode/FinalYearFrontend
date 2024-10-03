@@ -1,10 +1,19 @@
 <template>
   <div>
-    <h2>User Performance Overview</h2>
-    <div>Total Blogs: {{ totalBlogs }}</div>
-    <div>Total Likes: {{ totalLikes }}</div>
-    <div>Total Views: {{ totalViews }}</div>
-    <div>Total Comments: {{ totalComments }}</div>
+    <div class="blog-performance container d-flex justify-content-center p-2">
+      <div class="performance-block">
+        <i class="bi bi-book pe-2"></i>{{ totalBlogs }}
+      </div>
+      <div class="performance-block">
+        <i class="bi bi-heart pe-2"></i>{{ totalLikes }}
+      </div>
+      <div class="performance-block">
+        <i class="bi bi-eye pe-2"></i>{{ totalViews }}
+      </div>
+      <div class="performance-block">
+        <i class="bi bi-chat pe-2"></i>{{ totalComments }}
+      </div>
+    </div>
   </div>
 </template>
 

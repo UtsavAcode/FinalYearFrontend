@@ -91,17 +91,14 @@
 
 .comment-utility {
   margin-left: 0.6rem;
-  
 }
 
 .comment-utilities-single:hover {
   cursor: pointer;
   transform: scale(1.2);
-
- 
 }
 
-.comment-utilities{
+.comment-utilities {
   font-size: 0.7em;
   font-style: bold;
 }
@@ -273,4 +270,18 @@
 .comment-content {
   margin: 0;
   padding: 0;
+}
+
+.performance-block {
+ 
+  margin: 1rem;
+  height: 4rem;
+  width: 8rem;
+  font-size: 1.4em;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 1rem;
+  color: white;
+  background-color: black;
+  font-style: bold;
 }
