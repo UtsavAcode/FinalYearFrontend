@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar: takes up 3 out of 12 columns -->
-      <div class="col-md-3">
+      <div class="col-md-2">
         <UserSidebar />
       </div>
 

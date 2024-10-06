@@ -258,10 +258,19 @@ const blogService = {
   async getViews(blogPostId) {
     try {
       const response = await apiClient.get(`/Blog/GetViews/${blogPostId}`);
-      return response.data; // Assuming this returns the views count
+      return response.data; // Assumes the response contains the BlogViewDetailDto
     } catch (error) {
       console.error("Error fetching views:", error);
       throw error;
+    }
+  },
+  async getAllViews() {
+    try {
+      const response = await apiClient.get("/Blog/GetAllViews"); // Use the base URL `/api/BlogView`
+      return response.data; // Assuming the response contains the list of blog views
+    } catch (error) {
+      console.error("Error fetching blog views:", error);
+      throw error.response?.data || error.message;
     }
   },
 };

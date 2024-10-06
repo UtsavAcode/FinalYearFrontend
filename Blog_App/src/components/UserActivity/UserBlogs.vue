@@ -7,14 +7,20 @@
         class="blog-panel d-flex align-items-center justify-content-between"
       >
         <div class="d-flex align-items-center">
-          <div class="image-section" @click="goToBlogDetails(blog.id)" title="Goto the blog">
+          <div
+            class="image-section"
+            @click="goToBlogDetails(blog.id)"
+            title="Goto the blog"
+          >
             <img
-              :src="getImageUrl(blog.featuredImagePath)" 
+              :src="getImageUrl(blog.featuredImagePath)"
               alt="featureimage"
             />
           </div>
           <div class="blog-info-section ms-3 mt-3">
-            <b @click="goToBlogDetails(blog.id)" title="Goto the blog">{{ blog.title }}</b>
+            <b @click="goToBlogDetails(blog.id)" title="Goto the blog">{{
+              blog.title
+            }}</b>
             <div class="text-gray">{{ formatDate(blog.createdAt) }}</div>
             <div class="blog-stats">
               <i class="bi bi-heart"></i>
@@ -99,15 +105,16 @@ export default {
         this.blogs = await Promise.all(
           blogs.map(async (blog) => {
             const likes = await blogService.getLikesCount(blog.id);
-            const views = await blogService.getViews(blog.id);
+            const views = await blogService.getViews(blog.id); // Ensure this returns the total view count
             const comments = await blogService.getComments(); // Fetch all comments
             const commentCount = comments.filter(
               (comment) => comment.blogPostId === blog.id
             ).length;
+
             return {
               ...blog,
               likesCount: likes,
-              viewsCount: views,
+              viewsCount: views.totalViews || 0, // Assuming views returns an object with totalViews property
               commentCount: commentCount,
             };
           })

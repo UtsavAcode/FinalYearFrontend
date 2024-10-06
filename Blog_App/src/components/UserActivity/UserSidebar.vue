@@ -1,7 +1,7 @@
 <template>
-  <div class="container-fluid position-fixed border-end" style="width: 17rem">
+  <div class="container-fluid position-fixed border-end" style="width: 13rem">
     <div class="row flex-wrap">
-      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white">
+      <div class="col-auto col-md-3 col-xl-2 px-sm-0 px-0 bg-white">
         <div
           class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 dark min-vh-100"
         >
@@ -9,13 +9,7 @@
             class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
             id="menu"
           >
-            <!-- <li class="nav-item">
-              <a href="#" class="nav-link align-middle px-0 text-dark">
-                <i class="fs-4 bi-house"></i>
-                <span class="ms-1 d-none d-sm-inline">Home</span>
-              </a>
-            </li> -->
-            <li>
+            <li class="userside-links">
               <RouterLink
                 class="nav-link px-0 align-middle text-dark"
                 to="/userPerformance"
@@ -24,7 +18,7 @@
                 <span class="ms-1 d-none d-sm-inline">Dashboard</span>
               </RouterLink>
             </li>
-            <li>
+            <li class="userside-links">
               <RouterLink
                 class="nav-link px-0 align-middle text-dark"
                 to="/userBlogs"
@@ -139,11 +133,13 @@
 /* Smooth background transition on hover */
 .nav-link {
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-  width: 14.5rem;
+  width: 12rem;
+ 
 }
 
 /* Change background and text color on hover */
 .nav-link:hover {
   background-color: #eee;
+  
 }
 </style>

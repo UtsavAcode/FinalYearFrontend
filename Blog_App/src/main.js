@@ -19,18 +19,42 @@ import MultiSelect from "primevue/multiselect";
 
 import Panel from "primevue/panel";
 import "froala-editor/js/plugins.pkgd.min.js";
-//Import third party plugins
+// Import third-party plugins
 import "froala-editor/js/third_party/embedly.min";
 import "froala-editor/js/third_party/font_awesome.min";
 import "froala-editor/js/third_party/spell_checker.min";
 import "froala-editor/js/third_party/image_tui.min";
-// Import Froala Editor css files.
+// Import Froala Editor CSS files.
 import "froala-editor/css/froala_editor.pkgd.min.css";
 import "froala-editor/css/froala_style.min.css";
-// Import AdminLTE JS
-//import "admin-lte/dist/js/adminlte.min.js";
-//import "admin-lte/dist/css/adminlte.min.css";
+
+// Import Chart.js components
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineController, // Import LineController
+} from "chart.js";
+
 const app = createApp(App);
+
+// Register Chart.js components
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineController // Register LineController here
+);
+
 import axios from "axios";
 import VueFroala from "vue-froala-wysiwyg";
 app.config.globalProperties.hostname = "http://localhost:5254";

@@ -377,14 +377,16 @@ export default {
     },
     async fetchViews(blogPostId) {
       try {
-        const views = await blogService.getViews(blogPostId); // Ensure this returns views correctly
-        if (typeof views === "number") {
-          this.viewsCount = views;
+        const viewData = await blogService.getViews(blogPostId);
+        if (viewData && typeof viewData.totalViews === "number") {
+          this.viewsCount = viewData.totalViews;
         } else {
-          console.error("Unexpected views data format:", views);
+          console.error("Unexpected views data format:", viewData);
+          this.viewsCount = 0; // Set to 0 if data is not in expected format
         }
       } catch (error) {
         console.error("Error fetching the views", error);
+        this.viewsCount = 0; // Set to 0 in case of error
       }
     },
   },

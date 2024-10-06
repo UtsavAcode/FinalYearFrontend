@@ -27,7 +27,7 @@
             {{ tag.name }}
           </span>
         </div>
-        <div  style="height:5rem">{{  blog.metaDescription }}</div>
+        <div style="height: 5rem">{{ blog.metaDescription }}</div>
         <div class="d-flex justify-content-between" style="margin-top: 1.5rem">
           <button
             class="btn btn-dark"
@@ -138,15 +138,17 @@ export default {
         this.blogs = await Promise.all(
           response.map(async (blog) => {
             const likes = await blogService.getLikesCount(blog.id);
-            const views = await blogService.getViews(blog.id);
+            const viewResponse = await blogService.getViews(blog.id); // Fetch view data
+            const totalViews = viewResponse.totalViews || 0; // Get total views, default to 0 if undefined
             const comments = await blogService.getComments(); // Fetch all comments
             const commentCount = comments.filter(
               (comment) => comment.blogPostId === blog.id
             ).length;
+
             return {
               ...blog,
               likesCount: likes,
-              viewsCount: views,
+              viewsCount: totalViews, // Only store the total views count
               commentCount: commentCount,
             };
           })

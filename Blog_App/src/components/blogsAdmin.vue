@@ -12,7 +12,7 @@
             <th scope="col">Title</th>
             <th>Date</th>
             <th>Tags</th>
-            <th>AuthorName</th>
+            <th>Author Name</th>
             <th>Likes</th>
             <th>Comments</th>
             <th>Views</th>
@@ -31,32 +31,29 @@
               />
             </td>
             <td>{{ blog.title }}</td>
-            <!-- <td>{{ blog.metaDescription }}</td>
-            <td>{{ truncateContent(blog.content) }}</td> -->
             <td>{{ formatDate(blog.createdAt) }}</td>
             <td>{{ formatTags(blog.tags) }}</td>
             <td>{{ blog.authorName }}</td>
             <td>{{ blog.likeCount }}</td>
             <td>{{ blog.commentCount }}</td>
             <td>{{ blog.viewCount }}</td>
+            <!-- This should only display total views -->
             <td>
               <button class="btn btn-dark" @click="showDialog(blog)">
                 Edit
               </button>
-
               <Dialog
                 v-model:visible="visible"
                 header="Edit Blog"
                 :style="{ width: '60.5rem' }"
                 class="container"
               >
-                <div class="containeer-edit">
+                <div class="container-edit">
                   <span
                     class="text-surface-500 dark:text-surface-400 block mb-8"
                   >
                     Update the Blog.
                   </span>
-
                   <div class="flex items-center gap-4 mb-3">
                     <label for="editTitle" class="font-semibold w-25"
                       >Title</label
@@ -69,7 +66,6 @@
                       :style="{ width: '56.9rem' }"
                     />
                   </div>
-
                   <div class="flex items-center gap-4 mb-3">
                     <label for="editMetaDescription" class="font-semibold w-25"
                       >Meta Description</label
@@ -82,7 +78,6 @@
                       :style="{ width: '56.9rem' }"
                     ></textarea>
                   </div>
-
                   <div class="flex items-center gap-4 mb-3">
                     <label for="editContent" class="font-semibold w-25"
                       >Content</label
@@ -95,7 +90,6 @@
                       :style="{ width: '56.9rem' }"
                     ></textarea>
                   </div>
-
                   <div class="form-group mb-3">
                     <label for="editTags">Tags</label>
                     <MultiSelect
@@ -110,7 +104,6 @@
                       ref="multiSelect"
                     />
                   </div>
-
                   <div class="form-group">
                     <label for="editFeaturedImage">Featured Image</label>
                     <input
@@ -127,7 +120,6 @@
                       />
                     </div>
                   </div>
-
                   <div class="d-flex justify-content-center align-center gap-2">
                     <Button
                       type="button"
@@ -143,7 +135,6 @@
                   </div>
                 </div>
               </Dialog>
-
               <button
                 class="btn btn-danger px-1 ms-1"
                 @click="deletePost(blog.id)"
@@ -182,6 +173,7 @@ export default {
       },
       editImageFile: null,
       editImagePreview: null,
+      availableTags: [],
     };
   },
 
@@ -210,15 +202,16 @@ export default {
         this.blogs = await Promise.all(
           response.map(async (blog) => {
             const likes = await blogService.getLikesCount(blog.id);
-            const views = await blogService.getViews(blog.id);
+            const viewsResponse = await blogService.getViews(blog.id);
             const comments = await blogService.getComments(); // Fetch all comments
             const commentCount = comments.filter(
               (comment) => comment.blogPostId === blog.id
             ).length;
+
             return {
               ...blog,
               likeCount: likes,
-              viewCount: views,
+              viewCount: viewsResponse.totalViews, // Extract totalViews here
               commentCount: commentCount,
             };
           })
@@ -259,6 +252,7 @@ export default {
         this.error = error.response?.data?.errors || "An error occurred";
       }
     },
+
     formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString("en-US", {
@@ -284,13 +278,6 @@ export default {
         return "No content";
       }
       return content.length > 10 ? content.substring(0, 10) + "..." : content;
-    },
-
-    truncateId(id) {
-      if (!id) {
-        return "NoId";
-      }
-      return id.length > 10 ? id.substring(0, 10) + "..." : id;
     },
 
     showDialog(blog) {
