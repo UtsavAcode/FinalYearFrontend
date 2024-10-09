@@ -16,6 +16,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import MultiSelect from "primevue/multiselect";
+import Calendar from "primevue/calendar";
 
 import Panel from "primevue/panel";
 import "froala-editor/js/plugins.pkgd.min.js";
@@ -77,6 +78,7 @@ app.component("Dialog", Dialog);
 app.component("InputIcon", InputIcon);
 app.component("InputText", InputText);
 app.component("MultiSelect", MultiSelect);
+app.component("Calendar", Calendar);
 
 app.config.globalProperties.$axios = axios;
 app.use(router);
