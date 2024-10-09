@@ -1,16 +1,5 @@
 <template>
   <div class="container">
-    <!-- Search Bar -->
-    <div class="mb-3">
-      <input
-        type="text"
-        v-model="searchKeyword"
-        @keyup.enter="filterBlogs"
-        placeholder="Search by title or date (MM/DD/YYYY)"
-        class="form-control"
-      />
-    </div>
-
     <div class="table-responsive">
       <table
         class="table table-striped table-hover text-center table-bordered"
@@ -31,7 +20,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="blog in filteredBlogs" :key="blog.id">
+          <tr v-for="blog in blogs" :key="blog.id">
             <td>{{ blog.id }}</td>
             <td>
               <img
@@ -48,6 +37,7 @@
             <td>{{ blog.likeCount }}</td>
             <td>{{ blog.commentCount }}</td>
             <td>{{ blog.viewCount }}</td>
+            <!-- This should only display total views -->
             <td>
               <button class="btn btn-dark" @click="showDialog(blog)">
                 Edit
@@ -59,7 +49,90 @@
                 class="container"
               >
                 <div class="container-edit">
-                  <!-- Edit form content omitted for brevity -->
+                  <span
+                    class="text-surface-500 dark:text-surface-400 block mb-8"
+                  >
+                    Update the Blog.
+                  </span>
+                  <div class="flex items-center gap-4 mb-3">
+                    <label for="editTitle" class="font-semibold w-25"
+                      >Title</label
+                    >
+                    <InputText
+                      id="editTitle"
+                      v-model="currentBlog.title"
+                      class="flex-auto"
+                      autocomplete="off"
+                      :style="{ width: '56.9rem' }"
+                    />
+                  </div>
+                  <div class="flex items-center gap-4 mb-3">
+                    <label for="editMetaDescription" class="font-semibold w-25"
+                      >Meta Description</label
+                    >
+                    <textarea
+                      id="editMetaDescription"
+                      v-model="currentBlog.metaDescription"
+                      class="flex-auto"
+                      rows="3"
+                      :style="{ width: '56.9rem' }"
+                    ></textarea>
+                  </div>
+                  <div class="flex items-center gap-4 mb-3">
+                    <label for="editContent" class="font-semibold w-25"
+                      >Content</label
+                    >
+                    <textarea
+                      id="editContent"
+                      v-model="currentBlog.content"
+                      class="flex-auto"
+                      rows="5"
+                      :style="{ width: '56.9rem' }"
+                    ></textarea>
+                  </div>
+                  <div class="form-group mb-3">
+                    <label for="editTags">Tags</label>
+                    <MultiSelect
+                      v-model="currentBlog.tags"
+                      :options="availableTags"
+                      option-label="name"
+                      option-value="id"
+                      placeholder="Select tags"
+                      display="chip"
+                      :style="{ width: '56.9rem' }"
+                      class="w-full"
+                      ref="multiSelect"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="editFeaturedImage">Featured Image</label>
+                    <input
+                      type="file"
+                      @change="handleEditImageUpload"
+                      id="editFeaturedImage"
+                      class="form-control"
+                    />
+                    <div v-if="editImagePreview" class="mt-3">
+                      <img
+                        :src="editImagePreview"
+                        alt="Image Preview"
+                        class="img-fluid"
+                      />
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-center align-center gap-2">
+                    <Button
+                      type="button"
+                      label="Cancel"
+                      severity="secondary"
+                      @click="visible = false"
+                    ></Button>
+                    <Button
+                      type="button"
+                      label="Save"
+                      @click="updateBlogPost"
+                    ></Button>
+                  </div>
                 </div>
               </Dialog>
               <button
@@ -85,7 +158,6 @@ export default {
     return {
       blogs: [],
       visible: false,
-      searchKeyword: "", // Holds the search input
       currentBlog: {
         id: null,
         title: "",
@@ -113,11 +185,12 @@ export default {
   methods: {
     async getAvailableTags() {
       try {
-        const response = await blogService.getAll();
+        const response = await blogService.getAll(); // Adjust to the correct method to fetch tags
         this.availableTags = response.map((tag) => ({
           id: tag.id,
           name: tag.name,
         }));
+        console.log("Available Tags:", this.availableTags); // Debug output
       } catch (error) {
         console.error("Error fetching tags:", error);
       }
@@ -125,12 +198,12 @@ export default {
 
     async getAllPosts() {
       try {
-        const response = await blogService.getAllBlog();
+        const response = await blogService.getAllBlog(); // Ensure this method returns blog posts
         this.blogs = await Promise.all(
           response.map(async (blog) => {
             const likes = await blogService.getLikesCount(blog.id);
             const viewsResponse = await blogService.getViews(blog.id);
-            const comments = await blogService.getComments();
+            const comments = await blogService.getComments(); // Fetch all comments
             const commentCount = comments.filter(
               (comment) => comment.blogPostId === blog.id
             ).length;
@@ -138,7 +211,7 @@ export default {
             return {
               ...blog,
               likeCount: likes,
-              viewCount: viewsResponse.totalViews,
+              viewCount: viewsResponse.totalViews, // Extract totalViews here
               commentCount: commentCount,
             };
           })
@@ -148,23 +221,10 @@ export default {
       }
     },
 
-    // Filter blogs based on the search keyword
-    filterBlogs() {
-      this.filteredBlogs = this.blogs.filter((blog) => {
-        const formattedDate = this.formatDate(blog.createdAt);
-        const searchLower = this.searchKeyword.toLowerCase();
-
-        return (
-          blog.title.toLowerCase().includes(searchLower) ||
-          formattedDate.includes(searchLower)
-        );
-      });
-    },
-
     async deletePost(id) {
       try {
         await blogService.deleteBlog(id);
-        this.getAllPosts();
+        this.getAllPosts(); // Refresh the list
       } catch (error) {
         console.error("Error deleting post:", error);
       }
@@ -182,11 +242,14 @@ export default {
           TagIds: tagIdsArray,
         };
 
+        console.log("Updating Blog Post with Data:", updatedBlogPost); // Debug output
+
         await blogService.updateBlogPost(updatedBlogPost);
-        this.getAllPosts();
+        this.getAllPosts(); // Refresh the list
         this.visible = false;
       } catch (error) {
         console.error("Error updating blog post:", error);
+        this.error = error.response?.data?.errors || "An error occurred";
       }
     },
 
@@ -210,40 +273,35 @@ export default {
       return `http://localhost:5254${path}`;
     },
 
+    truncateContent(content) {
+      if (!content) {
+        return "No content";
+      }
+      return content.length > 10 ? content.substring(0, 10) + "..." : content;
+    },
+
     showDialog(blog) {
+      // Make sure to correctly copy the blog object
       this.currentBlog = { ...blog };
       this.editImageFile = null;
       this.editImagePreview = this.getImageUrl(blog.featuredImagePath);
+
+      // Ensure `currentBlog.tags` is correctly formatted
       this.currentBlog.tags = blog.tags.map((tag) => ({
         id: tag.id,
         name: tag.name,
       }));
+
+      console.log("Selected Blog for Editing:", this.currentBlog); // Debug output
+
       this.visible = true;
     },
-
     handleEditImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
         this.editImageFile = file;
         this.editImagePreview = URL.createObjectURL(file);
       }
-    },
-  },
-
-  computed: {
-    filteredBlogs() {
-      if (!this.searchKeyword) {
-        return this.blogs; // Return all blogs if there's no search keyword
-      }
-      return this.blogs.filter((blog) => {
-        const formattedDate = this.formatDate(blog.createdAt);
-        const searchLower = this.searchKeyword.toLowerCase();
-
-        return (
-          blog.title.toLowerCase().includes(searchLower) ||
-          formattedDate.includes(searchLower)
-        );
-      });
     },
   },
 };
