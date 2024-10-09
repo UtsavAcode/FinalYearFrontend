@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Performance Stats -->
     <div class="blog-performance container d-flex justify-content-center p-2">
       <div class="performance-block">
         <i class="bi bi-book pe-2"></i>{{ totalBlogs }}
@@ -15,6 +16,7 @@
       </div>
     </div>
 
+    <!-- Time Range Selection -->
     <div class="d-flex justify-content-center mt-4">
       <select v-model="timeRange" @change="fetchChartData">
         <option value="month">Monthly</option>
@@ -23,7 +25,7 @@
       </select>
     </div>
 
-    <!-- Line Chart -->
+    <!-- Chart -->
     <canvas id="lineChart"></canvas>
   </div>
 </template>
@@ -36,21 +38,22 @@ import {
   Title,
   Tooltip,
   Legend,
-  LineElement,
   CategoryScale,
   LinearScale,
   PointElement,
+  LineElement,
 } from "chart.js";
 import moment from "moment";
 
+// Register the necessary Chart.js components
 ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  LineElement,
   CategoryScale,
   LinearScale,
-  PointElement
+  PointElement,
+  LineElement
 );
 
 export default {
@@ -97,7 +100,6 @@ export default {
         for (const blog of this.userBlogs) {
           const likes = await blogService.getLikesCount(blog.id);
           const viewResponse = await blogService.getViews(blog.id);
-
           blog.views = Array.isArray(viewResponse)
             ? viewResponse
             : [viewResponse];
@@ -120,82 +122,39 @@ export default {
         this.totalLikes = totalLikes;
         this.totalViews = totalViews;
         this.totalComments = totalComments;
-
-        console.log("Total Likes:", totalLikes);
-        console.log("Total Views:", totalViews);
-        console.log("Total Comments:", totalComments);
       } catch (error) {
         console.error("Error calculating performance:", error);
       }
     },
-    getAccumulatedViewsByDay() {
-      const dailyViews = Array(2).fill(0); // Create an array for today and yesterday
+    accumulateViewsByDate() {
+      const viewCounts = {};
+      const today = moment().startOf("day");
 
-      const today = moment().startOf('day'); // Get the start of today
-      const yesterday = moment().subtract(1, 'days').startOf('day'); // Get the start of yesterday
+      // Initialize viewCounts for the last 30 days
+      for (let i = 0; i < 30; i++) {
+        const date = today.clone().subtract(i, "days").format("YYYY-MM-DD");
+        viewCounts[date] = 0; // Start with 0 views
+      }
 
+      // Populate viewCounts with actual views
       this.userBlogs.forEach((blog) => {
         (blog.views || []).forEach((view) => {
-          if (view.viewAt && view.totalViews) {
-            const viewDate = moment(view.viewAt).startOf('day'); // Get the view date normalized
-
-            if (viewDate.isSame(today)) {
-              dailyViews[0] += view.totalViews; // Accumulate views for today
-            } else if (viewDate.isSame(yesterday)) {
-              dailyViews[1] += view.totalViews; // Accumulate views for yesterday
+          if (view.viewAt) {
+            const viewDate = moment(view.viewAt).format("YYYY-MM-DD");
+            if (viewCounts[viewDate] !== undefined) {
+              viewCounts[viewDate] += view.totalViews || 0; // Accumulate views
             }
           }
         });
       });
 
-      return dailyViews;
-    },
-    getAccumulatedViewsByMonth() {
-      const monthlyViews = Array(12).fill(0); // Create an array for 12 months
-
-      this.userBlogs.forEach((blog) => {
-        (blog.views || []).forEach((view) => {
-          if (view.viewAt && view.totalViews) {
-            const month = moment(view.viewAt).month(); // Get the month from the view date
-            monthlyViews[month] += view.totalViews; // Accumulate views per month
-          }
-        });
-      });
-
-      return monthlyViews;
-    },
-    getAccumulatedViewsByWeek() {
-      const weeklyViews = Array(52).fill(0); // Create an array for 52 weeks
-
-      this.userBlogs.forEach((blog) => {
-        (blog.views || []).forEach((view) => {
-          if (view.viewAt && view.totalViews) {
-            const week = moment(view.viewAt).week() - 1; // Adjust to 0-based index
-            weeklyViews[week] += view.totalViews; // Accumulate views per week
-          }
-        });
-      });
-
-      return weeklyViews;
+      return viewCounts;
     },
     async fetchChartData() {
       try {
-        let labels = [];
-        let data = [];
-
-        if (this.timeRange === "month") {
-          labels = moment.months();
-          data = this.getAccumulatedViewsByMonth();
-        } else if (this.timeRange === "week") {
-          labels = Array.from({ length: 52 }, (_, i) => `Week ${i + 1}`);
-          data = this.getAccumulatedViewsByWeek();
-        } else if (this.timeRange === "day") {
-          labels = ["Today", "Yesterday"]; // Updated labels for daily view
-          data = this.getAccumulatedViewsByDay();
-        }
-
-        console.log("Chart Labels:", labels);
-        console.log("Chart Data:", data);
+        const viewCounts = this.accumulateViewsByDate();
+        const labels = Object.keys(viewCounts).reverse(); // Dates for X-axis
+        const data = labels.map((date) => viewCounts[date]); // Corresponding view counts for Y-axis
 
         this.updateChart(labels, data);
       } catch (error) {
@@ -215,7 +174,7 @@ export default {
       }
 
       this.chartInstance = new ChartJS(ctx, {
-        type: "line",
+        type: this.timeRange === "day" ? "bar" : "line", // Bar chart for daily, line chart for others
         data: {
           labels: labels,
           datasets: [
@@ -253,7 +212,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* Add any necessary styling */
-</style>
