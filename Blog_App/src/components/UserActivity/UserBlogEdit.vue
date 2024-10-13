@@ -123,12 +123,14 @@ export default {
 
         const updatedBlogPost = {
           ...this.blog,
-          Image: this.imageFile,
+          featuredImagePath: this.imageFile, // Ensure correct property name
           TagIds: tagIdsArray,
         };
 
         await blogService.updateBlogPost(updatedBlogPost);
         this.successMessage = "Blog updated successfully!";
+        // Optionally redirect or clear form after success
+        // this.router.push('/path/to/redirect'); // Uncomment to redirect
       } catch (error) {
         console.error("Error updating blog post:", error);
         this.error = error.response?.data?.errors || "An error occurred";

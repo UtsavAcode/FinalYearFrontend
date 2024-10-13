@@ -273,7 +273,6 @@
 }
 
 .performance-block {
- 
   margin: 1rem;
   height: 4rem;
   width: 8rem;
@@ -285,8 +284,7 @@
   background-color: black;
   font-style: bold;
 }
- 
-.userside-links{
- 
+
+.userside-links {
   width: 11rem;
 }

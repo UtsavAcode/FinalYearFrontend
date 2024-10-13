@@ -25,8 +25,19 @@
       </select>
     </div>
 
-    <!-- Chart -->
-    <canvas id="lineChart"></canvas>
+    <!-- Chart and Unique Viewers -->
+    <div class="d-flex justify-content-center align-items-center mt-4">
+      <div>
+        <canvas
+          ref="lineChart"
+          style="max-width: 600px; height: 300px"
+        ></canvas>
+      </div>
+      <div class="unique-viewers ml-3">
+        <i class="bi bi-person pe-2"></i>{{ uniqueViewers }} Unique Viewers This
+        Month
+      </div>
+    </div>
   </div>
 </template>
 
@@ -45,7 +56,6 @@ import {
 } from "chart.js";
 import moment from "moment";
 
-// Register the necessary Chart.js components
 ChartJS.register(
   Title,
   Tooltip,
@@ -64,6 +74,7 @@ export default {
       totalLikes: 0,
       totalViews: 0,
       totalComments: 0,
+      uniqueViewers: 0,
       timeRange: "month",
       chartInstance: null,
       userBlogs: [],
@@ -72,6 +83,8 @@ export default {
   async created() {
     await this.fetchUserBlogs();
     await this.calculateUserPerformance();
+  },
+  mounted() {
     this.fetchChartData();
   },
   methods: {
@@ -85,6 +98,27 @@ export default {
             String(blog.authorId).trim().toLowerCase() ===
             cleanUserId.toLowerCase()
         );
+
+        // Fetch views for each blog
+        for (let blog of this.userBlogs) {
+          const viewResponse = await blogService.getViews(blog.id);
+          blog.views = Array.isArray(viewResponse)
+            ? viewResponse
+            : [viewResponse];
+        }
+
+        if (this.userBlogs.length > 0) {
+          const currentMonth = moment().month();
+          this.uniqueViewers = this.userBlogs.reduce((acc, blog) => {
+            const blogUniqueViewCount = blog.uniqueViewCount || 0;
+            return (
+              acc +
+              (moment(blog.createdAt).month() === currentMonth
+                ? blogUniqueViewCount
+                : 0)
+            );
+          }, 0);
+        }
       } catch (error) {
         console.error("Error fetching user blogs:", error);
       }
@@ -99,10 +133,6 @@ export default {
 
         for (const blog of this.userBlogs) {
           const likes = await blogService.getLikesCount(blog.id);
-          const viewResponse = await blogService.getViews(blog.id);
-          blog.views = Array.isArray(viewResponse)
-            ? viewResponse
-            : [viewResponse];
 
           blog.views.forEach((view) => {
             if (view.totalViews) {
@@ -129,40 +159,86 @@ export default {
     accumulateViewsByDate() {
       const viewCounts = {};
       const today = moment().startOf("day");
+      let startDate;
 
-      // Initialize viewCounts for the last 30 days
-      for (let i = 0; i < 30; i++) {
-        const date = today.clone().subtract(i, "days").format("YYYY-MM-DD");
-        viewCounts[date] = 0; // Start with 0 views
+      switch (this.timeRange) {
+        case "month":
+          startDate = today.clone().subtract(11, "months").startOf("month");
+          break;
+        case "week":
+          startDate = today.clone().subtract(11, "weeks").startOf("week");
+          break;
+        case "day":
+          startDate = today.clone().subtract(29, "days");
+          break;
+      }
+
+      // Initialize viewCounts
+      let current = startDate.clone();
+      while (current <= today) {
+        const key = this.getDateKey(current);
+        viewCounts[key] = 0;
+        current.add(1, this.timeRange);
       }
 
       // Populate viewCounts with actual views
       this.userBlogs.forEach((blog) => {
-        (blog.views || []).forEach((view) => {
+        blog.views.forEach((view) => {
           if (view.viewAt) {
-            const viewDate = moment(view.viewAt).format("YYYY-MM-DD");
-            if (viewCounts[viewDate] !== undefined) {
-              viewCounts[viewDate] += view.totalViews || 0; // Accumulate views
+            const viewDate = moment(view.viewAt);
+            if (viewDate >= startDate) {
+              const key = this.getDateKey(viewDate);
+              if (viewCounts.hasOwnProperty(key)) {
+                viewCounts[key] += 1;
+              }
             }
           }
         });
       });
 
-      return viewCounts;
+      // Calculate daily differences and accumulate increases/decreases
+      const increases = [];
+      const decreases = [];
+      const keys = Object.keys(viewCounts);
+      let previousCount = 0;
+
+      for (let i = 0; i < keys.length; i++) {
+        const currentCount = viewCounts[keys[i]];
+        if (i === 0) {
+          increases.push(currentCount); // Start with the initial count
+          decreases.push(0); // No decrease at the start
+        } else {
+          const difference = currentCount - previousCount;
+          increases.push(difference >= 0 ? difference : 0);
+          decreases.push(difference < 0 ? Math.abs(difference) : 0);
+        }
+        previousCount = currentCount; // Update previousCount for the next iteration
+      }
+
+      return { increases, decreases, keys };
+    },
+    getDateKey(date) {
+      switch (this.timeRange) {
+        case "month":
+          return date.format("YYYY-MM");
+        case "week":
+          return date.format("YYYY-[W]WW");
+        case "day":
+          return date.format("YYYY-MM-DD");
+      }
     },
     async fetchChartData() {
       try {
-        const viewCounts = this.accumulateViewsByDate();
-        const labels = Object.keys(viewCounts).reverse(); // Dates for X-axis
-        const data = labels.map((date) => viewCounts[date]); // Corresponding view counts for Y-axis
+        const { increases, decreases, keys } = this.accumulateViewsByDate();
+        const labels = keys;
 
-        this.updateChart(labels, data);
+        this.updateChart(labels, increases, decreases);
       } catch (error) {
         console.error("Error fetching chart data:", error);
       }
     },
-    updateChart(labels, data) {
-      const ctx = document.getElementById("lineChart");
+    updateChart(labels, increases, decreases) {
+      const ctx = this.$refs.lineChart;
 
       if (!ctx) {
         console.error("Canvas element not found");
@@ -174,15 +250,22 @@ export default {
       }
 
       this.chartInstance = new ChartJS(ctx, {
-        type: this.timeRange === "day" ? "bar" : "line", // Bar chart for daily, line chart for others
+        type: "line",
         data: {
           labels: labels,
           datasets: [
             {
-              label: "Views",
+              label: "Increase in Views",
               backgroundColor: "rgba(75, 192, 192, 0.2)",
               borderColor: "rgba(75, 192, 192, 1)",
-              data: data,
+              data: increases,
+              fill: false,
+            },
+            {
+              label: "Decrease in Views",
+              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              data: decreases,
               fill: false,
             },
           ],
@@ -195,12 +278,26 @@ export default {
             },
             title: {
               display: true,
-              text: "Blog Views Over Time",
+              text: `Views Increase/Decrease (${
+                this.timeRange.charAt(0).toUpperCase() + this.timeRange.slice(1)
+              })`,
             },
           },
           scales: {
             y: {
               beginAtZero: true,
+              title: {
+                display: true,
+                text: "Views",
+              },
+            },
+            x: {
+              title: {
+                display: true,
+                text:
+                  this.timeRange.charAt(0).toUpperCase() +
+                  this.timeRange.slice(1),
+              },
             },
           },
         },
@@ -210,5 +307,12 @@ export default {
   computed: {
     ...mapGetters("auth", ["id"]),
   },
+  beforeUnmount() {
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
+  },
 };
 </script>
+
+<style scoped></style>

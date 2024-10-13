@@ -241,6 +241,9 @@ const blogService = {
 
   async addView(payload) {
     try {
+      // Log the payload to confirm its structure
+      console.log("Payload being sent:", payload);
+
       const response = await apiClient.post(
         `/Blog/${payload.blogPostId}/registerView`,
         {
@@ -249,27 +252,27 @@ const blogService = {
           userAgent: payload.userAgent,
         }
       );
+
       return response.data;
     } catch (error) {
-      console.error("Error in addView:", error); // Add logging to see the error
-      throw error.response?.data || error.message;
+      console.error("Error in addView:", error); // Log the error for debugging
+      throw error.response?.data || error.message; // Return the error response or message
     }
   },
   async getViews(blogPostId) {
     try {
       const response = await apiClient.get(`/Blog/GetViews/${blogPostId}`);
-      return response.data; // Assumes the response contains the BlogViewDetailDto
+      return response.data;
     } catch (error) {
-      console.error("Error fetching views:", error);
-      throw error;
+      throw error.response?.data || error.message;
     }
   },
+
   async getAllViews() {
     try {
-      const response = await apiClient.get("/Blog/GetAllViews"); // Use the base URL `/api/BlogView`
-      return response.data; // Assuming the response contains the list of blog views
+      const response = await apiClient.get("/Blog/GetAllViews");
+      return response.data;
     } catch (error) {
-      console.error("Error fetching blog views:", error);
       throw error.response?.data || error.message;
     }
   },
