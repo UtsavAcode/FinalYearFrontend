@@ -41,8 +41,6 @@
       </div>
       <button type="submit" class="btn-darkish">Create Account</button>
       <p class="text-center p-2 mx-auto">Already have an account? Sign in</p>
-      <p v-if="error">{{ error }}</p>
-      <p v-if="success">{{ success }}</p>
       <ul v-if="validationErrors.length">
         <li v-for="(err, index) in validationErrors" :key="index" class="error">
           {{ err }}
@@ -54,6 +52,7 @@
 
 <script>
 import axios from "axios";
+import toastr from "toastr"; // Import Toastr
 
 export default {
   name: "Register",
@@ -65,15 +64,11 @@ export default {
         password: "",
         repeatPassword: "",
       },
-      error: "",
-      success: "",
       validationErrors: [],
     };
   },
   methods: {
     async registerUser() {
-      this.error = "";
-      this.success = "";
       this.validationErrors = [];
 
       try {
@@ -87,9 +82,9 @@ export default {
           }
         );
         if (response.data.isSuccess) {
-          this.success = response.data.message;
+          toastr.success(response.data.message); // Display success message
         } else {
-          this.error = response.data.message;
+          toastr.error(response.data.message); // Display error message
         }
       } catch (error) {
         if (
@@ -99,9 +94,9 @@ export default {
         ) {
           const errors = error.response.data.errors;
           this.validationErrors = Object.values(errors).flat();
-          console.log("Validation errors:", this.validationErrors); // Debug log
+          this.validationErrors.forEach((err) => toastr.error(err)); // Display validation errors
         } else {
-          this.error = error.response.data.message;
+          toastr.error(error.response.data.message); // Display error message
         }
       }
     },
@@ -133,11 +128,6 @@ button {
 
 .error {
   color: red;
-  margin-top: 10px;
-}
-
-.success {
-  color: green;
   margin-top: 10px;
 }
 </style>

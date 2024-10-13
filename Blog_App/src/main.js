@@ -29,6 +29,10 @@ import "froala-editor/js/third_party/image_tui.min";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 import "froala-editor/css/froala_style.min.css";
 
+// Import Toastr
+import toastr from "toastr";
+import "toastr/build/toastr.min.css"; // Import Toastr CSS
+
 // Import Chart.js components
 import {
   Chart as ChartJS,
@@ -60,6 +64,14 @@ import axios from "axios";
 import VueFroala from "vue-froala-wysiwyg";
 app.config.globalProperties.hostname = "http://localhost:5254";
 
+// Set up Toastr options
+toastr.options = {
+  positionClass: "toast-top-right", // Position of the toast
+  timeOut: 3000, // Auto close after 3 seconds
+  closeButton: true, // Show close button
+  progressBar: true, // Show progress bar
+};
+
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
@@ -81,6 +93,7 @@ app.component("MultiSelect", MultiSelect);
 app.component("Calendar", Calendar);
 
 app.config.globalProperties.$axios = axios;
+app.config.globalProperties.$toastr = toastr; // Make Toastr available globally
 app.use(router);
 app.use(VueFroala);
 app.use(store);

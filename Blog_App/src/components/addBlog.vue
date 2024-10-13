@@ -101,7 +101,6 @@ export default {
       imageFile: null,
       imagePreview: null,
       error: null,
-      successMessage: null,
       tags: [],
       selectedTags: [],
     };
@@ -165,10 +164,15 @@ export default {
         const response = await blogService.addBlogPost(blogPost);
         this.successMessage = response.message;
         this.error = null;
+
+        // Use Toastr to show success message
+        this.$toastr.success(response.message, "Success");
       } catch (err) {
         console.error("Error while adding blog:", err);
         this.error = err.response?.data?.errors || "An error occurred";
-        this.successMessage = null;
+
+        // Use Toastr to show error message
+        this.$toastr.error(this.error, "Error");
       }
     },
 
