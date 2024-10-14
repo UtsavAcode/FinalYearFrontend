@@ -12,7 +12,7 @@
       <tbody>
         <tr v-for="user in users" :key="user.id">
           <td>{{ user.id }}</td>
-          <td>{{ user.userName }}</td>
+          <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
           <td>
             <button class="btn btn-dark" @click="showDialog(user)">Show</button>
@@ -30,8 +30,8 @@
                   >Username</label
                 >
                 <InputText
-                  id="username"
-                  v-model="selectedUser.userName"
+                  id="name"
+                  v-model="selectedUser.name"
                   class="flex-auto"
                   autocomplete="off"
                 />
@@ -106,7 +106,7 @@ export default {
           "http://localhost:5254/api/Auth/Update",
           {
             email: this.selectedUser.email,
-            name: this.selectedUser.userName,
+            name: this.selectedUser.name,
           }
         );
 

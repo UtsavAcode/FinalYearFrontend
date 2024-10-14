@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid position-fixed  border-end" style="width: 17rem">
+  <div class="container-fluid position-fixed border-end" style="width: 17rem">
     <div class="row flex-wrap">
       <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-white">
         <div
@@ -16,14 +16,13 @@
             </div>
 
             <li>
-              <a
-                href="#submenu1"
-                data-bs-toggle="collapse"
+              <RouterLink
+                to="/performance"
                 class="nav-link px-0 align-middle text-dark"
               >
                 <i class="fs-4 bi-speedometer2"></i>
                 <span class="ms-1 d-none d-sm-inline">Dashboard</span>
-              </a>
+              </RouterLink>
             </li>
 
             <li>

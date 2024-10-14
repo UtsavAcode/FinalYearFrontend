@@ -12,7 +12,7 @@
       </div>
     </div>
 
-    <div class="charts">
+    <div class="charts d-flex">
       <div>
         <h3>Blog Statistics</h3>
         <canvas id="blogChart"></canvas>
@@ -165,11 +165,10 @@ export default {
   text-align: center;
 }
 .charts {
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
   margin-top: 20px;
 }
 canvas {
-  max-width: 400px; /* Adjust width of the charts */
+  width: 31rem;
 }
 </style>
