@@ -268,9 +268,11 @@ const blogService = {
     }
   },
 
-  async getAllViews() {
+  async getAllViews(blogPostIds) {
     try {
-      const response = await apiClient.get("/Blog/GetAllViews");
+      // Construct the query string for multiple IDs
+      const params = blogPostIds.map((id) => `blogPostIds=${id}`).join("&");
+      const response = await apiClient.get(`/Blog/GetAllViews?${params}`);
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;

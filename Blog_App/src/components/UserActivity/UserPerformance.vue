@@ -83,6 +83,8 @@ export default {
   async created() {
     await this.fetchUserBlogs();
     await this.calculateUserPerformance();
+    const blogPostIds = this.userBlogs.map((blog) => blog.id);
+    await this.fetchViews(blogPostIds);
   },
   mounted() {
     this.fetchChartData();
@@ -91,6 +93,7 @@ export default {
     async fetchUserBlogs() {
       try {
         const response = await blogService.getAllBlog();
+        console.log(response);
         const blogs = Array.isArray(response) ? response : [];
         const cleanUserId = String(this.id).replace(/['"]+/g, "").trim();
         this.userBlogs = blogs.filter(
@@ -98,6 +101,17 @@ export default {
             String(blog.authorId).trim().toLowerCase() ===
             cleanUserId.toLowerCase()
         );
+
+        console.log("user blogs", this.userBlogs);
+        const blogPostIds = this.userBlogs.map((blog) => blog.id);
+        console.log("Blog Post IDs:", blogPostIds); // Debugging statement
+
+        // Call fetchViews only if there are blog post IDs
+        if (blogPostIds.length > 0) {
+          await this.fetchViews(blogPostIds);
+        } else {
+          console.warn("No blog post IDs to fetch views for.");
+        }
 
         // Fetch views for each blog
         for (let blog of this.userBlogs) {
@@ -235,6 +249,19 @@ export default {
         this.updateChart(labels, increases, decreases);
       } catch (error) {
         console.error("Error fetching chart data:", error);
+      }
+    },
+    async fetchViews(blogPostIds) {
+      try {
+        const allViews = []; // Store all views
+        for (const blogPostId of blogPostIds) {
+          const views = await blogService.getAllViews(blogPostId);
+          console.log(`Views for Blog ID ${blogPostId}:`, views);
+          allViews.push(...views); // Combine views from each blog
+        }
+        return allViews; // Return combined views if needed
+      } catch (error) {
+        console.error("Error fetching all views", error);
       }
     },
     updateChart(labels, increases, decreases) {
