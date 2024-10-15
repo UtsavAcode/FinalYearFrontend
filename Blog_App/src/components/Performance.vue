@@ -1,14 +1,16 @@
 <template>
   <div class="performance-container">
-    <h2>Total Blogs and Users</h2>
+ 
     <div class="stats">
       <div class="stat-item">
-        <p>Total Blogs</p>
-        <h3>{{ totalBlogs }}</h3>
+        <h3 class="stat-text">
+          <span class="bi bi-book pe-3"></span>{{ totalBlogs }}
+        </h3>
       </div>
       <div class="stat-item">
-        <p>Total Users</p>
-        <h3>{{ totalUsers }}</h3>
+        <h3 class="stat-text">
+          <span class="bi bi-person-circle pe-3"></span>{{ totalUsers }}
+        </h3>
       </div>
     </div>
 
@@ -26,9 +28,10 @@
 </template>
 
 <script>
+import authService from "@/services/auth.servics";
 import blogService from "@/services/BlogService";
-import axios from "axios";
 import { Chart, registerables } from "chart.js";
+import moment from "moment"; // You can use moment.js to handle dates easily
 
 Chart.register(...registerables); // Register all chart.js components
 
@@ -38,58 +41,95 @@ export default {
     return {
       totalBlogs: 0,
       totalUsers: 0,
-      blogData: [], // For storing blog statistics data
-      userData: [], // For storing user statistics data
+      blogData: [],
+      userData: [], // For storing processed user statistics data (daily counts)
     };
   },
   mounted() {
     this.fetchTotalBlogs();
-    this.fetchTotalUsers();
+    this.fetchAllUserData();
     this.fetchBlogData();
-    this.fetchUserData();
   },
   methods: {
     async fetchTotalBlogs() {
       try {
         const blogs = await blogService.getAllBlog();
         this.totalBlogs = blogs.length;
+        console.log(blogs);
       } catch (error) {
         console.error("Error fetching total blogs:", error);
       }
     },
-    async fetchTotalUsers() {
+    async fetchAllUserData() {
       try {
-        const response = await axios.get(
-          "http://localhost:5254/api/Auth/GetAll"
-        );
-        this.totalUsers = response.data.length; // Get the total number of users
+        const details = await authService.AllUserDetails();
+
+        // Process user registration data
+        const userRegistrationsByDate =
+          this.processUserRegistrationData(details);
+        this.userData = userRegistrationsByDate;
+
+        this.totalUsers = details.length;
+        this.renderUserChart();
       } catch (error) {
-        console.error("Error fetching total users:", error);
+        console.error("Error fetching the user details:", error);
       }
     },
-    async fetchBlogData() {
-      // This is a placeholder for actual data fetching logic
-      // Replace this with your API call to get blog statistics
-      this.blogData = [
-        { day: "2024-10-01", count: 5 },
-        { day: "2024-10-02", count: 3 },
-        { day: "2024-10-03", count: 8 },
-        { day: "2024-10-04", count: 2 },
-        { day: "2024-10-05", count: 4 },
-      ];
-      this.renderBlogChart();
+    processUserRegistrationData(userDetails) {
+      // Create a map to store the count of users registered on each day
+      const registrationsMap = {};
+
+      userDetails.forEach((user) => {
+        const registrationDate = moment(user.registeredAt).format("YYYY-MM-DD");
+        if (registrationsMap[registrationDate]) {
+          registrationsMap[registrationDate]++;
+        } else {
+          registrationsMap[registrationDate] = 1;
+        }
+      });
+
+      // Convert the map to an array of objects sorted by date
+      const sortedRegistrationData = Object.keys(registrationsMap)
+        .sort()
+        .map((date) => ({
+          day: date,
+          count: registrationsMap[date],
+        }));
+
+      return sortedRegistrationData;
     },
-    async fetchUserData() {
-      // This is a placeholder for actual data fetching logic
-      // Replace this with your API call to get user statistics
-      this.userData = [
-        { day: "2024-10-01", count: 10 },
-        { day: "2024-10-02", count: 6 },
-        { day: "2024-10-03", count: 12 },
-        { day: "2024-10-04", count: 5 },
-        { day: "2024-10-05", count: 9 },
-      ];
-      this.renderUserChart();
+    async fetchBlogData() {
+      try {
+        const blogs = await blogService.getAllBlog();
+        const blogCreationData = this.processBlogCreationData(blogs);
+        this.blogData = blogCreationData;
+        this.renderBlogChart();
+      } catch (error) {
+        console.error("Error fetching blog data:", error);
+      }
+    },
+    processBlogCreationData(blogs) {
+      // Create a map to store the count of blogs created on each day
+      const blogsMap = {};
+
+      blogs.forEach((blog) => {
+        const creationDate = moment(blog.createdAt).format("YYYY-MM-DD");
+        if (blogsMap[creationDate]) {
+          blogsMap[creationDate]++;
+        } else {
+          blogsMap[creationDate] = 1;
+        }
+      });
+
+      // Convert the map to an array of objects sorted by date
+      const sortedBlogData = Object.keys(blogsMap)
+        .sort()
+        .map((date) => ({
+          day: date,
+          count: blogsMap[date],
+        }));
+
+      return sortedBlogData;
     },
     renderBlogChart() {
       const ctx = document.getElementById("blogChart").getContext("2d");
@@ -158,15 +198,27 @@ export default {
   padding: 20px;
 }
 .stats {
+  padding: 1rem;
   display: flex;
-  justify-content: space-between;
 }
 .stat-item {
   text-align: center;
+  background-color: black;
+  color: white;
+  padding: 1rem;
+  margin-right: 1rem;
+  border-radius: 1rem;
+  height: 6rem;
+  width: 9rem;
+}
+
+.stat-text {
+  margin-top:1rem;
 }
 .charts {
   width: 100%;
   margin-top: 20px;
+  height: 25rem;
 }
 canvas {
   width: 31rem;

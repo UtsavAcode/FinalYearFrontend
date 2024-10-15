@@ -12,7 +12,8 @@
       <tbody>
         <tr v-for="user in users" :key="user.id">
           <td>{{ user.id }}</td>
-          <td>{{ user.name }}</td>
+          <td>{{ user.userName }}</td>
+          <!-- Use "name" as per the DTO -->
           <td>{{ user.email }}</td>
           <td>
             <button class="btn btn-dark" @click="showDialog(user)">Show</button>
@@ -22,16 +23,14 @@
               header="Edit Profile"
               :style="{ width: '25rem' }"
             >
-              <span class="text-surface-500 dark:text-surface-400 block mb-8"
-                >Update your information.</span
-              >
+              <span class="text-surface-500 dark:text-surface-400 block mb-8">
+                Update your information.
+              </span>
               <div class="flex items-center gap-4 mb-4">
-                <label for="username" class="font-semibold w-25"
-                  >Username</label
-                >
+                <label for="name" class="font-semibold w-25">Name</label>
                 <InputText
-                  id="name"
-                  v-model="selectedUser.name"
+                  id="userName"
+                  v-model="selectedUser.userName"
                   class="flex-auto"
                   autocomplete="off"
                 />
@@ -81,7 +80,6 @@ export default {
       selectedUser: {},
     };
   },
-
   methods: {
     async getUsers() {
       try {
@@ -102,18 +100,19 @@ export default {
     },
     async saveUser() {
       try {
+        // Sending Name and Email in the expected format for the DTO
         const response = await axios.put(
           "http://localhost:5254/api/Auth/Update",
           {
-            email: this.selectedUser.email,
-            name: this.selectedUser.name,
+            name: this.selectedUser.userName, // Must match "Name" in DTO
+            email: this.selectedUser.email, // Must match "Email" in DTO
           }
         );
 
         if (response.data.isSuccess) {
           console.log("User updated successfully");
           this.visible = false;
-          await this.getUsers(); // Refresh the user list
+          await this.getUsers(); // Refresh the user list after successful update
         } else {
           console.error("Error updating user:", response.data.message);
         }
@@ -121,7 +120,6 @@ export default {
         console.error("Error updating user:", error);
       }
     },
-
     async deleteUser(email) {
       try {
         const response = await axios.delete(
