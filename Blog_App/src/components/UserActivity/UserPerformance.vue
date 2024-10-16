@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Performance Stats -->
-    <div class="blog-performance container d-flex justify-content-center p-2">
+    <div class="blog-performance container d-flex justify-content-center ">
       <div class="performance-block">
         <i class="bi bi-book pe-2"></i>{{ totalBlogs }}
       </div>
@@ -17,12 +17,31 @@
     </div>
 
     <!-- Time Range Selection -->
-    <div class="d-flex justify-content-center mt-4">
-      <select v-model="timeRange" @change="fetchChartData">
-        <option value="day">Daily</option>
-        <option value="month">Monthly</option>
-        <option value="week">Weekly</option>
-      </select>
+    <div class="d-flex justify-content-center">
+      <div class="d-flex justify-content-center mt-4 me-2">
+        <select
+          class="chart-option"
+          v-model="timeRange"
+          @change="fetchChartData"
+        >
+          <option value="day">Daily</option>
+          <option value="month">Monthly</option>
+          <option value="week">Weekly</option>
+        </select>
+      </div>
+
+      <div class="d-flex justify-content-center mt-4">
+        <button
+          @click="downloadPDF"
+          class="file-option btn btn-danger me-2 bi bi-filetype-pdf fs-4"
+          title="Download pdf"
+        ></button>
+        <button
+          @click="downloadWord"
+          class="file-option btn btn-primary fs-4 bi bi-file-earmark-word"
+          title="Download word"
+        ></button>
+      </div>
     </div>
 
     <!-- Chart and Unique Viewers -->
@@ -30,19 +49,12 @@
       <div class="chart-container">
         <canvas ref="lineChart"></canvas>
       </div>
-      <div class="unique-viewers ml-3">
-        <i class="bi bi-person pe-2"></i>{{ uniqueViewers }} Unique Viewers This
-        Month
+      <div class="blog-overview">
+        <div class="unique-viewers ml-3">
+          <i class="bi bi-person pe-2"></i>{{ uniqueViewers }} Unique Viewers
+          This Month
+        </div>
       </div>
-    </div>
-
-    <div class="d-flex justify-content-center mt-4">
-      <button @click="downloadPDF" class="btn btn-primary me-2">
-        Download PDF
-      </button>
-      <button @click="downloadWord" class="btn btn-primary">
-        Download Word
-      </button>
     </div>
   </div>
 </template>
@@ -309,7 +321,7 @@ export default {
           },
         },
       });
-    }, 
+    },
     async downloadPDF() {
       const canvas = this.$refs.lineChart;
       const imgData = canvas.toDataURL("image/png");
@@ -414,5 +426,23 @@ export default {
 
 .unique-viewers {
   margin-left: 20px;
+}
+
+.chart-option {
+  height: 1.6rem;
+  margin-top: 1rem;
+  border-radius: 5px;
+}
+
+.blog-overview {
+  border: 1px solid black;
+  border-radius: 0.8rem;
+  height: 15rem;
+  margin-left: 1rem;
+  width: 15rem;
+}
+
+.file-option{
+  height:3rem;
 }
 </style>

@@ -1,6 +1,5 @@
 <template>
   <div class="performance-container">
- 
     <div class="stats">
       <div class="stat-item">
         <h3 class="stat-text">
@@ -14,13 +13,37 @@
       </div>
     </div>
 
-    <div class="charts d-flex">
-      <div>
-        <h3>Blog Statistics</h3>
+    <div class="charts">
+      <div class="chart">
+        <h3>Blogs</h3>
+        <div class="download-buttons">
+          <button
+            @click="downloadBlogChartPDF"
+            class="bi bi-file-pdf btn btn-danger fs-5"
+            title="Downlaod Pdf"
+          ></button>
+          <button
+            @click="downloadBlogChartWord"
+            class="btn btn-primary bi bi-file-earmark-word fs-5"
+            title="Download Word"
+          ></button>
+        </div>
         <canvas id="blogChart"></canvas>
       </div>
-      <div>
-        <h3>User Statistics</h3>
+      <div class="chart" style="margin-top: 8rem">
+        <h3>Users</h3>
+        <div class="download-buttons">
+          <button
+            @click="downloadUserChartPDF"
+            class="btn btn-danger bi bi-file-pdf fs-5"
+            title="Download Pdf"
+          ></button>
+          <button
+            @click="downloadUserChartWord"
+            class="btn btn-primary bi bi-file-earmark-word fs-5"
+            title="Download Word"
+          ></button>
+        </div>
         <canvas id="userChart"></canvas>
       </div>
     </div>
@@ -31,9 +54,11 @@
 import authService from "@/services/auth.servics";
 import blogService from "@/services/BlogService";
 import { Chart, registerables } from "chart.js";
-import moment from "moment"; // You can use moment.js to handle dates easily
+import moment from "moment";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
-Chart.register(...registerables); // Register all chart.js components
+Chart.register(...registerables);
 
 export default {
   name: "Performance",
@@ -42,7 +67,7 @@ export default {
       totalBlogs: 0,
       totalUsers: 0,
       blogData: [],
-      userData: [], // For storing processed user statistics data (daily counts)
+      userData: [],
     };
   },
   mounted() {
@@ -63,12 +88,9 @@ export default {
     async fetchAllUserData() {
       try {
         const details = await authService.AllUserDetails();
-
-        // Process user registration data
         const userRegistrationsByDate =
           this.processUserRegistrationData(details);
         this.userData = userRegistrationsByDate;
-
         this.totalUsers = details.length;
         this.renderUserChart();
       } catch (error) {
@@ -76,27 +98,19 @@ export default {
       }
     },
     processUserRegistrationData(userDetails) {
-      // Create a map to store the count of users registered on each day
       const registrationsMap = {};
-
       userDetails.forEach((user) => {
         const registrationDate = moment(user.registeredAt).format("YYYY-MM-DD");
-        if (registrationsMap[registrationDate]) {
-          registrationsMap[registrationDate]++;
-        } else {
-          registrationsMap[registrationDate] = 1;
-        }
+        registrationsMap[registrationDate] =
+          (registrationsMap[registrationDate] || 0) + 1;
       });
 
-      // Convert the map to an array of objects sorted by date
-      const sortedRegistrationData = Object.keys(registrationsMap)
+      return Object.keys(registrationsMap)
         .sort()
         .map((date) => ({
           day: date,
           count: registrationsMap[date],
         }));
-
-      return sortedRegistrationData;
     },
     async fetchBlogData() {
       try {
@@ -109,27 +123,18 @@ export default {
       }
     },
     processBlogCreationData(blogs) {
-      // Create a map to store the count of blogs created on each day
       const blogsMap = {};
-
       blogs.forEach((blog) => {
         const creationDate = moment(blog.createdAt).format("YYYY-MM-DD");
-        if (blogsMap[creationDate]) {
-          blogsMap[creationDate]++;
-        } else {
-          blogsMap[creationDate] = 1;
-        }
+        blogsMap[creationDate] = (blogsMap[creationDate] || 0) + 1;
       });
 
-      // Convert the map to an array of objects sorted by date
-      const sortedBlogData = Object.keys(blogsMap)
+      return Object.keys(blogsMap)
         .sort()
         .map((date) => ({
           day: date,
           count: blogsMap[date],
         }));
-
-      return sortedBlogData;
     },
     renderBlogChart() {
       const ctx = document.getElementById("blogChart").getContext("2d");
@@ -189,6 +194,40 @@ export default {
         },
       });
     },
+    async downloadBlogChartPDF() {
+      const canvas = document.getElementById("blogChart");
+      const imageData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF();
+      pdf.addImage(imageData, "PNG", 10, 10);
+      pdf.save("blog_chart.pdf");
+    },
+    async downloadUserChartPDF() {
+      const canvas = document.getElementById("userChart");
+      const imageData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF();
+      pdf.addImage(imageData, "PNG", 10, 10);
+      pdf.save("user_chart.pdf");
+    },
+    downloadBlogChartWord() {
+      const canvas = document.getElementById("blogChart");
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "blog_chart.doc";
+        link.click();
+      }, "image/png");
+    },
+    downloadUserChartWord() {
+      const canvas = document.getElementById("userChart");
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "user_chart.doc";
+        link.click();
+      }, "image/png");
+    },
   },
 };
 </script>
@@ -198,29 +237,39 @@ export default {
   padding: 20px;
 }
 .stats {
-  padding: 1rem;
+  padding: 0rem;
   display: flex;
 }
 .stat-item {
   text-align: center;
   background-color: black;
   color: white;
-  padding: 1rem;
+  padding: 0rem;
   margin-right: 1rem;
   border-radius: 1rem;
-  height: 6rem;
+  height: 4rem;
   width: 9rem;
+  font-size: 1em;
 }
 
 .stat-text {
-  margin-top:1rem;
+  margin-top: 1rem;
 }
 .charts {
   width: 100%;
   margin-top: 20px;
   height: 25rem;
 }
+.chart {
+  height: 22rem;
+}
 canvas {
-  width: 31rem;
+  height: 10rem;
+}
+.download-buttons {
+  margin-top: 10px;
+}
+.download-buttons button {
+  margin-right: 5px;
 }
 </style>

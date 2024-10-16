@@ -40,7 +40,20 @@
           class="form-control w-25"
         />
       </div>
-
+      <div class="mb-3 d-flex justify-content-end me-5">
+        <button
+          class="btn btn-success bi bi-file-earmark-excel fs-5 m-1"
+          @click="downloadExcel"
+        ></button>
+        <button
+          class="btn btn-danger bi bi-file-pdf fs-5 m-1"
+          @click="downloadPDF"
+        ></button>
+        <button
+          class="btn btn-primary bi bi-file-earmark-word fs-5 m-1"
+          @click="downloadWord"
+        ></button>
+      </div>
       <div class="table-responsive">
         <table
           class="table table-striped table-hover text-center table-bordered"
@@ -196,6 +209,9 @@
 
 <script>
 import blogService from "../services/BlogService";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 export default {
   name: "AllBlogs",
@@ -369,6 +385,71 @@ export default {
         this.editImageFile = file;
         this.editImagePreview = URL.createObjectURL(file);
       }
+    },
+    downloadExcel() {
+      const ws = XLSX.utils.json_to_sheet(this.filteredBlogs);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Blogs");
+      XLSX.writeFile(wb, "blogs.xlsx");
+    },
+
+    downloadPDF() {
+      const doc = new jsPDF();
+      const tableColumn = [
+        "Id",
+        "Title",
+        "Date",
+        "Tags",
+        "Author Name",
+        "Likes",
+        "Comments",
+        "Views",
+      ];
+      const tableRows = [];
+
+      this.filteredBlogs.forEach((blog) => {
+        const blogData = [
+          blog.id,
+          blog.title,
+          this.formatDate(blog.createdAt),
+          this.formatTags(blog.tags),
+          blog.authorName,
+          blog.likeCount,
+          blog.commentCount,
+          blog.viewCount,
+        ];
+        tableRows.push(blogData);
+      });
+
+      doc.autoTable(tableColumn, tableRows, { startY: 10 });
+      doc.text("Blog List", 14, 10);
+      doc.save("blogs.pdf");
+    },
+
+    // Download data as Word
+    downloadWord() {
+      const header = `<h1>Blog List</h1>`;
+      let content = `<table><thead><tr><th>Id</th><th>Title</th><th>Date</th><th>Tags</th><th>Author Name</th><th>Likes</th><th>Comments</th><th>Views</th></tr></thead><tbody>`;
+      this.filteredBlogs.forEach((blog) => {
+        content += `<tr>
+          <td>${blog.id}</td>
+          <td>${blog.title}</td>
+          <td>${this.formatDate(blog.createdAt)}</td>
+          <td>${this.formatTags(blog.tags)}</td>
+          <td>${blog.authorName}</td>
+          <td>${blog.likeCount}</td>
+          <td>${blog.commentCount}</td>
+          <td>${blog.viewCount}</td>
+        </tr>`;
+      });
+      content += `</tbody></table>`;
+      const blob = new Blob([header + content], {
+        type: "application/msword",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "blogs.doc";
+      link.click();
     },
   },
 
