@@ -26,7 +26,11 @@
               {{ blog.title }}
             </div>
             <div class="tags">
-              <span class="badge bg-secondary ms-1" v-for="(tag, index) in blog.tags" :key="tag.id">
+              <span
+                class="badge bg-secondary ms-1"
+                v-for="(tag, index) in blog.tags"
+                :key="tag.id"
+              >
                 {{ tag.name.trim()
                 }}<span v-if="index < blog.tags.length - 1">, </span>
               </span>
@@ -45,6 +49,13 @@
         <div
           class="utilities-section me-5 d-flex align-items-center justify-content-between"
         >
+          <RouterLink
+            :to="`/userBlogPerformance/${blog.id}`"
+            class="blog-utilities"
+            title="statistics"
+          >
+            <i class="bi bi-clipboard2-data text-dark"></i>
+          </RouterLink>
           <div
             class="blog-utilities"
             @click="showDialog(blog)"
