@@ -19,19 +19,16 @@
     <!-- Time Range Selection -->
     <div class="d-flex justify-content-center mt-4">
       <select v-model="timeRange" @change="fetchChartData">
+        <option value="day">Daily</option>
         <option value="month">Monthly</option>
         <option value="week">Weekly</option>
-        <option value="day">Daily</option>
       </select>
     </div>
 
     <!-- Chart and Unique Viewers -->
     <div class="d-flex justify-content-center align-items-center mt-4">
-      <div>
-        <canvas
-          ref="lineChart"
-          style="max-width: 600px; height: 300px"
-        ></canvas>
+      <div class="chart-container">
+        <canvas ref="lineChart"></canvas>
       </div>
       <div class="unique-viewers ml-3">
         <i class="bi bi-person pe-2"></i>{{ uniqueViewers }} Unique Viewers This
@@ -210,27 +207,12 @@ export default {
         });
       });
 
-      // Calculate daily differences and accumulate increases/decreases
-      const increases = [];
-      const decreases = [];
       const keys = Object.keys(viewCounts);
-      let previousCount = 0;
+      const totalViews = keys.map((key) => viewCounts[key]);
 
-      for (let i = 0; i < keys.length; i++) {
-        const currentCount = viewCounts[keys[i]];
-        if (i === 0) {
-          increases.push(currentCount); // Start with the initial count
-          decreases.push(0); // No decrease at the start
-        } else {
-          const difference = currentCount - previousCount;
-          increases.push(difference >= 0 ? difference : 0);
-          decreases.push(difference < 0 ? Math.abs(difference) : 0);
-        }
-        previousCount = currentCount; // Update previousCount for the next iteration
-      }
-
-      return { increases, decreases, keys };
+      return { totalViews, keys };
     },
+
     getDateKey(date) {
       switch (this.timeRange) {
         case "month":
@@ -243,28 +225,31 @@ export default {
     },
     async fetchChartData() {
       try {
-        const { increases, decreases, keys } = this.accumulateViewsByDate();
+        const { totalViews, keys } = this.accumulateViewsByDate();
         const labels = keys;
 
-        this.updateChart(labels, increases, decreases);
+        this.updateChart(labels, totalViews);
       } catch (error) {
         console.error("Error fetching chart data:", error);
       }
     },
     async fetchViews(blogPostIds) {
       try {
-        const allViews = []; // Store all views
-        for (const blogPostId of blogPostIds) {
-          const views = await blogService.getAllViews(blogPostId);
-          console.log(`Views for Blog ID ${blogPostId}:`, views);
-          allViews.push(...views); // Combine views from each blog
+        if (blogPostIds && blogPostIds.length > 0) {
+          const views = await blogService.getAllViews(blogPostIds);
+          console.log("Views for Blog IDs:", views);
+
+          this.userBlogs.forEach((blog) => {
+            blog.views = views.filter((view) => view.blogPostId === blog.id);
+          });
+        } else {
+          console.warn("No blog post IDs provided for fetching views.");
         }
-        return allViews; // Return combined views if needed
       } catch (error) {
         console.error("Error fetching all views", error);
       }
     },
-    updateChart(labels, increases, decreases) {
+    updateChart(labels, totalViews) {
       const ctx = this.$refs.lineChart;
 
       if (!ctx) {
@@ -282,17 +267,10 @@ export default {
           labels: labels,
           datasets: [
             {
-              label: "Increase in Views",
+              label: "Total Views",
               backgroundColor: "rgba(75, 192, 192, 0.2)",
               borderColor: "rgba(75, 192, 192, 1)",
-              data: increases,
-              fill: false,
-            },
-            {
-              label: "Decrease in Views",
-              backgroundColor: "rgba(255, 99, 132, 0.2)",
-              borderColor: "rgba(255, 99, 132, 1)",
-              data: decreases,
+              data: totalViews,
               fill: false,
             },
           ],
@@ -305,7 +283,7 @@ export default {
             },
             title: {
               display: true,
-              text: `Views Increase/Decrease (${
+              text: `Total Views Accumulated (${
                 this.timeRange.charAt(0).toUpperCase() + this.timeRange.slice(1)
               })`,
             },
@@ -342,4 +320,13 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.chart-container {
+  width: 80%; /* Adjust this value to make the chart wider */
+  margin: 0 auto; /* Center the chart */
+}
+
+.unique-viewers {
+  margin-left: 20px; /* Adjust spacing between the chart and unique viewers */
+}
+</style>
