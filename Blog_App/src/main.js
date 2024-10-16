@@ -43,8 +43,14 @@ import {
   CategoryScale,
   LinearScale,
   PointElement,
-  LineController, // Import LineController
+  LineController,
 } from "chart.js";
+
+// Import the new plugins for exporting files
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import { saveAs } from "file-saver";
+import { Document, Packer, Paragraph, TextRun } from "docx";
 
 const app = createApp(App);
 
@@ -57,7 +63,7 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
-  LineController // Register LineController here
+  LineController
 );
 
 import axios from "axios";
@@ -94,6 +100,13 @@ app.component("Calendar", Calendar);
 
 app.config.globalProperties.$axios = axios;
 app.config.globalProperties.$toastr = toastr; // Make Toastr available globally
+
+// Make the new plugins globally available in the app
+app.config.globalProperties.$html2canvas = html2canvas;
+app.config.globalProperties.$jsPDF = jsPDF;
+app.config.globalProperties.$saveAs = saveAs;
+app.config.globalProperties.$docx = { Document, Packer, Paragraph, TextRun };
+
 app.use(router);
 app.use(VueFroala);
 app.use(store);

@@ -15,7 +15,18 @@
                 to="/userPerformance"
               >
                 <i class="fs-4 bi-speedometer2"></i>
-                <span class="ms-1 d-none d-sm-inline">Dashboard</span>
+                <span class="ms-2 d-none d-sm-inline">Dashboard</span>
+              </RouterLink>
+            </li>
+            <li class="userside-links">
+              <RouterLink
+                class="nav-link px-0 align-middle text-dark"
+                to="/addBlog"
+              >
+                <i class=" fs-4 bi bi-book"></i>
+                <span class="ms-2 d-none d-sm-inline text-darl display-7"
+                  >Add Blog</span
+                >
               </RouterLink>
             </li>
             <li class="userside-links">
@@ -24,7 +35,7 @@
                 to="/userBlogs"
               >
                 <i class="fs-4 bi-table"></i>
-                <p class="ms-1 d-none d-sm-inline text-dark display-7">Blogs</p>
+                <p class="ms-2 d-none d-sm-inline text-dark display-7">Blogs</p>
               </RouterLink>
             </li>
 
@@ -134,12 +145,10 @@
 .nav-link {
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
   width: 12rem;
- 
 }
 
 /* Change background and text color on hover */
 .nav-link:hover {
   background-color: #eee;
-  
 }
 </style>

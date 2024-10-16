@@ -35,6 +35,15 @@
         Month
       </div>
     </div>
+
+    <div class="d-flex justify-content-center mt-4">
+      <button @click="downloadPDF" class="btn btn-primary me-2">
+        Download PDF
+      </button>
+      <button @click="downloadWord" class="btn btn-primary">
+        Download Word
+      </button>
+    </div>
   </div>
 </template>
 
@@ -52,6 +61,9 @@ import {
   LineElement,
 } from "chart.js";
 import moment from "moment";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { Document, Packer, Paragraph, TextRun } from "docx";
 
 ChartJS.register(
   Title,
@@ -82,15 +94,12 @@ export default {
     await this.calculateUserPerformance();
     const blogPostIds = this.userBlogs.map((blog) => blog.id);
     await this.fetchViews(blogPostIds);
-  },
-  mounted() {
     this.fetchChartData();
   },
   methods: {
     async fetchUserBlogs() {
       try {
         const response = await blogService.getAllBlog();
-        console.log(response);
         const blogs = Array.isArray(response) ? response : [];
         const cleanUserId = String(this.id).replace(/['"]+/g, "").trim();
         this.userBlogs = blogs.filter(
@@ -99,18 +108,14 @@ export default {
             cleanUserId.toLowerCase()
         );
 
-        console.log("user blogs", this.userBlogs);
         const blogPostIds = this.userBlogs.map((blog) => blog.id);
-        console.log("Blog Post IDs:", blogPostIds); // Debugging statement
 
-        // Call fetchViews only if there are blog post IDs
         if (blogPostIds.length > 0) {
           await this.fetchViews(blogPostIds);
         } else {
           console.warn("No blog post IDs to fetch views for.");
         }
 
-        // Fetch views for each blog
         for (let blog of this.userBlogs) {
           const viewResponse = await blogService.getViews(blog.id);
           blog.views = Array.isArray(viewResponse)
@@ -184,7 +189,6 @@ export default {
           break;
       }
 
-      // Initialize viewCounts
       let current = startDate.clone();
       while (current <= today) {
         const key = this.getDateKey(current);
@@ -192,7 +196,6 @@ export default {
         current.add(1, this.timeRange);
       }
 
-      // Populate viewCounts with actual views
       this.userBlogs.forEach((blog) => {
         blog.views.forEach((view) => {
           if (view.viewAt) {
@@ -212,7 +215,6 @@ export default {
 
       return { totalViews, keys };
     },
-
     getDateKey(date) {
       switch (this.timeRange) {
         case "month":
@@ -227,7 +229,6 @@ export default {
       try {
         const { totalViews, keys } = this.accumulateViewsByDate();
         const labels = keys;
-
         this.updateChart(labels, totalViews);
       } catch (error) {
         console.error("Error fetching chart data:", error);
@@ -237,8 +238,6 @@ export default {
       try {
         if (blogPostIds && blogPostIds.length > 0) {
           const views = await blogService.getAllViews(blogPostIds);
-          console.log("Views for Blog IDs:", views);
-
           this.userBlogs.forEach((blog) => {
             blog.views = views.filter((view) => view.blogPostId === blog.id);
           });
@@ -260,6 +259,9 @@ export default {
       if (this.chartInstance) {
         this.chartInstance.destroy();
       }
+
+      // Get the month name for the current month
+      const monthName = moment().format("MMMM");
 
       this.chartInstance = new ChartJS(ctx, {
         type: "line",
@@ -283,7 +285,7 @@ export default {
             },
             title: {
               display: true,
-              text: `Total Views Accumulated (${
+              text: `Total Views Accumulated for ${monthName} (${
                 this.timeRange.charAt(0).toUpperCase() + this.timeRange.slice(1)
               })`,
             },
@@ -307,6 +309,90 @@ export default {
           },
         },
       });
+    }, 
+    async downloadPDF() {
+      const canvas = this.$refs.lineChart;
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("landscape");
+
+      pdf.addImage(imgData, "PNG", 10, 10, 280, 150);
+      pdf.save("chart.pdf");
+    },
+    async downloadWord() {
+      try {
+        const doc = new Document({
+          sections: [
+            {
+              properties: {},
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: "User Performance Report",
+                      bold: true,
+                      size: 24,
+                    }),
+                  ],
+                }),
+                new Paragraph({
+                  children: [new TextRun(`Total Blogs: ${this.totalBlogs}`)],
+                }),
+                new Paragraph({
+                  children: [new TextRun(`Total Likes: ${this.totalLikes}`)],
+                }),
+                new Paragraph({
+                  children: [new TextRun(`Total Views: ${this.totalViews}`)],
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun(`Total Comments: ${this.totalComments}`),
+                  ],
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun(
+                      `Unique Viewers This Month: ${this.uniqueViewers}`
+                    ),
+                  ],
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: "Chart Data",
+                      bold: true,
+                      size: 16,
+                    }),
+                  ],
+                }),
+                ...this.getChartDataForWord(),
+              ],
+            },
+          ],
+        });
+
+        const blob = await Packer.toBlob(doc);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "user-performance-report.docx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error downloading Word document:", error);
+      }
+    },
+    getChartDataForWord() {
+      const { totalViews, keys } = this.accumulateViewsByDate();
+      return keys.map(
+        (key, index) =>
+          new Paragraph({
+            children: [
+              new TextRun(`Date: ${key}, Views: ${totalViews[index]}`),
+            ],
+          })
+      );
     },
   },
   computed: {
@@ -322,11 +408,11 @@ export default {
 
 <style scoped>
 .chart-container {
-  width: 80%; /* Adjust this value to make the chart wider */
-  margin: 0 auto; /* Center the chart */
+  width: 80%;
+  margin: 0 auto;
 }
 
 .unique-viewers {
-  margin-left: 20px; /* Adjust spacing between the chart and unique viewers */
+  margin-left: 20px;
 }
 </style>

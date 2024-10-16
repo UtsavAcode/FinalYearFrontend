@@ -136,14 +136,9 @@
   display: none !important;
 }
 
-/* .blog-item {
-  display: flex !important;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-} */
+
 .blog-panel {
-  width: 90%;
+  width: 100%;
   border: 2px solid rgb(235, 232, 232);
   margin: 1rem 0 0 0;
   height: 7rem;
