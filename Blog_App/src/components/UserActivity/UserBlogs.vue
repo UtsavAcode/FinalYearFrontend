@@ -18,10 +18,20 @@
             />
           </div>
           <div class="blog-info-section ms-3 mt-3">
-            <b @click="goToBlogDetails(blog.id)" title="Goto the blog">{{
-              blog.title
-            }}</b>
-            <div class="text-gray">{{ formatDate(blog.createdAt) }}</div>
+            <div
+              @click="goToBlogDetails(blog.id)"
+              class="blog-title"
+              title="Goto the blog"
+            >
+              {{ blog.title }}
+            </div>
+            <div class="tags">
+              <span class="badge bg-secondary ms-1" v-for="(tag, index) in blog.tags" :key="tag.id">
+                {{ tag.name.trim()
+                }}<span v-if="index < blog.tags.length - 1">, </span>
+              </span>
+            </div>
+            <div class="date">{{ formatDate(blog.createdAt) }}</div>
             <div class="blog-stats">
               <i class="bi bi-heart"></i>
               <span class="ms-2 me-2">{{ blog.likesCount }}</span>
@@ -177,3 +187,16 @@ export default {
   },
 };
 </script>
+<style>
+.blog-title {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  width: 38rem;
+}
+
+.date {
+  font-size: 0.8em;
+  font-style: italic;
+}
+</style>

@@ -1,7 +1,10 @@
 <template>
   <div>
+    <!-- Display Loading message while fetching blogs -->
+    <div v-if="loading" class="loading-message">Loading...</div>
+
     <!-- Display no result message -->
-    <div v-if="filteredBlogs.length === 0" class="no-results">
+    <div v-else-if="filteredBlogs.length === 0" class="no-results">
       No blogs found for "{{ searchQuery }}".
     </div>
 
@@ -89,6 +92,7 @@ export default {
       blogs: [],
       currentPage: 1,
       blogsPerPage: 10,
+      loading: true, // Loading state added
       likeCount: 0,
       commentCount: 0,
       viewsCOunt: 0,
@@ -133,14 +137,15 @@ export default {
   },
   methods: {
     async getAllPosts() {
+      this.loading = true; // Set loading to true when fetching starts
       try {
-        const response = await blogService.getAllBlog(); // Ensure this method returns blog posts
+        const response = await blogService.getAllBlog();
         this.blogs = await Promise.all(
           response.map(async (blog) => {
             const likes = await blogService.getLikesCount(blog.id);
-            const viewResponse = await blogService.getViews(blog.id); // Fetch view data
-            const totalViews = viewResponse.totalViews || 0; // Get total views, default to 0 if undefined
-            const comments = await blogService.getComments(); // Fetch all comments
+            const viewResponse = await blogService.getViews(blog.id);
+            const totalViews = viewResponse.totalViews || 0;
+            const comments = await blogService.getComments();
             const commentCount = comments.filter(
               (comment) => comment.blogPostId === blog.id
             ).length;
@@ -148,7 +153,7 @@ export default {
             return {
               ...blog,
               likesCount: likes,
-              viewsCount: totalViews, // Only store the total views count
+              viewsCount: totalViews,
               commentCount: commentCount,
             };
           })
@@ -158,6 +163,8 @@ export default {
         ); // Sort by createdAt date
       } catch (error) {
         console.error("Error fetching posts:", error);
+      } finally {
+        this.loading = false; // Set loading to false when fetching is complete
       }
     },
     getImageUrl(path) {
@@ -197,6 +204,13 @@ export default {
 </script>
 
 <style>
+.loading-message {
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 20px;
+  font-weight: bold;
+}
+
 .no-results {
   text-align: center;
   padding: 20px;

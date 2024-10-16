@@ -52,21 +52,18 @@ export default {
           password: this.password,
         });
         if (response.isSuccess) {
-          const roles = this.$store.getters["auth/roles"]; // Get roles from Vuex
+          const roles = this.$store.getters["auth/roles"];
           if (roles.includes("Admin") || roles.includes("SuperAdmin")) {
-            this.$router.push("/performance"); // Redirect to admin dashboard
+            this.$router.push("/performance");
           } else {
-            this.$router.push("/"); // Redirect to hero page
+            this.$router.push("/");
           }
         } else {
-          this.errorMessage = response.message;
+          this.$toastr.error(response.message);
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          this.errorMessage = error.response.data.message;
-        } else {
-          this.errorMessage = error.message; // Adjusted to use error.message
-        }
+        const errorMessage = error.response?.data?.message || error.message;
+        this.$toastr.error(errorMessage);
       }
     },
   },

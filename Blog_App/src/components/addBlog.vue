@@ -123,6 +123,12 @@ export default {
         this.error = null; // Clear error if within limit
       }
     },
+    selectedTags(newValue) {
+      if (newValue.length > 5) {
+        this.selectedTags.pop(); // Prevent adding more than 5 tags
+        this.$toastr.warning("You can only select up to 5 tags", "Warning");
+      }
+    },
   },
 
   async created() {

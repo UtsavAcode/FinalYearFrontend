@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Performance Stats -->
-    <div class="blog-performance container d-flex justify-content-center ">
+    <div class="blog-performance container d-flex justify-content-center">
       <div class="performance-block">
         <i class="bi bi-book pe-2"></i>{{ totalBlogs }}
       </div>
@@ -43,7 +43,12 @@
         ></button>
       </div>
     </div>
-
+    <div class="d-flex justify-content-center mt-2 mb-2" style="height: 1rem">
+      <p style="font-size: 1.8em">
+        <span>Total Views for {{ currentMonthName }}:</span>
+        {{ viewsThisMonth }}
+      </p>
+    </div>
     <!-- Chart and Unique Viewers -->
     <div class="d-flex justify-content-center align-items-center mt-4">
       <div class="chart-container">
@@ -99,6 +104,8 @@ export default {
       timeRange: "month",
       chartInstance: null,
       userBlogs: [],
+      viewsThisMonth: 0, // To track total views this month
+      currentMonthName: moment().format("MMMM"),
     };
   },
   async created() {
@@ -127,6 +134,10 @@ export default {
         } else {
           console.warn("No blog post IDs to fetch views for.");
         }
+        const currentMonth = moment().month(); // Get the current month
+
+        this.uniqueViewers = 0;
+        this.calculateViewsThisMonth();
 
         for (let blog of this.userBlogs) {
           const viewResponse = await blogService.getViews(blog.id);
@@ -183,6 +194,18 @@ export default {
       } catch (error) {
         console.error("Error calculating performance:", error);
       }
+    },
+    calculateViewsThisMonth() {
+      const currentMonth = moment().month(); // Get the current month (0-based)
+
+      // Reset viewsThisMonth before calculation
+      this.viewsThisMonth = this.userBlogs.reduce((acc, blog) => {
+        // Filter views that belong to the current month
+        const monthViews = blog.views.filter(
+          (view) => moment(view.viewAt).month() === currentMonth
+        );
+        return acc + monthViews.length;
+      }, 0);
     },
     accumulateViewsByDate() {
       const viewCounts = {};
@@ -442,7 +465,7 @@ export default {
   width: 15rem;
 }
 
-.file-option{
-  height:3rem;
+.file-option {
+  height: 3rem;
 }
 </style>

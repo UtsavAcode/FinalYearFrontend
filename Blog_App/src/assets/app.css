@@ -141,7 +141,7 @@
   width: 100%;
   border: 2px solid rgb(235, 232, 232);
   margin: 1rem 0 0 0;
-  height: 7rem;
+  height: 8rem;
   border-radius: 5px;
 }
 
@@ -212,7 +212,7 @@
 }
 
 .blogcontainer {
-  height: 18rem;
+  height: 19rem;
 }
 
 .blogcontainer:hover {
