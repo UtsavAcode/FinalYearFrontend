@@ -167,10 +167,15 @@ export default {
       timer: null,
       hasScrolled: false,
       viewsCount: 0,
+      readingTime: 0, // Time spent reading in seconds
+      scrollPositions: [], // To track scroll positions
+      scrollTrackingInterval: null,
+      apiUrl: 'http://localhost:5254',
     };
   },
   async created() {
     try {
+      console.log("API URL:", this.apiUrl);
       const response = await blogService.getBlogById(this.id);
       this.blog = response;
 
@@ -179,7 +184,6 @@ export default {
       this.hasLiked = await blogService.checkIfUserLiked(this.blog.id);
       await this.fetchViews(this.blog.id);
 
-      // Only register the view if redirected from the home page and view isn't already registered
       if (this.$route.query.fromHomePage && !this.viewRegistered) {
         this.startViewRegistration();
       }
@@ -188,6 +192,10 @@ export default {
       this.error = error.message;
     }
 
+    this.startReadingTimer();
+    this.startScrollTracking();
+
+    window.addEventListener("beforeunload", this.handleBeforeUnload);
     this.currentUserId = JSON.parse(authService.getId());
   },
   computed: {
@@ -202,7 +210,9 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.handleScroll);
-    if (this.timer) clearTimeout(this.timer); // Clear timer on component destroy
+    window.removeEventListener("beforeunload", this.handleBeforeUnload);
+    if (this.timer) clearTimeout(this.timer);
+    clearInterval(this.scrollTrackingInterval);
   },
   methods: {
     getImageUrl(path) {
@@ -389,6 +399,43 @@ export default {
         this.viewsCount = 0; // Set to 0 in case of error
       }
     },
+
+    startReadingTimer() {
+      this.readingTime = 0;
+      setInterval(() => {
+        this.readingTime += 1;
+      }, 1000);
+    },
+    startScrollTracking() {
+      this.scrollTrackingInterval = setInterval(() => {
+        const scrollTop = window.scrollY;
+        const documentHeight = document.documentElement.scrollHeight;
+        const windowHeight = window.innerHeight;
+        const scrollPercent =
+          (scrollTop / (documentHeight - windowHeight)) * 100;
+        this.scrollPositions.push(parseFloat(scrollPercent.toFixed(2)));
+      }, 1000);
+    },
+    handleBeforeUnload(event) {
+      const payload = {
+        blogPostId: this.blog.id,
+        userId: this.currentUserId,
+        readingTime: Math.round(this.readingTime),
+        scrollPositions: this.scrollPositions,
+      };
+
+      // Use the sendBeacon API to send the data asynchronously
+      const blob = new Blob([JSON.stringify(payload)], {
+        type: "application/json",
+      });
+
+      const url = `${this.apiUrl}/api/Blog/Send`;
+      console.log("Sending data to:", url); // Debug log
+
+      navigator.sendBeacon(url, blob);
+    },
+
+    // ... other methods ...
   },
 };
 </script>

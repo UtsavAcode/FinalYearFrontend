@@ -278,6 +278,28 @@ const blogService = {
       throw error.response?.data || error.message;
     }
   },
+
+  async sendReadingData(payload) {
+    try {
+      // Format the payload to match the API expectations
+      const formattedPayload = {
+        blogPostId: payload.blogPostId,
+        userId: payload.userId,
+        readingTime: Math.round(payload.readingTime),
+        scrollPositions: payload.scrollPositions.map((position) =>
+          parseFloat(position.toFixed(2))
+        ),
+      };
+
+      console.log("Sending Reading Data Payload:", formattedPayload);
+
+      const response = await apiClient.post("/api/Blog/Send", formattedPayload);
+      return response.data;
+    } catch (error) {
+      console.error("Error sending reading data:", error);
+      throw error;
+    }
+  },
 };
 
 export default blogService;
