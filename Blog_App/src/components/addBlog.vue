@@ -45,20 +45,26 @@
           :tag="'textarea'"
           :config="config"
           v-model:value="Content"
+          style="height: 30rem"
         ></froala>
       </div>
-
+      
       <div class="form-group">
-        <label for="featuredImage">Featured Image</label>
-        <input
-          type="file"
-          @change="handleImageUpload"
-          id="featuredImage"
-          class="form-control"
-        />
-        <div v-if="imagePreview" class="mt-3">
+        <div  v-if="imagePreview" class=" image-area mt-3">
           <img :src="imagePreview" alt="Image Preview" class="img-fluid" />
         </div>
+        <div class="btn btn-dark btn-rounded mt-3">
+          <label for="featuredImage">Featured Image</label>
+          <input
+            type="file"
+            @change="handleImageUpload"
+            id="featuredImage"
+            class="form-control d-none"
+            onchange="displaySelectedImage(event, 'selectedImage')"
+          />
+        </div>
+
+      
       </div>
 
       <div class="form-group">
@@ -78,7 +84,7 @@
 
       <button
         type="submit"
-        class="btn btn-primary"
+        class="btn btn-dark"
         :disabled="metaDescriptionLengthExceeded"
       >
         Add Blog Post
@@ -103,6 +109,12 @@ export default {
       error: null,
       tags: [],
       selectedTags: [],
+      config: {
+        placeholderText: "Start typing your content here...",
+        charCounterCount: true,
+        heightMin: 300, // Minimum height in pixels
+        heightMax: 600, // Maximum height in pixels (optional)
+      },
     };
   },
 
@@ -189,6 +201,20 @@ export default {
         this.imagePreview = URL.createObjectURL(file);
       }
     },
+    displaySelectedImage(event, elementId) {
+      const selectedImage = document.getElementById(elementId);
+      const fileInput = event.target;
+
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          selectedImage.src = e.target.result;
+        };
+
+        reader.readAsDataURL(fileInput.files[0]);
+      }
+    },
   },
 };
 </script>
@@ -207,5 +233,10 @@ export default {
 
 .form-group {
   margin-bottom: 15px;
+}
+
+.image-area{
+  height:12rem;
+  width:12rem;
 }
 </style>

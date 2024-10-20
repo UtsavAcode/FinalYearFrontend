@@ -1,5 +1,38 @@
 <template>
   <div>
+    <div class="tag-filter-wrapper">
+      <!-- Left arrow to scroll tags left -->
+      <button class="scroll-btn left-btn" @click="scrollLeft">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <!-- Tag Filter Bar (scrollable container) -->
+      <div
+        class="tag-filter-bar container d-flex flex-nowrap align-items-center"
+      >
+        <button
+          class="btn btn-outline-secondary me-2"
+          :class="{ active: selectedTag === null }"
+          @click="selectTag(null)"
+        >
+          All
+        </button>
+        <button
+          class="tags-choose btn me-2"
+          v-for="tag in allTags"
+          :key="tag.id"
+          :class="{ active: selectedTag === tag.name }"
+          @click="selectTag(tag.name)"
+        >
+          {{ tag.name }}
+        </button>
+      </div>
+
+      <!-- Right arrow to scroll tags right -->
+      <button class="scroll-btn right-btn" @click="scrollRight">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
     <!-- Display Loading message while fetching blogs -->
     <div v-if="loading" class="loading-message">Loading...</div>
 
@@ -90,12 +123,14 @@ export default {
   data() {
     return {
       blogs: [],
+      allTags: [], // Store all tags
+      selectedTag: null, // Store the selected tag
       currentPage: 1,
       blogsPerPage: 10,
-      loading: true, // Loading state added
+      loading: true,
       likeCount: 0,
       commentCount: 0,
-      viewsCOunt: 0,
+      viewsCount: 0,
     };
   },
   watch: {
@@ -116,28 +151,39 @@ export default {
       return Math.ceil(this.blogs.length / this.blogsPerPage);
     },
     filteredBlogs() {
+      let filtered = this.blogs;
+
+      // Filter by search query
       if (this.searchQuery) {
         const lowerCaseQuery = this.searchQuery.toLowerCase();
-        return this.blogs.filter((blog) => {
+        filtered = filtered.filter((blog) => {
           const titleMatch = blog.title.toLowerCase().includes(lowerCaseQuery);
           const authorMatch = blog.authorName
             .toLowerCase()
             .includes(lowerCaseQuery);
-
-          // Check if any tag matches the query
           const tagsMatch = blog.tags.some((tag) =>
             tag.name.toLowerCase().includes(lowerCaseQuery)
           );
-
           return titleMatch || authorMatch || tagsMatch;
         });
       }
-      return this.paginatedBlogs;
+
+      // Filter by selected tag
+      if (this.selectedTag !== null) {
+        filtered = filtered.filter((blog) =>
+          blog.tags.some((tag) => tag.name === this.selectedTag)
+        );
+      }
+
+      return filtered.slice(
+        (this.currentPage - 1) * this.blogsPerPage,
+        this.currentPage * this.blogsPerPage
+      );
     },
   },
   methods: {
     async getAllPosts() {
-      this.loading = true; // Set loading to true when fetching starts
+      this.loading = true;
       try {
         const response = await blogService.getAllBlog();
         this.blogs = await Promise.all(
@@ -158,15 +204,30 @@ export default {
             };
           })
         );
+        this.allTags = this.extractUniqueTags(this.blogs);
         this.blogs.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        ); // Sort by createdAt date
+        );
       } catch (error) {
         console.error("Error fetching posts:", error);
       } finally {
-        this.loading = false; // Set loading to false when fetching is complete
+        this.loading = false;
       }
     },
+    extractUniqueTags(blogs) {
+      const tagMap = new Map();
+
+      blogs.forEach((blog) => {
+        blog.tags.forEach((tag) => {
+          if (!tagMap.has(tag.name)) {
+            tagMap.set(tag.name, tag); // Add the tag if it doesn't exist in the map
+          }
+        });
+      });
+
+      return Array.from(tagMap.values()); // Convert the map back to an array
+    },
+
     getImageUrl(path) {
       return `http://localhost:5254${path}`;
     },
@@ -188,9 +249,7 @@ export default {
         this.currentPage--;
       }
     },
-
     handleSearch(query) {
-      // Reset to first page after search
       this.currentPage = 1;
     },
     goToBlogDetail(blog) {
@@ -198,6 +257,18 @@ export default {
         { path: `/userBlogDetail/${blog.id}` },
         { fromHomePage: true }
       );
+    },
+    selectTag(tag) {
+      this.selectedTag = tag;
+      this.currentPage = 1; // Reset to the first page
+    },
+    scrollLeft() {
+      const container = this.$refs.tagFilterBar;
+      container.scrollBy({ left: -200, behavior: "smooth" });
+    },
+    scrollRight() {
+      const container = this.$refs.tagFilterBar;
+      container.scrollBy({ left: 200, behavior: "smooth" });
     },
   },
 };
@@ -237,5 +308,51 @@ export default {
 
 .page {
   margin: 10px 0 0 0;
+}
+
+.tag-filter-bar {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.tag-filter-bar .btn {
+  margin: 0.2rem;
+}
+
+.tag-filter-bar .btn.active {
+  background-color: #000;
+  color: #fff;
+}
+
+.tag-filter-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.tag-filter-bar {
+  overflow-x: auto;
+  white-space: nowrap;
+  scroll-behavior: smooth;
+  flex-grow: 1;
+  max-width: 70%; /* Adjust width to fit page layout */
+}
+
+.scroll-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.scroll-btn.left-btn {
+  position: absolute;
+  left: 5rem;
+}
+
+.scroll-btn.right-btn {
+  position: absolute;
+  right: 5rem;
 }
 </style>
