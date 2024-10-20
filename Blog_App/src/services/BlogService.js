@@ -281,23 +281,30 @@ const blogService = {
 
   async sendReadingData(payload) {
     try {
-      // Format the payload to match the API expectations
-      const formattedPayload = {
-        blogPostId: payload.blogPostId,
-        userId: payload.userId,
-        readingTime: Math.round(payload.readingTime),
-        scrollPositions: payload.scrollPositions.map((position) =>
-          parseFloat(position.toFixed(2))
-        ),
-      };
-
-      console.log("Sending Reading Data Payload:", formattedPayload);
-
-      const response = await apiClient.post("/api/Blog/Send", formattedPayload);
+      console.log("Sending Reading Data Payload:", payload);
+      const response = await apiClient.post("/Blog/Send", payload);
+      console.log("Reading data sent successfully:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error sending reading data:", error);
       throw error;
+    }
+  },
+
+  async getAverageScrollAndReadingTime(blogPostId) {
+    try {
+      const response = await apiClient.get(`/Blog/${blogPostId}/average`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+  async getReadingData(blogPostId) {
+    try {
+      const response = await apiClient.get(`/Blog/ReadingData/${blogPostId}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
     }
   },
 };

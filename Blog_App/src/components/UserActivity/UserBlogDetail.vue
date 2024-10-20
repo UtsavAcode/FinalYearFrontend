@@ -139,6 +139,7 @@
 <script>
 import blogService from "@/services/BlogService";
 import authService from "@/services/auth.servics";
+import { API_URL } from "@/services/api";
 
 export default {
   name: "UserBlogDetail",
@@ -170,7 +171,7 @@ export default {
       readingTime: 0, // Time spent reading in seconds
       scrollPositions: [], // To track scroll positions
       scrollTrackingInterval: null,
-      apiUrl: 'http://localhost:5254',
+      apiUrl: "http://localhost:5254",
     };
   },
   async created() {
@@ -194,6 +195,7 @@ export default {
 
     this.startReadingTimer();
     this.startScrollTracking();
+    this.startPeriodicDataSending();
 
     window.addEventListener("beforeunload", this.handleBeforeUnload);
     this.currentUserId = JSON.parse(authService.getId());
@@ -416,6 +418,7 @@ export default {
         this.scrollPositions.push(parseFloat(scrollPercent.toFixed(2)));
       }, 1000);
     },
+
     handleBeforeUnload(event) {
       const payload = {
         blogPostId: this.blog.id,
@@ -424,17 +427,48 @@ export default {
         scrollPositions: this.scrollPositions,
       };
 
-      // Use the sendBeacon API to send the data asynchronously
       const blob = new Blob([JSON.stringify(payload)], {
         type: "application/json",
       });
 
-      const url = `${this.apiUrl}/api/Blog/Send`;
-      console.log("Sending data to:", url); // Debug log
+      const url = `${this.apiUrl}/Blog/Send`;
+      console.log("Sending data to:", url, "Payload:", payload);
 
-      navigator.sendBeacon(url, blob);
+      // Use sendBeacon and fallback to XMLHttpRequest if not supported
+      if (navigator.sendBeacon) {
+        const success = navigator.sendBeacon(url, blob);
+        console.log("sendBeacon success:", success);
+      } else {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url, false); // Synchronous request
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
+        console.log("XHR status:", xhr.status);
+      }
+    },
+    // New method to periodically send data
+    startPeriodicDataSending() {
+      setInterval(() => {
+        this.sendReadingData();
+      }, 30000); // Send data every minute
     },
 
+    async sendReadingData() {
+  const payload = {
+    blogPostId: this.blog.id,
+    userId: this.currentUserId,
+    readingTime: Math.round(this.readingTime),
+    scrollPositions: this.scrollPositions
+  };
+
+  try {
+    const response = await blogService.sendReadingData(payload);
+    console.log("Data sent successfully:", response);
+    this.scrollPositions = []; // Clear scroll positions after sending
+  } catch (error) {
+    console.error("Error sending reading data:", error);
+  }
+},
     // ... other methods ...
   },
 };

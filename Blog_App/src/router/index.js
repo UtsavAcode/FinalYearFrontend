@@ -19,6 +19,9 @@ import Performance from "@/components/Performance.vue";
 import UserBlogDetail from "@/components/UserActivity/UserBlogDetail.vue";
 import UserPerformance from "@/components/UserActivity/UserPerformance.vue";
 import UserBlogPerformance from "@/components/UserActivity/UserBlogPerformance.vue";
+import UserBlogScroll from "@/components/UserActivity/UserBlogScroll.vue";
+import UserBlogTime from "@/components/UserActivity/UserBlogTime.vue";
+import UserBlogView from "@/components/UserActivity/UserBlogView.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
@@ -68,6 +71,24 @@ const routes = [
         name: "UserBlogPerformance",
         component: UserBlogPerformance,
         props: true,
+        children: [
+          {
+            path: "/blogScroll/:id",
+            name: "UserBlogScroll",
+            component: UserBlogScroll,
+            props: true,
+          },
+          {
+            path: "/blogTime/:id",
+            name: "UserBlogTime",
+            component: UserBlogTime,
+          },
+          {
+            path: "",
+            name: "UserBlogView",
+            component: UserBlogView,
+          },
+        ],
       },
     ],
   },
