@@ -67,7 +67,7 @@
       
       </div>
 
-      <div class="form-group">
+      <div class="form-group" style="width:10rem;">
         <label for="tags">Tags</label>
         <MultiSelect
           v-model="selectedTags"

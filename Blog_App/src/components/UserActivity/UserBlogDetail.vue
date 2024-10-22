@@ -1,134 +1,171 @@
 <template>
-  <div class="container" v-if="blog" style="width: 80%">
-    <h1 class="" style="margin: auto; width: 55rem">{{ blog.title }}</h1>
-    <div
-      class="author-date d-flex justify-content-between"
-      style="width: 59rem; margin-left: 4rem; font-size: 1em"
-    >
-      <div>By: {{ blog.authorName }}</div>
-      <div>{{ formatDate(blog.createdAt) }}</div>
-    </div>
-
-    <!-- Tags -->
-    <div class="blogtags" style="width: 59rem; margin-left: 5rem">
-      <span v-for="tag in blog.tags" :key="tag.id" class="badge bg-secondary">
-        {{ tag.name }}
-      </span>
-    </div>
-
-    <div class="likes d-flex">
-      <i
-        :class="[hasLiked ? 'bi-heart-fill' : 'bi-heart']"
-        @click="likeBlog"
-      ></i>
-      <span class="ms-2">{{ likesCount }} </span>
-      <div class="bi bi-eye ms-4">
-        <span class="p-2">{{ viewsCount }}</span>
-      </div>
+  <div class="overall d-flex" v-if="blog">
+    <div class="cover-box">
+      <h1 class="headline">{{ blog.title }}</h1>
       <div
-        class="total-comments ms-4 bi bi-chat"
-        v-if="filteredComments.length"
+        class="author-date d-flex justify-content-between"
+        style="width: 59rem; margin-left: 1.9rem; font-size: 1em"
       >
-        <span class="ps-2">{{ filteredComments.length }}</span>
+        <div>By: {{ blog.authorName }}</div>
+        <div>{{ formatDate(blog.createdAt) }}</div>
       </div>
-    </div>
 
-    <!-- Blog Image -->
-    <div class="blogdetail-image">
-      <img
-        v-if="blog.featuredImagePath"
-        :src="getImageUrl(blog.featuredImagePath)"
-        alt="Blog Image"
-      />
-    </div>
-
-    <!-- Content section -->
-    <div class="container" v-html="blog.content" style="width: 80%"></div>
-
-    <div class="container ms-6">
-      <h2>Comments</h2>
-
-      <form @submit.prevent="addComment">
-        <textarea
-          v-model="newComment"
-          placeholder="Add a comment..."
-          required
-          rows="3"
-          class="form-control w-50 mb-2 p-1"
-        ></textarea>
-        <button class="btn btn-dark" style="width: 10rem">Submit</button>
-      </form>
-
-      <div v-if="comments.length" class="mt-3 mb-3">
-        <div
-          class="mb-1 d-flex"
-          v-for="comment in filteredComments"
-          :key="comment.id"
-          @mouseenter="setHoveredComment(comment.id, comment.userId)"
-          @mouseleave="clearHoveredCommentId"
+      <!-- Tags -->
+      <div class="blogtags" style="width: 59rem; margin-left: 2.9rem">
+        <span
+          v-for="tag in blog.tags"
+          :key="tag.id"
+          class="badge bg-secondary me-1"
         >
-          <div class="profile-con" style="background-color: black">
-            <div class="profile-pic" style="color: white">
-              {{ getFirstLetter(comment.userName) }}
-            </div>
-          </div>
-          <div class="cover-utility">
-            <div class="bubble">
-              <div class="username-comment">{{ comment.userName }}</div>
-              <p class="comment-content">{{ comment.content }}</p>
-            </div>
-            <div
-              class="comment-utility"
-              v-if="
-                hoveredCommentId === comment.id &&
-                isCommentAuthor(comment.userId)
-              "
-            >
-              <div class="comment-utilities d-flex ms-5">
-                <p
-                  class="me-3 comment-utilities-single"
-                  @click="showDialog(comment)"
-                >
-                  edit
-                </p>
-                <p
-                  @click="deleteComment(comment.id)"
-                  class="comment-utilities-single"
-                >
-                  delete
-                </p>
-              </div>
-            </div>
-          </div>
-          <Dialog
-            v-model:visible="visible"
-            :style="{ width: '25rem' }"
-            header="Edit Comment"
-            class="container"
-            :close-on-click-overlay="true"
-          >
-            <InputText
-              v-model="currentComment.content"
-              :style="{ width: '20rem' }"
-            ></InputText>
+          {{ tag.name }}
+        </span>
+      </div>
 
-            <div class="d-flex justify-content-center align-center gap-2">
-              <Button
-                type="button"
-                label="Cancel"
-                severity="secondary"
-                @click="visible = false"
-              ></Button>
-              <Button type="button" label="Save" @click="editComment"></Button>
-            </div>
-          </Dialog>
+      <div class="likes d-flex">
+        <i
+          :class="[hasLiked ? 'bi-heart-fill' : 'bi-heart']"
+          @click="likeBlog"
+        ></i>
+        <span class="ms-2">{{ likesCount }} </span>
+        <div class="bi bi-eye ms-4">
+          <span class="p-2">{{ viewsCount }}</span>
+        </div>
+        <div
+          class="total-comments ms-4 bi bi-chat"
+          v-if="filteredComments.length"
+        >
+          <span class="ps-2">{{ filteredComments.length }}</span>
         </div>
       </div>
-      <p v-else>No comments yet.</p>
+
+      <!-- Blog Image -->
+      <div class="blogdetail-image">
+        <img
+          v-if="blog.featuredImagePath"
+          :src="getImageUrl(blog.featuredImagePath)"
+          alt="Blog Image"
+        />
+      </div>
+
+      <!-- Content section -->
+      <div class="container" v-html="blog.content" style="width: 70%"></div>
+
+      <div class="container ms-6">
+        <h2>Comments</h2>
+
+        <form @submit.prevent="addComment">
+          <textarea
+            v-model="newComment"
+            placeholder="Add a comment..."
+            required
+            rows="3"
+            class="form-control w-50 mb-2 p-1"
+          ></textarea>
+          <button class="btn btn-dark" style="width: 10rem">Submit</button>
+        </form>
+
+        <div v-if="comments.length" class="mt-3 mb-3">
+          <div
+            class="mb-1 d-flex"
+            v-for="comment in filteredComments"
+            :key="comment.id"
+            @mouseenter="setHoveredComment(comment.id, comment.userId)"
+            @mouseleave="clearHoveredCommentId"
+          >
+            <div class="profile-con" style="background-color: black">
+              <div class="profile-pic" style="color: white">
+                {{ getFirstLetter(comment.userName) }}
+              </div>
+            </div>
+            <div class="cover-utility">
+              <div class="bubble">
+                <div class="username-comment">{{ comment.userName }}</div>
+                <p class="comment-content">{{ comment.content }}</p>
+              </div>
+              <div
+                class="comment-utility"
+                v-if="
+                  hoveredCommentId === comment.id &&
+                  isCommentAuthor(comment.userId)
+                "
+              >
+                <div class="comment-utilities d-flex ms-5">
+                  <p
+                    class="me-3 comment-utilities-single"
+                    @click="showDialog(comment)"
+                  >
+                    edit
+                  </p>
+                  <p
+                    @click="deleteComment(comment.id)"
+                    class="comment-utilities-single"
+                  >
+                    delete
+                  </p>
+                </div>
+              </div>
+            </div>
+            <Dialog
+              v-model:visible="visible"
+              :style="{ width: '25rem' }"
+              header="Edit Comment"
+              class="container"
+              :close-on-click-overlay="true"
+            >
+              <InputText
+                v-model="currentComment.content"
+                :style="{ width: '20rem' }"
+              ></InputText>
+
+              <div class="d-flex justify-content-center align-center gap-2">
+                <Button
+                  type="button"
+                  label="Cancel"
+                  severity="secondary"
+                  @click="visible = false"
+                ></Button>
+                <Button
+                  type="button"
+                  label="Save"
+                  @click="editComment"
+                ></Button>
+              </div>
+            </Dialog>
+          </div>
+        </div>
+        <p v-else>No comments yet.</p>
+      </div>
+
+      <div v-if="isRegisteringView" class="view-registration-message">
+        Registering view...
+      </div>
     </div>
 
-    <div v-if="isRegisteringView" class="view-registration-message">
-      Registering view...
+    <div v-if="recommendedBlogs.length > 0" class="recomendation-bar">
+      <div class="recommendations">Recommendations for you</div>
+      <div class="recommended-blogs">
+        <div
+          v-for="blog in recommendedBlogs"
+          :key="blog.id"
+          class="recommended-blog"
+          @click="handleRecommendationClick(blog.id)"
+        >
+          <img
+            :src="getImageUrl(blog.featuredImagePath)"
+            :alt="blog.title"
+            class="recommended-image"
+          />
+          <div class="recommended-info">
+            <h5 class="recommended-title">{{ blog.title }}</h5>
+            <div class="recommended-author">By: {{ blog.authorName }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div v-if="isLoadingRecommendations" class="recommendations-loading">
+        Loading recommendations...
+      </div>
     </div>
     <!-- Loading indicator -->
   </div>
@@ -172,6 +209,8 @@ export default {
       scrollPositions: [], // To track scroll positions
       scrollTrackingInterval: null,
       apiUrl: "http://localhost:5254",
+      recommendedBlogs: [],
+      isLoadingRecommendations: false,
     };
   },
   async created() {
@@ -184,6 +223,7 @@ export default {
       await this.fetchComments();
       this.hasLiked = await blogService.checkIfUserLiked(this.blog.id);
       await this.fetchViews(this.blog.id);
+      this.fetchRecommendations();
 
       if (this.$route.query.fromHomePage && !this.viewRegistered) {
         this.startViewRegistration();
@@ -454,29 +494,139 @@ export default {
     },
 
     async sendReadingData() {
-  const payload = {
-    blogPostId: this.blog.id,
-    userId: this.currentUserId,
-    readingTime: Math.round(this.readingTime),
-    scrollPositions: this.scrollPositions
-  };
+      const payload = {
+        blogPostId: this.blog.id,
+        userId: this.currentUserId,
+        readingTime: Math.round(this.readingTime),
+        scrollPositions: this.scrollPositions,
+      };
 
-  try {
-    const response = await blogService.sendReadingData(payload);
-    console.log("Data sent successfully:", response);
-    this.scrollPositions = []; // Clear scroll positions after sending
-  } catch (error) {
-    console.error("Error sending reading data:", error);
-  }
-},
+      try {
+        const response = await blogService.sendReadingData(payload);
+        console.log("Data sent successfully:", response);
+        this.scrollPositions = []; // Clear scroll positions after sending
+      } catch (error) {
+        console.error("Error sending reading data:", error);
+      }
+    },
+    async fetchRecommendations() {
+      this.isLoadingRecommendations = true;
+      try {
+        const userId = JSON.parse(authService.getId());
+        if (!userId) {
+          console.log("No user ID found");
+          return;
+        }
+
+        const recommendations = await blogService.getRecommendations(userId);
+        // Filter out the current blog from recommendations if present
+        this.recommendedBlogs = recommendations.filter(
+          (blog) => blog.id !== this.blog.id
+        );
+      } catch (error) {
+        console.error("Error fetching recommendations:", error);
+        this.recommendedBlogs = [];
+      } finally {
+        this.isLoadingRecommendations = false;
+      }
+    },
+    handleRecommendationClick(blogId) {
+      // Navigate to the clicked blog
+      this.$router.push(`/blog/${blogId}`);
+    },
     // ... other methods ...
   },
 };
 </script>
 
-<style scoped>
+<style>
 .view-registration-message {
   margin-top: 10px;
   color: blue; /* Add some style for visibility */
+}
+
+.headline {
+  margin: auto;
+  width: 56rem;
+  font-size: 2.4em;
+}
+.overall {
+}
+.cover-box {
+  width: 75%;
+}
+
+.panel {
+  border-bottom: 1px solid #eee;
+  padding: 0.8rem;
+}
+.recomendation-bar {
+  width: 20rem;
+  position: sticky;
+  height: auto;
+  max-height: calc(100vh - 100px);
+  border-left: 1.5px solid #e2dede;
+  top: 11%;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.recommendations {
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.recommended-blogs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.recommended-blog {
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  border: 1px solid #eee;
+}
+
+.recommended-blog:hover {
+  background-color: #f5f5f5;
+}
+
+.recommended-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.recommended-info {
+  padding: 0.5rem;
+}
+
+.recommended-title {
+  font-size: 1rem;
+  margin: 0;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recommended-author {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.recommendations-loading {
+  text-align: center;
+  padding: 1rem;
+  color: #666;
 }
 </style>

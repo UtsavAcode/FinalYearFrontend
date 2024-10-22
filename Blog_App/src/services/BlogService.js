@@ -307,6 +307,15 @@ const blogService = {
       throw error.response?.data || error.message;
     }
   },
+  async getRecommendations(userId) {
+    try {
+      const response = await apiClient.get(`/Recommendation/recommendations/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+      throw error.response?.data || error.message;
+    }
+  },
 };
 
 export default blogService;

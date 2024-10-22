@@ -348,7 +348,7 @@ export default {
 
 .scroll-btn.left-btn {
   position: absolute;
-  left: 5rem;
+  left: 4rem;
 }
 
 .scroll-btn.right-btn {
