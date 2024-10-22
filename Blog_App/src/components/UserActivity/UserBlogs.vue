@@ -44,6 +44,17 @@
               <i class="bi bi-chat"></i>
               <span class="ms-2 me-2">{{ blog.commentCount }}</span>
             </div>
+            <div class="confirmation-section mt-2">
+              <label for="confirm-blog" class="form-check-label">
+                <input
+  type="checkbox"
+  class="form-check-input"
+  :checked="blog.isConfirmed"
+  @change="confirmBlog(blog)"
+/>
+                Confirm Blog
+              </label>
+            </div>
           </div>
         </div>
         <div
@@ -117,7 +128,7 @@ export default {
     this.fetchUserBlogs();
   },
   methods: {
-    async fetchUserBlogs() {
+      async fetchUserBlogs() {
       try {
         const response = await blogService.getAllBlog();
         const blogs = Array.isArray(response) ? response : [];
@@ -126,22 +137,25 @@ export default {
         this.blogs = await Promise.all(
           blogs.map(async (blog) => {
             const likes = await blogService.getLikesCount(blog.id);
-            const views = await blogService.getViews(blog.id); // Ensure this returns the total view count
-            const comments = await blogService.getComments(); // Fetch all comments
+            const views = await blogService.getViews(blog.id);
+            const comments = await blogService.getComments();
             const commentCount = comments.filter(
               (comment) => comment.blogPostId === blog.id
             ).length;
 
+            // Ensure isConfirmed is properly initialized from the backend
             return {
               ...blog,
               likesCount: likes,
-              viewsCount: views.totalViews || 0, // Assuming views returns an object with totalViews property
+              viewsCount: views.totalViews || 0,
               commentCount: commentCount,
+              isConfirmed: Boolean(blog.isConfirmed) // Explicitly convert to boolean
             };
           })
         );
       } catch (error) {
-        console.log("User dash fetch error blogs:", error);
+        console.error("Error fetching blogs:", error);
+        this.$toastr.error("Failed to fetch blogs");
       }
     },
     editBlog(blog) {
@@ -181,6 +195,40 @@ export default {
 
       this.visible = true;
     },
+
+    // In UserBlogs.vue, update the confirmBlog method:
+
+async confirmBlog(blog) {
+    try {
+        const newStatus = !blog.isConfirmed;
+        
+        // Show loading state if you have one
+        // this.$loading.show();
+        
+        // Make API call
+        const response = await blogService.updateBlogConfirmation(blog.id, newStatus);
+        
+        // Update local state only if API call was successful
+        if (response) {
+            blog.isConfirmed = newStatus;
+            this.$toastr.success(
+                `Blog visibility ${newStatus ? 'enabled' : 'disabled'}`
+            );
+            
+            // Optionally refresh the blogs list
+            await this.fetchUserBlogs();
+        }
+    } catch (error) {
+        console.error("Error updating blog confirmation:", error);
+        this.$toastr.error("Failed to update blog visibility");
+        
+        // Revert checkbox state on error
+        blog.isConfirmed = !blog.isConfirmed;
+    } finally {
+        // Hide loading state if you have one
+        // this.$loading.hide();
+    }
+}
   },
 
   computed: {

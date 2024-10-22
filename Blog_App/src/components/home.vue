@@ -151,7 +151,7 @@ export default {
       return Math.ceil(this.blogs.length / this.blogsPerPage);
     },
     filteredBlogs() {
-      let filtered = this.blogs;
+      let filtered = this.blogs.filter((blog) => blog.isConfirmed);
 
       // Filter by search query
       if (this.searchQuery) {

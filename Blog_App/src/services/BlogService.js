@@ -10,6 +10,8 @@ const apiClient = axios.create({
   },
 });
 
+const BASE_URL = "http://localhost:5254";
+
 apiClient.interceptors.request.use(
   (config) => {
     const token = authService.getToken();
@@ -309,11 +311,40 @@ const blogService = {
   },
   async getRecommendations(userId) {
     try {
-      const response = await apiClient.get(`/Recommendation/recommendations/${userId}`);
+      const response = await apiClient.get(
+        `/Recommendation/recommendations/${userId}`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching recommendations:", error);
       throw error.response?.data || error.message;
+    }
+  },
+
+  async confirmBlog(blogPostId) {
+    try {
+      const response = await axios.post(`/Blog/ConfirmBlog/${blogPostId}`);
+      if (response.data.success) {
+        this.$toastr.success("Blog post confirmed successfully.");
+        // Optionally refresh the list of blogs
+      }
+    } catch (error) {
+      this.$toastr.error("Failed to confirm the blog post.");
+    }
+  },
+
+  async updateBlogConfirmation(blogId, status) {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/api/Blog/ConfirmBlog/${blogId}`,
+        {
+          isConfirmed: status,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error in updateBlogConfirmation:", error);
+      throw error;
     }
   },
 };

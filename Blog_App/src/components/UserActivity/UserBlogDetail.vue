@@ -531,10 +531,8 @@ export default {
       }
     },
     handleRecommendationClick(blogId) {
-      // Navigate to the clicked blog
-      this.$router.push(`/blog/${blogId}`);
+      this.$router.push({ name: "UserBlogDetail", params: { id: blogId } });
     },
-    // ... other methods ...
   },
 };
 </script>
