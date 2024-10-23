@@ -125,25 +125,31 @@ const blogService = {
     try {
       const formData = new FormData();
       formData.append("Id", blogPost.id);
-      formData.append("Title", blogPost.title); // Use `blogPost.title`
-      formData.append("MetaDescription", blogPost.metaDescription); // Use `blogPost.metaDescription`
-      formData.append("Content", blogPost.content); // Use `blogPost.content`
+      formData.append("Title", blogPost.title);
+      formData.append("MetaDescription", blogPost.metaDescription);
+      formData.append("Content", blogPost.content);
       formData.append("AuthorId", blogPost.authorId);
       formData.append("AuthorName", blogPost.authorName);
 
+      // Append image only if there is one
       if (blogPost.Image) {
         formData.append("Image", blogPost.Image);
       }
 
-      blogPost.TagIds.forEach((tagId) => formData.append("TagIds", tagId)); // Handle multiple tags
+      // Append each TagId separately
+      blogPost.TagIds.forEach((tagId) => {
+        formData.append("TagIds[]", tagId); // Notice the "[]" to hint it's an array, depending on backend needs
+      });
 
-      console.log("FormData Contents:", Array.from(formData.entries())); // Debug output
+      // Debug output for FormData contents
+      console.log("FormData Contents:", Array.from(formData.entries()));
 
       const response = await apiClient.put(`/Blog/UpdateBlogPost`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;

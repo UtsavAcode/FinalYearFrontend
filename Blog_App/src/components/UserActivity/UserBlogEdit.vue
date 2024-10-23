@@ -3,9 +3,6 @@
     <h1>Edit Blog</h1>
     <form @submit.prevent="updateBlogPost" style="width: 90%">
       <div v-if="error" class="alert alert-danger">{{ error }}</div>
-      <div v-if="successMessage" class="alert alert-success">
-        {{ successMessage }}
-      </div>
 
       <div class="form-group">
         <label for="title">Title</label>
@@ -19,7 +16,7 @@
         <div v-if="error?.Title" class="text-danger">{{ error.Title[0] }}</div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group mt-2">
         <label for="metaDescription">Meta Description</label>
         <textarea
           v-model="blog.metaDescription"
@@ -41,7 +38,7 @@
         ></froala>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" style="height:20rem; width:20rem;">
         <label for="featuredImage">Featured Image</label>
         <input
           type="file"
@@ -54,7 +51,7 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group mt-2">
         <label for="tags">Tags</label>
         <MultiSelect
           v-model="blog.selectedTags"
@@ -67,7 +64,7 @@
           filterPlaceholder="Search Tags"
         />
       </div>
-      <button type="submit" class="btn btn-primary">Update</button>
+      <button type="submit" class="btn btn-dark mt-3">Update</button>
     </form>
   </div>
 </template>
@@ -75,6 +72,7 @@
 <script>
 import { useRoute, useRouter } from "vue-router";
 import blogService from "@/services/BlogService";
+import toastr from "toastr"; // Import Toastr
 
 export default {
   name: "EditBlog",
@@ -128,11 +126,12 @@ export default {
         };
 
         await blogService.updateBlogPost(updatedBlogPost);
-        this.successMessage = "Blog updated successfully!";
+        toastr.success("Blog updated successfully!"); // Show success message
         // Optionally redirect or clear form after success
         // this.router.push('/path/to/redirect'); // Uncomment to redirect
       } catch (error) {
         console.error("Error updating blog post:", error);
+        toastr.error(error.response?.data?.errors || "An error occurred"); // Show error message
         this.error = error.response?.data?.errors || "An error occurred";
       }
     },
@@ -149,3 +148,7 @@ export default {
   },
 };
 </script>
+
+<style>
+/* You may need to add custom styles for Toastr */
+</style>

@@ -2,7 +2,7 @@
   <div>
     <div class="blog-list">
       <div
-        v-for="blog in userBlogs"
+        v-for="blog in paginatedBlogs"
         :key="blog.id"
         class="blog-panel d-flex align-items-center justify-content-between"
       >
@@ -44,17 +44,6 @@
               <i class="bi bi-chat"></i>
               <span class="ms-2 me-2">{{ blog.commentCount }}</span>
             </div>
-            <div class="confirmation-section mt-2">
-              <label for="confirm-blog" class="form-check-label">
-                <input
-  type="checkbox"
-  class="form-check-input"
-  :checked="blog.isConfirmed"
-  @change="confirmBlog(blog)"
-/>
-                Confirm Blog
-              </label>
-            </div>
           </div>
         </div>
         <div
@@ -67,13 +56,6 @@
           >
             <i class="bi bi-clipboard2-data text-dark"></i>
           </RouterLink>
-          <div
-            class="blog-utilities"
-            @click="showDialog(blog)"
-            title="View Blog"
-          >
-            <i class="bi bi-eye" style="font-size: 1em"> </i>
-          </div>
           <div class="blog-utilities" title="Edit" @click="editBlog(blog)">
             <i class="bi bi-pencil" style="font-size: 1em"></i>
           </div>
@@ -83,6 +65,16 @@
             @click="deletePost(blog.id)"
           >
             <i class="bi bi-trash3" style="font-size: 1em"></i>
+          </div>
+          <div class="blog-utilities confirmation-section mt-2" title="Publish">
+            <label for="confirm-blog" class="form-check-label">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                :checked="blog.isConfirmed"
+                @change="confirmBlog(blog)"
+              />
+            </label>
           </div>
         </div>
       </div>
@@ -97,6 +89,25 @@
         </div>
         <div v-html="currentBlog.content"></div>
       </Dialog>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination mt-4">
+      <button
+        class="btn btn-secondary"
+        :disabled="currentPage === 1"
+        @click="currentPage--"
+      >
+        Previous
+      </button>
+      <span class="mx-2">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button
+        class="btn btn-secondary"
+        :disabled="currentPage === totalPages"
+        @click="currentPage++"
+      >
+        Next
+      </button>
     </div>
   </div>
 </template>
@@ -122,13 +133,35 @@ export default {
         featuredImagePath: "",
         tags: [],
       },
+      currentPage: 1, // Current page
+      blogsPerPage: 10, // Number of blogs to display per page
     };
   },
   created() {
     this.fetchUserBlogs();
   },
+  computed: {
+    ...mapGetters("auth", ["id"]),
+    userBlogs() {
+      const userId = String(this.id).replace(/"/g, "").trim();
+
+      return this.blogs.filter((blog) => {
+        const blogAuthorId = String(blog.authorId).trim();
+        return blogAuthorId === userId;
+      });
+    },
+    paginatedBlogs() {
+      // Calculate the start and end index for slicing the blogs array
+      const start = (this.currentPage - 1) * this.blogsPerPage;
+      const end = start + this.blogsPerPage;
+      return this.userBlogs.slice(start, end); // Return only the sliced blogs
+    },
+    totalPages() {
+      return Math.ceil(this.userBlogs.length / this.blogsPerPage); // Calculate total pages
+    },
+  },
   methods: {
-      async fetchUserBlogs() {
+    async fetchUserBlogs() {
       try {
         const response = await blogService.getAllBlog();
         const blogs = Array.isArray(response) ? response : [];
@@ -149,7 +182,7 @@ export default {
               likesCount: likes,
               viewsCount: views.totalViews || 0,
               commentCount: commentCount,
-              isConfirmed: Boolean(blog.isConfirmed) // Explicitly convert to boolean
+              isConfirmed: Boolean(blog.isConfirmed), // Explicitly convert to boolean
             };
           })
         );
@@ -172,7 +205,6 @@ export default {
     goToBlogDetails(blogId) {
       this.$router.push({ path: `/userBlogDetail/${blogId}` });
     },
-
     formatDate(date) {
       return new Date(date).toLocaleDateString();
     },
@@ -195,57 +227,44 @@ export default {
 
       this.visible = true;
     },
-
-    // In UserBlogs.vue, update the confirmBlog method:
-
-async confirmBlog(blog) {
-    try {
+    async confirmBlog(blog) {
+      try {
         const newStatus = !blog.isConfirmed;
-        
+
         // Show loading state if you have one
         // this.$loading.show();
-        
+
         // Make API call
-        const response = await blogService.updateBlogConfirmation(blog.id, newStatus);
-        
+        const response = await blogService.updateBlogConfirmation(
+          blog.id,
+          newStatus
+        );
+
         // Update local state only if API call was successful
         if (response) {
-            blog.isConfirmed = newStatus;
-            this.$toastr.success(
-                `Blog visibility ${newStatus ? 'enabled' : 'disabled'}`
-            );
-            
-            // Optionally refresh the blogs list
-            await this.fetchUserBlogs();
+          blog.isConfirmed = newStatus;
+          this.$toastr.success(
+            `Blog visibility ${newStatus ? "enabled" : "disabled"}`
+          );
+
+          // Optionally refresh the blogs list
+          await this.fetchUserBlogs();
         }
-    } catch (error) {
+      } catch (error) {
         console.error("Error updating blog confirmation:", error);
         this.$toastr.error("Failed to update blog visibility");
-        
+
         // Revert checkbox state on error
         blog.isConfirmed = !blog.isConfirmed;
-    } finally {
+      } finally {
         // Hide loading state if you have one
         // this.$loading.hide();
-    }
-}
-  },
-
-  computed: {
-    ...mapGetters("auth", ["id"]),
-    userBlogs() {
-      const userId = String(this.id).replace(/"/g, "").trim();
-
-      const filteredBlogs = this.blogs.filter((blog) => {
-        const blogAuthorId = String(blog.authorId).trim();
-        return blogAuthorId === userId;
-      });
-
-      return filteredBlogs;
+      }
     },
   },
 };
 </script>
+
 <style>
 .blog-title {
   font-family: "Roboto", sans-serif;
