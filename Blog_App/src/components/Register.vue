@@ -40,7 +40,7 @@
         />
       </div>
       <button type="submit" class="btn-darkish">Create Account</button>
-      <p class="text-center p-2 mx-auto">Already have an account? Sign in</p>
+      
       <ul v-if="validationErrors.length">
         <li v-for="(err, index) in validationErrors" :key="index" class="error">
           {{ err }}

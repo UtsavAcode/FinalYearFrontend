@@ -21,9 +21,7 @@
         />
       </div>
       <button type="submit" class="btn-darkish">Login</button>
-      <p class="text-center p-2 mx-auto">
-        Don't have an account? Register here
-      </p>
+     
       <p v-if="errorMessage">{{ errorMessage }}</p>
     </form>
   </div>
